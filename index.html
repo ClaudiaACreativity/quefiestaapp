@@ -897,6 +897,28 @@ footer strong { color: white; }
             <label class="form-label">Observaciones</label>
             <textarea class="form-input" id="f-obs" rows="3" placeholder="Alergias, pedidos especiales, etc."></textarea>
           </div>
+          <div class="form-group full" id="comprobante-group" style="display:none;">
+            <label class="form-label">Comprobante de transferencia *</label>
+            <div style="border:2px dashed var(--border);border-radius:var(--radius);padding:20px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative;" 
+                 id="comprobante-drop"
+                 onclick="document.getElementById('f-comprobante').click()"
+                 ondragover="event.preventDefault();this.style.borderColor='var(--color1)'"
+                 ondragleave="this.style.borderColor='var(--border)'"
+                 ondrop="handleComprobanteDrop(event)">
+              <input type="file" id="f-comprobante" accept="image/*,application/pdf" style="display:none" onchange="handleComprobanteChange(this)">
+              <div id="comprobante-placeholder">
+                <div style="font-size:32px;margin-bottom:8px;">📎</div>
+                <div style="font-size:14px;font-weight:600;color:var(--text);">Adjuntá el comprobante</div>
+                <div style="font-size:12px;color:var(--text2);margin-top:4px;">Imagen o PDF · Máx. 5MB</div>
+              </div>
+              <div id="comprobante-preview" style="display:none;">
+                <div style="font-size:32px;margin-bottom:8px;">✅</div>
+                <div style="font-size:14px;font-weight:600;color:var(--text);" id="comprobante-nombre"></div>
+                <div style="font-size:12px;color:var(--text2);margin-top:4px;">Clic para cambiar</div>
+              </div>
+            </div>
+            <div style="font-size:12px;color:var(--text2);margin-top:8px;" id="comprobante-alias"></div>
+          </div>
         </div>
 
         <div class="pago-info" id="pago-info" style="display:none;"></div>
@@ -1096,6 +1118,16 @@ async function cargarSalon() {
     const pagoInfo = document.getElementById('pago-info');
     pagoInfo.textContent = salon.mensaje_pago;
     pagoInfo.style.display = 'block';
+  }
+
+  // Mostrar campo de comprobante si la modalidad es transferencia
+  const modalidad = salon.modalidad_cobro || '';
+  if (modalidad.includes('transferencia') || modalidad === 'total_transferencia') {
+    document.getElementById('comprobante-group').style.display = 'block';
+    if (salon.alias_transferencia) {
+      document.getElementById('comprobante-alias').textContent = 
+        `Alias / CBU para transferir la seña: ${salon.alias_transferencia}`;
+    }
   }
 
   actualizarResumen();
@@ -1410,6 +1442,13 @@ async function enviarReserva() {
   if (!fechaSeleccionada) { toast('Elegí una fecha del calendario', 'error'); return; }
   if (!horarioSeleccionado) { toast('Elegí un horario', 'error'); return; }
 
+  // Validar comprobante si es modalidad transferencia
+  const modalidad = salon?.modalidad_cobro || '';
+  const requiereComprobante = modalidad.includes('transferencia') || modalidad === 'total_transferencia';
+  if (requiereComprobante && !archivoComprobante) {
+    toast('Adjuntá el comprobante de transferencia', 'error'); return;
+  }
+
   const { salon: ps, menu: pm, juegos: pj, total } = calcularTotal();
 
   const btn = document.getElementById('btn-reservar');
@@ -1444,6 +1483,11 @@ async function enviarReserva() {
     const data = await res.json();
 
     if (res.ok) {
+      // Subir comprobante si existe
+      if (archivoComprobante && data.reserva_id) {
+        await subirComprobante(data.reserva_id);
+      }
+
       document.getElementById('formulario').style.display = 'none';
       const success = document.getElementById('success-screen');
       success.style.display = 'block';
@@ -1468,6 +1512,55 @@ async function enviarReserva() {
 // ============================================================
 // HELPERS
 // ============================================================
+// ============================================================
+// COMPROBANTE
+// ============================================================
+let archivoComprobante = null;
+
+function handleComprobanteChange(input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    toast('El archivo no puede superar 5MB', 'error');
+    input.value = '';
+    return;
+  }
+  archivoComprobante = file;
+  document.getElementById('comprobante-placeholder').style.display = 'none';
+  document.getElementById('comprobante-preview').style.display = 'block';
+  document.getElementById('comprobante-nombre').textContent = file.name;
+}
+
+function handleComprobanteDrop(event) {
+  event.preventDefault();
+  document.getElementById('comprobante-drop').style.borderColor = 'var(--border)';
+  const file = event.dataTransfer.files[0];
+  if (file) {
+    const input = document.getElementById('f-comprobante');
+    const dt = new DataTransfer();
+    dt.items.add(file);
+    input.files = dt.files;
+    handleComprobanteChange(input);
+  }
+}
+
+async function subirComprobante(reservaId) {
+  if (!archivoComprobante) return null;
+  const formData = new FormData();
+  formData.append('file', archivoComprobante);
+  try {
+    const res = await fetch(`${API}/${SLUG}/comprobante/${reservaId}`, {
+      method: 'POST',
+      body: formData
+    });
+    const data = await res.json();
+    return data.url || null;
+  } catch(e) {
+    console.error('Error subiendo comprobante:', e);
+    return null;
+  }
+}
+
 function formatPrecio(n) {
   if (!n && n !== 0) return '$0';
   return '$' + Number(n).toLocaleString('es-AR');

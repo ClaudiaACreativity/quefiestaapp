@@ -711,6 +711,7 @@ select option { background: var(--surface2); }
               <th>Niños</th>
               <th>Total</th>
               <th>Seña</th>
+              <th>Comprobante</th>
               <th>Estado</th>
               <th>Acciones</th>
             </tr>
@@ -1427,6 +1428,11 @@ async function cargarReservas() {
           ${r.seña_pagada ? '✓ Pagada' : '⏳ Pendiente'}
         </span>
       </td>
+      <td>
+        ${r.comprobante_url 
+          ? `<a href="${r.comprobante_url}" target="_blank" style="color:var(--accent2);font-size:13px;">📎 Ver</a>`
+          : `<span style="color:var(--text2);font-size:12px;">Sin comprobante</span>`}
+      </td>
       <td><span class="badge badge-${r.estado}">${r.estado}</span></td>
       <td>
         <div style="display:flex;gap:6px;flex-wrap:wrap;">
@@ -1475,6 +1481,16 @@ async function verDetalleReserva(id) {
     ${menu.length ? `<div style="margin-top:16px;"><strong>Menú:</strong> ${menu.map(m=>m.nombre).join(', ')}</div>` : ''}
     ${juegos.length ? `<div style="margin-top:8px;"><strong>Juegos:</strong> ${juegos.map(j=>j.nombre).join(', ')}</div>` : ''}
     ${r.observaciones ? `<div style="margin-top:8px;"><strong>Observaciones:</strong> ${r.observaciones}</div>` : ''}
+    ${r.comprobante_url ? `
+      <div style="margin-top:16px;">
+        <strong>Comprobante de pago:</strong>
+        <div style="margin-top:8px;">
+          <a href="${r.comprobante_url}" target="_blank" 
+             style="display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);color:var(--accent2);text-decoration:none;font-size:13px;">
+            📎 Ver comprobante
+          </a>
+        </div>
+      </div>` : '<div style="margin-top:8px;color:var(--text2);font-size:13px;">⏳ Sin comprobante adjunto</div>'}
     <div style="margin-top:16px;display:flex;gap:8px;">
       <button class="btn btn-ghost btn-sm" onclick="toggleSeñaPagada('${r.id}', ${!r.seña_pagada})">
         ${r.seña_pagada ? 'Marcar seña NO pagada' : 'Marcar seña como pagada'}
