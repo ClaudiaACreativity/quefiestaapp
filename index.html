@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reservá tu fiesta</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Montserrat:wght@800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color1: #ff6b6b;
+  --color2: #ffd93d;
+  --text: #1a1a2e;
+  --text2: #5a5a7a;
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --border: #ebebf0;
+  --radius: 16px;
+  --radius-lg: 24px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* LOADING */
+#loading-screen {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  gap: 16px;
+}
+
+.loader {
+  width: 48px; height: 48px;
+  border: 4px solid var(--border);
+  border-top-color: var(--color1);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* HERO */
+.hero {
+  position: relative;
+  min-height: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 60px 24px 80px;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--color1) 0%, var(--color2) 100%);
+  opacity: 0.12;
+}
+
+.hero-img {
+  position: absolute; inset: 0;
+  object-fit: cover;
+  width: 100%; height: 100%;
+  opacity: 0.25;
+}
+
+.hero-content { position: relative; z-index: 2; max-width: 680px; }
+
+.hero-logo {
+  width: 80px; height: 80px;
+  border-radius: 20px;
+  object-fit: cover;
+  margin-bottom: 20px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  display: none;
+}
+
+.hero-badge {
+  display: inline-block;
+  background: var(--color1);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.hero-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(36px, 7vw, 64px);
+  font-weight: 900;
+  line-height: 1.05;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.hero-title span { color: var(--color1); }
+
+.hero-subtitle {
+  font-size: 17px;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+
+.hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+.btn-hero {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 50px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-hero-primary {
+  background: var(--color1);
+  color: white;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.2); }
+
+.btn-hero-secondary {
+  background: white;
+  color: var(--text);
+  border: 2px solid var(--border);
+}
+
+.btn-hero-secondary:hover { border-color: var(--color1); color: var(--color1); }
+
+/* SECCIÓN */
+.section { padding: 64px 24px; max-width: 1100px; margin: 0 auto; }
+.section-sm { padding: 40px 24px; max-width: 1100px; margin: 0 auto; }
+
+.section-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color1);
+  margin-bottom: 10px;
+}
+
+.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(26px, 4vw, 38px);
+  font-weight: 700;
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.section-subtitle {
+  color: var(--text2);
+  font-size: 15px;
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+/* COMBOS */
+.combos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.combo-card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all 0.25s;
+  cursor: pointer;
+}
+
+.combo-card:hover {
+  border-color: var(--color1);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.1);
+}
+
+.combo-card.selected {
+  border-color: var(--color1);
+  box-shadow: 0 0 0 4px rgba(255,107,107,0.15);
+}
+
+.combo-img {
+  width: 100%; height: 180px;
+  object-fit: cover;
+  background: linear-gradient(135deg, var(--color1) 0%, var(--color2) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56px;
+}
+
+.combo-body { padding: 20px; }
+
+.combo-name {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.combo-desc {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+  margin-bottom: 14px;
+}
+
+.combo-price {
+  font-family: 'Fraunces', serif;
+  font-size: 26px;
+  font-weight: 900;
+  color: var(--color1);
+}
+
+.combo-price-label {
+  font-size: 11px;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.combo-check {
+  display: none;
+  background: var(--color1);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-top: 10px;
+}
+
+.combo-card.selected .combo-check { display: inline-block; }
+
+/* DIVISOR */
+.divisor {
+  text-align: center;
+  padding: 32px 24px;
+  position: relative;
+}
+
+.divisor::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 1100px;
+  height: 1px;
+  background: var(--border);
+}
+
+.divisor-text {
+  position: relative;
+  background: var(--bg);
+  padding: 8px 24px;
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-style: italic;
+  color: var(--text2);
+}
+
+/* PRESUPUESTADOR */
+.presup-container {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .presup-container { grid-template-columns: 1fr; }
+}
+
+.presup-panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  margin-bottom: 20px;
+}
+
+.presup-panel-title {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* CANTIDAD NIÑOS */
+.ninos-control {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  width: fit-content;
+}
+
+.ninos-btn {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: white;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  color: var(--text);
+}
+
+.ninos-btn:hover { border-color: var(--color1); color: var(--color1); }
+
+.ninos-value {
+  font-family: 'Fraunces', serif;
+  font-size: 36px;
+  font-weight: 900;
+  min-width: 60px;
+  text-align: center;
+}
+
+.ninos-label { font-size: 13px; color: var(--text2); }
+
+/* ITEMS CHECKLIST */
+.items-list { display: flex; flex-direction: column; gap: 10px; }
+
+.item-check {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s;
+  user-select: none;
+}
+
+.item-check:hover { border-color: var(--color1); background: rgba(255,107,107,0.03); }
+
+.item-check.checked {
+  border-color: var(--color1);
+  background: rgba(255,107,107,0.06);
+}
+
+.item-check-box {
+  width: 22px; height: 22px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  background: white;
+}
+
+.item-check.checked .item-check-box {
+  background: var(--color1);
+  border-color: var(--color1);
+  color: white;
+}
+
+.item-check-img {
+  width: 44px; height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: linear-gradient(135deg, var(--color1), var(--color2));
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.item-check-info { flex: 1; }
+.item-check-name { font-weight: 600; font-size: 14px; }
+.item-check-desc { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.item-check-price { font-weight: 700; font-size: 14px; color: var(--color1); white-space: nowrap; }
+
+/* CALENDARIO */
+.calendario {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.cal-mes {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.cal-nav {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  width: 32px; height: 32px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  transition: all 0.15s;
+}
+
+.cal-nav:hover { border-color: var(--color1); color: var(--color1); }
+
+.cal-dias-semana {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-bottom: 4px;
+}
+
+.cal-dia-label {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 0;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.cal-dia {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: default;
+  transition: all 0.15s;
+}
+
+.cal-dia.vacio { background: transparent; }
+.cal-dia.pasado { color: #ccc; }
+.cal-dia.no-disponible { color: #ddd; }
+.cal-dia.bloqueado { color: #ddd; text-decoration: line-through; }
+.cal-dia.completo { background: #fee; color: #f99; }
+
+.cal-dia.disponible {
+  background: rgba(107,203,119,0.15);
+  color: #2d7a3a;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.cal-dia.disponible:hover {
+  background: #6bcb77;
+  color: white;
+  transform: scale(1.1);
+}
+
+.cal-dia.seleccionado {
+  background: var(--color1);
+  color: white;
+  transform: scale(1.1);
+}
+
+.cal-leyenda {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.cal-leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--text2);
+}
+
+.cal-leyenda-dot {
+  width: 10px; height: 10px;
+  border-radius: 3px;
+}
+
+/* HORARIOS */
+.horarios-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.horario-chip {
+  padding: 8px 16px;
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: white;
+}
+
+.horario-chip:hover { border-color: var(--color1); color: var(--color1); }
+.horario-chip.selected { background: var(--color1); border-color: var(--color1); color: white; }
+
+/* RESUMEN */
+.resumen {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  position: sticky;
+  top: 24px;
+}
+
+.resumen-title {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.resumen-linea {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  gap: 12px;
+}
+
+.resumen-linea:last-of-type { border-bottom: none; }
+.resumen-linea-label { color: var(--text2); flex: 1; }
+.resumen-linea-valor { font-weight: 600; text-align: right; }
+
+.resumen-total {
+  background: linear-gradient(135deg, var(--color1), var(--color2));
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-top: 16px;
+  text-align: center;
+}
+
+.resumen-total-label { font-size: 12px; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 1px; }
+.resumen-total-valor {
+  font-family: 'Fraunces', serif;
+  font-size: 36px;
+  font-weight: 900;
+  color: white;
+}
+
+.resumen-seña {
+  text-align: center;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--text2);
+}
+
+/* FORMULARIO */
+.form-reserva {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+
+.form-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text2);
+}
+
+.form-input {
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.form-input:focus { border-color: var(--color1); }
+
+.btn-reservar {
+  width: 100%;
+  background: var(--color1);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 16px;
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.2s;
+  box-shadow: 0 8px 24px rgba(255,107,107,0.3);
+}
+
+.btn-reservar:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(255,107,107,0.4); }
+.btn-reservar:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+/* PAGO INFO */
+.pago-info {
+  background: rgba(255,217,61,0.1);
+  border: 1px solid rgba(255,217,61,0.4);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+  margin-top: 16px;
+}
+
+/* SUCCESS */
+.success-screen {
+  display: none;
+  text-align: center;
+  padding: 60px 24px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.success-icon { font-size: 72px; margin-bottom: 20px; }
+.success-title {
+  font-family: 'Fraunces', serif;
+  font-size: 32px;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+.success-text { color: var(--text2); font-size: 16px; line-height: 1.6; }
+
+/* FOOTER */
+footer {
+  background: #1a1a2e;
+  color: rgba(255,255,255,0.6);
+  text-align: center;
+  padding: 40px 24px;
+  font-size: 13px;
+  margin-top: 60px;
+}
+
+footer a { color: rgba(255,255,255,0.7); text-decoration: none; }
+footer a:hover { color: white; }
+footer strong { color: white; }
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  background: var(--text);
+  color: white;
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  font-size: 14px;
+  z-index: 200;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s;
+  max-width: 320px;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.error { background: #e74c3c; }
+
+/* WHATSAPP FLOAT */
+.whatsapp-btn {
+  position: fixed;
+  bottom: 24px; left: 24px;
+  background: #25d366;
+  color: white;
+  border-radius: 50px;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  box-shadow: 0 4px 16px rgba(37,211,102,0.4);
+  transition: all 0.2s;
+  z-index: 50;
+}
+.whatsapp-btn:hover { transform: translateY(-2px); }
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  .presup-container { grid-template-columns: 1fr; }
+  .resumen { position: static; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-screen">
+  <div class="loader"></div>
+  <div style="font-size:14px;color:#999">Cargando...</div>
+</div>
+
+<!-- HERO -->
+<header class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <img id="hero-img" class="hero-img" src="" alt="" style="display:none">
+  <div class="hero-content">
+    <img id="hero-logo" class="hero-logo" src="" alt="">
+    <div class="hero-badge" id="hero-badge">🎉 Reservas online</div>
+    <h1 class="hero-title" id="hero-title">Tu fiesta, <span>perfecta</span></h1>
+    <p class="hero-subtitle" id="hero-subtitle">Armá el festejo ideal para ese día especial. Elegí menú, juegos y fecha desde acá.</p>
+    <div class="hero-actions">
+      <a href="#presupuestador" class="btn-hero btn-hero-primary">🎈 Armar mi presupuesto</a>
+      <a href="#combos" class="btn-hero btn-hero-secondary">Ver combos</a>
+    </div>
+  </div>
+</header>
+
+<!-- COMBOS -->
+<section class="section" id="combos">
+  <div class="section-label">Ofertas especiales</div>
+  <div class="section-title">Combos armados</div>
+  <div class="section-subtitle" id="combos-subtitle">Paquetes con todo incluido a precio cerrado. ¡Elegí el que más te gusta!</div>
+  <div class="combos-grid" id="combos-grid">
+    <!-- se carga dinámicamente -->
+  </div>
+</section>
+
+<div class="divisor">
+  <span class="divisor-text">¿Querés personalizar? Armá tu combo a medida 👇</span>
+</div>
+
+<!-- PRESUPUESTADOR -->
+<section class="section" id="presupuestador">
+  <div class="section-label">Presupuestador</div>
+  <div class="section-title">Armá tu fiesta a medida</div>
+  <div class="section-subtitle">Elegí lo que querés incluir y el precio se actualiza en tiempo real</div>
+
+  <div class="presup-container">
+    <!-- COLUMNA IZQUIERDA -->
+    <div>
+
+      <!-- CANTIDAD DE NIÑOS -->
+      <div class="presup-panel">
+        <div class="presup-panel-title">👶 Cantidad de niños</div>
+        <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+          <div class="ninos-control">
+            <button class="ninos-btn" onclick="cambiarNinos(-1)">−</button>
+            <div>
+              <div class="ninos-value" id="ninos-value">20</div>
+              <div class="ninos-label">niños</div>
+            </div>
+            <button class="ninos-btn" onclick="cambiarNinos(1)">+</button>
+          </div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.5;">
+            El precio base incluye hasta <strong id="ninos-base-label">20</strong> niños.<br>
+            Cada niño extra tiene un costo adicional por ítem.
+          </div>
+        </div>
+      </div>
+
+      <!-- MENÚ -->
+      <div class="presup-panel">
+        <div class="presup-panel-title">🍕 Menú</div>
+        <div class="items-list" id="menu-list">
+          <div style="color:var(--text2);font-size:14px;">Cargando...</div>
+        </div>
+      </div>
+
+      <!-- JUEGOS -->
+      <div class="presup-panel">
+        <div class="presup-panel-title">🎪 Juegos y adicionales</div>
+        <div class="items-list" id="juegos-list">
+          <div style="color:var(--text2);font-size:14px;">Cargando...</div>
+        </div>
+      </div>
+
+      <!-- CALENDARIO -->
+      <div class="presup-panel">
+        <div class="presup-panel-title">📅 Elegí la fecha</div>
+        <div class="calendario">
+          <div class="cal-header">
+            <button class="cal-nav" onclick="cambiarMes(-1)">‹</button>
+            <div class="cal-mes" id="cal-mes-label"></div>
+            <button class="cal-nav" onclick="cambiarMes(1)">›</button>
+          </div>
+          <div class="cal-dias-semana">
+            <div class="cal-dia-label">Dom</div>
+            <div class="cal-dia-label">Lun</div>
+            <div class="cal-dia-label">Mar</div>
+            <div class="cal-dia-label">Mié</div>
+            <div class="cal-dia-label">Jue</div>
+            <div class="cal-dia-label">Vie</div>
+            <div class="cal-dia-label">Sáb</div>
+          </div>
+          <div class="cal-grid" id="cal-grid"></div>
+          <div class="cal-leyenda">
+            <div class="cal-leyenda-item"><div class="cal-leyenda-dot" style="background:rgba(107,203,119,0.4)"></div>Disponible</div>
+            <div class="cal-leyenda-item"><div class="cal-leyenda-dot" style="background:#fee"></div>Completo</div>
+            <div class="cal-leyenda-item"><div class="cal-leyenda-dot" style="background:#eee"></div>No disponible</div>
+          </div>
+        </div>
+
+        <div id="horarios-container" style="display:none;margin-top:8px;">
+          <div style="font-size:14px;font-weight:600;margin-bottom:8px;">Horarios disponibles:</div>
+          <div class="horarios-chips" id="horarios-chips"></div>
+        </div>
+      </div>
+
+      <!-- FORMULARIO -->
+      <div class="form-reserva" id="formulario">
+        <div class="presup-panel-title" style="margin-bottom:20px;">📝 Tus datos</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Tu nombre *</label>
+            <input type="text" class="form-input" id="f-nombre" placeholder="Nombre completo">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email *</label>
+            <input type="email" class="form-input" id="f-email" placeholder="tu@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Teléfono</label>
+            <input type="tel" class="form-input" id="f-tel" placeholder="Ej: 3492123456">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nombre del festejado/a</label>
+            <input type="text" class="form-input" id="f-festejado" placeholder="¿Quién cumple?">
+          </div>
+          <div class="form-group full">
+            <label class="form-label">Observaciones</label>
+            <textarea class="form-input" id="f-obs" rows="3" placeholder="Alergias, pedidos especiales, etc."></textarea>
+          </div>
+        </div>
+
+        <div class="pago-info" id="pago-info" style="display:none;"></div>
+
+        <button class="btn-reservar" id="btn-reservar" onclick="enviarReserva()">
+          🎉 Solicitar reserva
+        </button>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="success-screen" id="success-screen">
+        <div class="success-icon">🎊</div>
+        <div class="success-title">¡Solicitud enviada!</div>
+        <div class="success-text" id="success-text">
+          Recibimos tu solicitud. Nos pondremos en contacto a la brevedad para confirmar tu reserva.
+        </div>
+      </div>
+
+    </div>
+
+    <!-- COLUMNA DERECHA — RESUMEN -->
+    <div>
+      <div class="resumen">
+        <div class="resumen-title">Tu presupuesto 🎈</div>
+
+        <div class="resumen-linea">
+          <span class="resumen-linea-label">Salón (<span id="res-ninos">20</span> niños)</span>
+          <span class="resumen-linea-valor" id="res-salon">$0</span>
+        </div>
+        <div class="resumen-linea" id="res-menu-linea" style="display:none;">
+          <span class="resumen-linea-label" id="res-menu-label">Menú</span>
+          <span class="resumen-linea-valor" id="res-menu">$0</span>
+        </div>
+        <div class="resumen-linea" id="res-juegos-linea" style="display:none;">
+          <span class="resumen-linea-label">Juegos y adicionales</span>
+          <span class="resumen-linea-valor" id="res-juegos">$0</span>
+        </div>
+        <div class="resumen-linea" id="res-fecha-linea" style="display:none;">
+          <span class="resumen-linea-label">Fecha</span>
+          <span class="resumen-linea-valor" id="res-fecha">—</span>
+        </div>
+        <div class="resumen-linea" id="res-horario-linea" style="display:none;">
+          <span class="resumen-linea-label">Horario</span>
+          <span class="resumen-linea-valor" id="res-horario">—</span>
+        </div>
+
+        <div class="resumen-total">
+          <div class="resumen-total-label">Total estimado</div>
+          <div class="resumen-total-valor" id="res-total">$0</div>
+        </div>
+        <div class="resumen-seña" id="res-seña" style="display:none;"></div>
+
+        <div style="margin-top:16px;font-size:12px;color:var(--text2);line-height:1.5;text-align:center;">
+          * El presupuesto es orientativo y será confirmado por el salón.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div id="footer-contacto" style="margin-bottom:16px;"></div>
+
+  <div style="margin-bottom:20px;">
+    <a href="https://gestionateia.com/quefiestaapp" style="color:rgba(255,255,255,0.7);text-decoration:none;margin:0 12px;">QueFiestaApp</a>
+    <a href="https://gestionateia.com/soporte" target="_blank" style="color:rgba(255,255,255,0.7);text-decoration:none;margin:0 12px;">Soporte</a>
+    <a href="https://gestionateia.com/terminos-y-condiciones/" target="_blank" style="color:rgba(255,255,255,0.7);text-decoration:none;margin:0 12px;">Términos y condiciones</a>
+    <a href="https://gestionateia.com/politica-de-privacidad/" target="_blank" style="color:rgba(255,255,255,0.7);text-decoration:none;margin:0 12px;">Política de privacidad</a>
+  </div>
+
+  <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
+    <span style="color:rgba(255,255,255,0.5);font-size:13px;">Un producto de</span>
+    <a href="https://gestionateia.com" target="_blank" style="text-decoration:none;font-family:'Montserrat',sans-serif;font-weight:800;font-size:18px;">
+      <span style="color:#ffffff">Gestiona</span><span style="color:#FF8000">Te</span><span style="color:#71D997">IA</span>
+    </a>
+  </div>
+</footer>
+
+<!-- WHATSAPP FLOAT -->
+<a class="whatsapp-btn" id="whatsapp-btn" href="#" target="_blank" style="display:none;">
+  💬 Consultar por WhatsApp
+</a>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const API = 'https://reserva-aulas.onrender.com/quefiestaapp';
+
+// Leer el slug desde la URL: quefiestaapp.gestionateia.com?salon=prueba
+// o desde el subdominio si aplica
+function getSlug() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('salon')) return params.get('salon');
+  // Intentar desde subdominio: prueba.quefiestaapp.gestionateia.com
+  const host = window.location.hostname;
+  const parts = host.split('.');
+  if (parts.length >= 3 && parts[0] !== 'www' && parts[0] !== 'quefiestaapp') return parts[0];
+  return 'prueba'; // fallback
+}
+
+const SLUG = getSlug();
+
+// Estado
+let salon = null;
+let menuItems = [];
+let juegosItems = [];
+let cantNinos = 20;
+let ninosBase = 20;
+let menuSeleccionado = [];
+let juegosSeleccionados = [];
+let fechaSeleccionada = null;
+let horarioSeleccionado = null;
+let disponibilidad = [];
+let calMes, calAnio;
+
+const hoy = new Date();
+calMes = hoy.getMonth() + 1;
+calAnio = hoy.getFullYear();
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload = async () => {
+  try {
+    await cargarSalon();
+    await Promise.all([cargarMenu(), cargarJuegos(), cargarCombos()]);
+    await cargarDisponibilidad();
+    renderCalendario();
+  } catch(e) {
+    console.error(e);
+    document.getElementById('loading-screen').innerHTML = `
+      <div style="text-align:center;padding:40px;color:#999;">
+        <div style="font-size:40px;margin-bottom:12px;">😕</div>
+        <div>No pudimos cargar la página. Intentá de nuevo más tarde.</div>
+      </div>`;
+    return;
+  }
+  document.getElementById('loading-screen').style.display = 'none';
+};
+
+// ============================================================
+// CARGAR DATOS
+// ============================================================
+async function cargarSalon() {
+  const res = await fetch(`${API}/${SLUG}`);
+  if (!res.ok) throw new Error('Salón no encontrado');
+  salon = await res.json();
+
+  // Aplicar colores
+  document.documentElement.style.setProperty('--color1', salon.color_primario || '#ff6b6b');
+  document.documentElement.style.setProperty('--color2', salon.color_secundario || '#ffd93d');
+
+  // Hero
+  document.title = salon.nombre_visible || salon.nombre;
+  document.getElementById('hero-title').innerHTML = `<span>${salon.nombre_visible || salon.nombre}</span>`;
+
+  if (salon.imagen_portada_url) {
+    const img = document.getElementById('hero-img');
+    img.src = salon.imagen_portada_url;
+    img.style.display = 'block';
+  }
+
+  if (salon.logo_url) {
+    const logo = document.getElementById('hero-logo');
+    logo.src = salon.logo_url;
+    logo.style.display = 'block';
+  }
+
+  // niños base
+  ninosBase = salon.ninos_base || 20;
+  cantNinos = ninosBase;
+  document.getElementById('ninos-value').textContent = cantNinos;
+  document.getElementById('ninos-base-label').textContent = ninosBase;
+  document.getElementById('res-ninos').textContent = cantNinos;
+
+  // WhatsApp
+  if (salon.whatsapp) {
+    const btn = document.getElementById('whatsapp-btn');
+    btn.href = `https://wa.me/${salon.whatsapp}`;
+    btn.style.display = 'flex';
+  }
+
+  // Footer
+  let contacto = [];
+  if (salon.direccion) contacto.push('📍 ' + salon.direccion);
+  if (salon.whatsapp) contacto.push('📱 ' + salon.whatsapp);
+  if (salon.email_contacto) contacto.push('✉️ ' + salon.email_contacto);
+  document.getElementById('footer-contacto').textContent = contacto.join('  ·  ');
+
+  // Info de pago
+  if (salon.mensaje_pago) {
+    const pagoInfo = document.getElementById('pago-info');
+    pagoInfo.textContent = salon.mensaje_pago;
+    pagoInfo.style.display = 'block';
+  }
+
+  actualizarResumen();
+}
+
+async function cargarCombos() {
+  const res = await fetch(`${API}/${SLUG}/combos`);
+  if (!res.ok) return;
+  const combos = await res.json();
+  const grid = document.getElementById('combos-grid');
+
+  if (!combos.length) {
+    document.getElementById('combos').style.display = 'none';
+    document.querySelector('.divisor').style.display = 'none';
+    return;
+  }
+
+  grid.innerHTML = combos.map(c => `
+    <div class="combo-card" onclick="seleccionarCombo(this, ${JSON.stringify(c).replace(/"/g,'&quot;')})">
+      <div class="combo-img">
+        ${c.imagen_url
+          ? `<img src="${c.imagen_url}" style="width:100%;height:100%;object-fit:cover;">`
+          : '🎁'}
+      </div>
+      <div class="combo-body">
+        <div class="combo-name">${c.nombre}</div>
+        ${c.descripcion ? `<div class="combo-desc">${c.descripcion}</div>` : ''}
+        <div class="combo-price-label">Precio cerrado</div>
+        <div class="combo-price">${formatPrecio(c.precio_cerrado)}</div>
+        <div class="combo-check">✓ Seleccionado</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function cargarMenu() {
+  const res = await fetch(`${API}/${SLUG}/menu`);
+  if (!res.ok) return;
+  menuItems = await res.json();
+  renderMenuList();
+}
+
+async function cargarJuegos() {
+  const res = await fetch(`${API}/${SLUG}/juegos`);
+  if (!res.ok) return;
+  juegosItems = await res.json();
+  renderJuegosList();
+}
+
+async function cargarDisponibilidad() {
+  const res = await fetch(`${API}/${SLUG}/disponibilidad?mes=${calMes}&anio=${calAnio}`);
+  if (!res.ok) return;
+  const data = await res.json();
+  disponibilidad = data.dias;
+}
+
+// ============================================================
+// RENDER LISTAS
+// ============================================================
+function renderMenuList() {
+  const list = document.getElementById('menu-list');
+  if (!menuItems.length) {
+    list.innerHTML = '<div style="color:var(--text2);font-size:14px;">No hay ítems de menú configurados.</div>';
+    return;
+  }
+
+  list.innerHTML = menuItems.map(item => {
+    const seleccionado = menuSeleccionado.find(s => s.id === item.id);
+    const checked = !!seleccionado;
+    return `
+      <div class="item-check ${checked ? 'checked' : ''}" onclick="toggleMenu('${item.id}')">
+        <div class="item-check-box">${checked ? '✓' : ''}</div>
+        <div class="item-check-img">
+          ${item.imagen_url ? `<img src="${item.imagen_url}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">` : '🍕'}
+        </div>
+        <div class="item-check-info">
+          <div class="item-check-name">${item.nombre}</div>
+          <div class="item-check-desc">Base ${formatPrecio(item.precio_base)} · Extra: ${formatPrecio(item.precio_por_nino_extra)}/niño</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderJuegosList() {
+  const list = document.getElementById('juegos-list');
+  if (!juegosItems.length) {
+    list.innerHTML = '<div style="color:var(--text2);font-size:14px;">No hay juegos configurados.</div>';
+    return;
+  }
+
+  list.innerHTML = juegosItems.map(j => {
+    const checked = juegosSeleccionados.some(s => s.id === j.id);
+    let precioLabel = '';
+    if (j.precio_fijo > 0 && j.precio_por_nino > 0) precioLabel = `${formatPrecio(j.precio_fijo)} + ${formatPrecio(j.precio_por_nino)}/niño`;
+    else if (j.precio_fijo > 0) precioLabel = formatPrecio(j.precio_fijo);
+    else if (j.precio_por_nino > 0) precioLabel = `${formatPrecio(j.precio_por_nino)}/niño`;
+
+    return `
+      <div class="item-check ${checked ? 'checked' : ''}" onclick="toggleJuego('${j.id}')">
+        <div class="item-check-box">${checked ? '✓' : ''}</div>
+        <div class="item-check-img">
+          ${j.imagen_url ? `<img src="${j.imagen_url}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">` : '🎪'}
+        </div>
+        <div class="item-check-info">
+          <div class="item-check-name">${j.nombre}</div>
+          ${j.descripcion ? `<div class="item-check-desc">${j.descripcion}</div>` : ''}
+        </div>
+        <div class="item-check-price">${precioLabel}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// INTERACCIONES
+// ============================================================
+function cambiarNinos(delta) {
+  cantNinos = Math.max(1, cantNinos + delta);
+  document.getElementById('ninos-value').textContent = cantNinos;
+  document.getElementById('res-ninos').textContent = cantNinos;
+  renderMenuList();
+  renderJuegosList();
+  actualizarResumen();
+}
+
+function toggleMenu(id) {
+  const item = menuItems.find(m => m.id === id);
+  if (!item) return;
+  const idx = menuSeleccionado.findIndex(s => s.id === id);
+  if (idx >= 0) menuSeleccionado.splice(idx, 1);
+  else menuSeleccionado.push(item);
+  renderMenuList();
+  actualizarResumen();
+}
+
+function toggleJuego(id) {
+  const juego = juegosItems.find(j => j.id === id);
+  if (!juego) return;
+  const idx = juegosSeleccionados.findIndex(s => s.id === id);
+  if (idx >= 0) juegosSeleccionados.splice(idx, 1);
+  else juegosSeleccionados.push(juego);
+  renderJuegosList();
+  actualizarResumen();
+}
+
+function seleccionarCombo(el, combo) {
+  document.querySelectorAll('.combo-card').forEach(c => c.classList.remove('selected'));
+  el.classList.toggle('selected');
+}
+
+// ============================================================
+// CALENDARIO
+// ============================================================
+function renderCalendario() {
+  const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  document.getElementById('cal-mes-label').textContent = `${meses[calMes-1]} ${calAnio}`;
+
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+
+  // Primer día del mes
+  const primerDia = new Date(calAnio, calMes - 1, 1).getDay();
+
+  // Días vacíos al inicio
+  for (let i = 0; i < primerDia; i++) {
+    const vacio = document.createElement('div');
+    vacio.className = 'cal-dia vacio';
+    grid.appendChild(vacio);
+  }
+
+  // Días del mes
+  const diasEnMes = new Date(calAnio, calMes, 0).getDate();
+  for (let d = 1; d <= diasEnMes; d++) {
+    const fecha = `${calAnio}-${String(calMes).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const diaData = disponibilidad.find(x => x.fecha === fecha);
+    const estado = diaData?.estado || 'no_disponible';
+
+    const el = document.createElement('div');
+    el.className = `cal-dia ${estado}`;
+    el.textContent = d;
+
+    if (fecha === fechaSeleccionada) el.classList.add('seleccionado');
+
+    if (estado === 'disponible') {
+      el.onclick = () => seleccionarFecha(fecha, diaData?.horarios || []);
+    }
+
+    grid.appendChild(el);
+  }
+}
+
+async function cambiarMes(delta) {
+  calMes += delta;
+  if (calMes > 12) { calMes = 1; calAnio++; }
+  if (calMes < 1) { calMes = 12; calAnio--; }
+  await cargarDisponibilidad();
+  renderCalendario();
+}
+
+function seleccionarFecha(fecha, horarios) {
+  fechaSeleccionada = fecha;
+  horarioSeleccionado = null;
+
+  renderCalendario();
+
+  // Mostrar horarios
+  const container = document.getElementById('horarios-container');
+  const chips = document.getElementById('horarios-chips');
+  container.style.display = 'block';
+
+  chips.innerHTML = horarios.map(h => `
+    <div class="horario-chip" onclick="seleccionarHorario(this, '${h.hora_inicio}', '${h.hora_fin}')">
+      ${h.hora_inicio.slice(0,5)} - ${h.hora_fin.slice(0,5)}
+    </div>
+  `).join('');
+
+  // Actualizar resumen
+  const [y,m,d] = fecha.split('-');
+  document.getElementById('res-fecha').textContent = `${d}/${m}/${y}`;
+  document.getElementById('res-fecha-linea').style.display = 'flex';
+  document.getElementById('res-horario-linea').style.display = 'none';
+  document.getElementById('res-horario').textContent = '—';
+  actualizarResumen();
+}
+
+function seleccionarHorario(el, inicio, fin) {
+  document.querySelectorAll('.horario-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  horarioSeleccionado = { inicio, fin };
+  document.getElementById('res-horario').textContent = `${inicio.slice(0,5)} - ${fin.slice(0,5)}`;
+  document.getElementById('res-horario-linea').style.display = 'flex';
+  actualizarResumen();
+}
+
+// ============================================================
+// RESUMEN Y CÁLCULO
+// ============================================================
+function calcularTotal() {
+  if (!salon) return { salon: 0, menu: 0, juegos: 0, total: 0 };
+
+  const ninosExtra = Math.max(0, cantNinos - ninosBase);
+
+  // Salón
+  const precioSalon = parseFloat(salon.precio_base_salon) || 0;
+
+  // Menú
+  let precioMenu = 0;
+  menuSeleccionado.forEach(item => {
+    precioMenu += parseFloat(item.precio_base) || 0;
+    precioMenu += (parseFloat(item.precio_por_nino_extra) || 0) * ninosExtra;
+  });
+
+  // Juegos
+  let precioJuegos = 0;
+  juegosSeleccionados.forEach(j => {
+    precioJuegos += parseFloat(j.precio_fijo) || 0;
+    precioJuegos += (parseFloat(j.precio_por_nino) || 0) * cantNinos;
+  });
+
+  return {
+    salon: precioSalon,
+    menu: precioMenu,
+    juegos: precioJuegos,
+    total: precioSalon + precioMenu + precioJuegos
+  };
+}
+
+function actualizarResumen() {
+  const { salon: ps, menu: pm, juegos: pj, total } = calcularTotal();
+
+  document.getElementById('res-salon').textContent = formatPrecio(ps);
+
+  if (pm > 0) {
+    const labels = menuSeleccionado.map(m => m.nombre).join(', ');
+    document.getElementById('res-menu-label').textContent = labels.length > 30 ? labels.slice(0,30)+'…' : labels;
+    document.getElementById('res-menu').textContent = formatPrecio(pm);
+    document.getElementById('res-menu-linea').style.display = 'flex';
+  } else {
+    document.getElementById('res-menu-linea').style.display = 'none';
+  }
+
+  if (pj > 0) {
+    document.getElementById('res-juegos').textContent = formatPrecio(pj);
+    document.getElementById('res-juegos-linea').style.display = 'flex';
+  } else {
+    document.getElementById('res-juegos-linea').style.display = 'none';
+  }
+
+  document.getElementById('res-total').textContent = formatPrecio(total);
+
+  // Seña
+  if (salon && total > 0) {
+    const modalidad = salon.modalidad_cobro || '';
+    if (modalidad.includes('seña')) {
+      const porcentaje = salon.porcentaje_seña || 30;
+      const seña = Math.round(total * porcentaje / 100);
+      document.getElementById('res-seña').textContent = `Seña: ${formatPrecio(seña)} (${porcentaje}%)`;
+      document.getElementById('res-seña').style.display = 'block';
+    }
+  }
+}
+
+// ============================================================
+// ENVIAR RESERVA
+// ============================================================
+async function enviarReserva() {
+  const nombre = document.getElementById('f-nombre').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+
+  if (!nombre || !email) { toast('Completá nombre y email', 'error'); return; }
+  if (!fechaSeleccionada) { toast('Elegí una fecha del calendario', 'error'); return; }
+  if (!horarioSeleccionado) { toast('Elegí un horario', 'error'); return; }
+
+  const { salon: ps, menu: pm, juegos: pj, total } = calcularTotal();
+
+  const btn = document.getElementById('btn-reservar');
+  btn.disabled = true;
+  btn.textContent = 'Enviando...';
+
+  const body = {
+    fecha: fechaSeleccionada,
+    hora_inicio: horarioSeleccionado.inicio,
+    hora_fin: horarioSeleccionado.fin,
+    cantidad_ninos: cantNinos,
+    nombre_festejado: document.getElementById('f-festejado').value,
+    cliente_nombre: nombre,
+    cliente_email: email,
+    cliente_telefono: document.getElementById('f-tel').value,
+    menu_seleccionado: menuSeleccionado.map(m => ({id: m.id, nombre: m.nombre, precio_base: m.precio_base, precio_por_nino_extra: m.precio_por_nino_extra})),
+    juegos_seleccionados: juegosSeleccionados.map(j => ({id: j.id, nombre: j.nombre, precio_fijo: j.precio_fijo, precio_por_nino: j.precio_por_nino})),
+    precio_salon: ps,
+    precio_menu: pm,
+    precio_juegos: pj,
+    precio_total: total,
+    observaciones: document.getElementById('f-obs').value
+  };
+
+  try {
+    const res = await fetch(`${API}/${SLUG}/reservas`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(body)
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      document.getElementById('formulario').style.display = 'none';
+      const success = document.getElementById('success-screen');
+      success.style.display = 'block';
+
+      let texto = `Tu solicitud fue recibida, ${nombre}. Te contactaremos a ${email} para confirmar.`;
+      if (data.monto_seña > 0) {
+        texto += ` La seña es de ${formatPrecio(data.monto_seña)}.`;
+      }
+      document.getElementById('success-text').textContent = texto;
+    } else {
+      toast(data.detail || 'Error al enviar', 'error');
+      btn.disabled = false;
+      btn.textContent = '🎉 Solicitar reserva';
+    }
+  } catch(e) {
+    toast('Error de conexión', 'error');
+    btn.disabled = false;
+    btn.textContent = '🎉 Solicitar reserva';
+  }
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function formatPrecio(n) {
+  if (!n && n !== 0) return '$0';
+  return '$' + Number(n).toLocaleString('es-AR');
+}
+
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast ${type} show`;
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
