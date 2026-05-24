@@ -602,6 +602,9 @@ select option { background: var(--surface2); }
       <div class="nav-item" onclick="showPage('juegos')">
         <span class="nav-icon">🎪</span> Juegos y adicionales
       </div>
+      <div class="nav-item" onclick="showPage('combos')">
+        <span class="nav-icon">🎁</span> Combos / Ofertas
+      </div>
       <div class="nav-section">Disponibilidad</div>
       <div class="nav-item" onclick="showPage('horarios')">
         <span class="nav-icon">🕐</span> Horarios
@@ -734,6 +737,20 @@ select option { background: var(--surface2); }
         <button class="btn btn-accent" onclick="openModalJuego()">+ Agregar juego</button>
       </div>
       <div class="items-grid" id="juegos-grid">
+        <div class="loading">Cargando...</div>
+      </div>
+    </div>
+
+    <!-- COMBOS -->
+    <div id="page-combos" class="page">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Combos / Ofertas 🎁</div>
+          <div class="page-subtitle">Paquetes cerrados que se muestran antes del presupuestador</div>
+        </div>
+        <button class="btn btn-accent" onclick="openModalCombo()">+ Agregar combo</button>
+      </div>
+      <div class="items-grid" id="combos-grid">
         <div class="loading">Cargando...</div>
       </div>
     </div>
@@ -1153,6 +1170,56 @@ select option { background: var(--surface2); }
   </div>
 </div>
 
+<!-- Modal Combo -->
+<div class="modal-overlay" id="modal-combo">
+  <div class="modal">
+    <div class="modal-title" id="modal-combo-title">Nuevo combo / oferta</div>
+    <input type="hidden" id="combo-id">
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Nombre del combo</label>
+        <input type="text" id="c-nombre" placeholder="Ej: Combo Cumple Feliz">
+      </div>
+      <div class="form-group full">
+        <label>Descripción</label>
+        <textarea id="c-descripcion" placeholder="Qué incluye este combo..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Precio cerrado</label>
+        <input type="number" id="c-precio" min="0" step="100" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>Orden</label>
+        <input type="number" id="c-orden" min="0" value="0">
+      </div>
+      <div class="form-group full">
+        <label>Imagen (opcional)</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="url" id="c-imagen" placeholder="https://... o subí desde tu ordenador" style="flex:1">
+          <label class="btn btn-ghost btn-sm" style="cursor:pointer;white-space:nowrap;">
+            📁 Subir
+            <input type="file" accept="image/*" style="display:none" onchange="subirImagen(this,'c-imagen','c-imagen-preview','c-imagen-img')">
+          </label>
+        </div>
+        <div id="c-imagen-preview" style="margin-top:8px;display:none;">
+          <img id="c-imagen-img" style="max-height:80px;border-radius:8px;border:1px solid var(--border);">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Estado</label>
+        <div class="toggle-wrap">
+          <button class="toggle on" id="c-activo" onclick="toggleBtn(this)"></button>
+          <span id="c-activo-label">Activo</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-combo')">Cancelar</button>
+      <button class="btn btn-accent" onclick="guardarCombo()">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -1253,6 +1320,7 @@ function showPage(name) {
     reservas: cargarReservas,
     menu: cargarMenu,
     juegos: cargarJuegos,
+    combos: cargarCombos,
     horarios: cargarHorarios,
     bloqueadas: cargarBloqueadas,
     configuracion: cargarConfiguracion
@@ -1827,6 +1895,87 @@ function formatPrecio(n) {
   return '$' + Number(n).toLocaleString('es-AR');
 }
 
+
+// ============================================================
+// COMBOS
+// ============================================================
+async function cargarCombos() {
+  const res = await api('GET', `/admin/${SLUG}/combos`);
+  if (!res) return;
+  const combos = await res.json();
+  const grid = document.getElementById('combos-grid');
+
+  if (!combos.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🎁</div><div class="empty-state-text">No hay combos. ¡Agregá el primero!</div></div>`;
+    return;
+  }
+
+  grid.innerHTML = combos.map(c => `
+    <div class="item-card">
+      <div class="item-card-img">${c.imagen_url ? `<img src="${c.imagen_url}" style="width:100%;height:100%;object-fit:cover;">` : '🎁'}</div>
+      <div class="item-card-body">
+        <div class="item-card-name">${c.nombre}</div>
+        ${c.descripcion ? `<div class="item-card-desc">${c.descripcion}</div>` : ''}
+        <div class="item-card-price">Precio cerrado: ${formatPrecio(c.precio_cerrado)}</div>
+        <div style="margin-top:6px;">
+          <span class="badge ${c.activo ? 'badge-confirmada' : 'badge-cancelada'}">${c.activo ? 'Activo' : 'Inactivo'}</span>
+        </div>
+        <div class="item-card-actions">
+          <button class="btn btn-ghost btn-sm" onclick="editarCombo(${JSON.stringify(c).replace(/"/g,'&quot;')})">✏️ Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="eliminarCombo('${c.id}')">🗑</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openModalCombo(combo) {
+  document.getElementById('modal-combo-title').textContent = combo ? 'Editar combo' : 'Nuevo combo / oferta';
+  document.getElementById('combo-id').value = combo?.id || '';
+  document.getElementById('c-nombre').value = combo?.nombre || '';
+  document.getElementById('c-descripcion').value = combo?.descripcion || '';
+  document.getElementById('c-precio').value = combo?.precio_cerrado || 0;
+  document.getElementById('c-orden').value = combo?.orden ?? 0;
+  document.getElementById('c-imagen').value = combo?.imagen_url || '';
+  document.getElementById('c-imagen-preview').style.display = 'none';
+  const toggle = document.getElementById('c-activo');
+  toggle.className = 'toggle ' + (combo?.activo !== false ? 'on' : '');
+  document.getElementById('c-activo-label').textContent = combo?.activo !== false ? 'Activo' : 'Inactivo';
+  openModal('modal-combo');
+}
+
+function editarCombo(c) { openModalCombo(c); }
+
+async function guardarCombo() {
+  const id = document.getElementById('combo-id').value;
+  const body = {
+    nombre: document.getElementById('c-nombre').value,
+    descripcion: document.getElementById('c-descripcion').value,
+    precio_cerrado: parseFloat(document.getElementById('c-precio').value) || 0,
+    orden: parseInt(document.getElementById('c-orden').value) || 0,
+    imagen_url: document.getElementById('c-imagen').value || null,
+    activo: document.getElementById('c-activo').classList.contains('on')
+  };
+
+  if (!body.nombre) { toast('El nombre es obligatorio', 'error'); return; }
+
+  const res = id
+    ? await api('PUT', `/admin/${SLUG}/combos/${id}`, body)
+    : await api('POST', `/admin/${SLUG}/combos`, body);
+
+  if (res?.ok) {
+    toast(id ? 'Combo actualizado' : 'Combo creado', 'success');
+    closeModal('modal-combo');
+    cargarCombos();
+  } else toast('Error al guardar', 'error');
+}
+
+async function eliminarCombo(id) {
+  if (!confirm('¿Eliminar este combo?')) return;
+  const res = await api('DELETE', `/admin/${SLUG}/combos/${id}`);
+  if (res?.ok) { toast('Combo eliminado', 'success'); cargarCombos(); }
+  else toast('Error al eliminar', 'error');
+}
 
 // ============================================================
 // SUBIDA DE IMÁGENES
