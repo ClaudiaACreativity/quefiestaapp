@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QueFiestaApp — Superadmin</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=Montserrat:wght@800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f0f13;
+  --surface: #1a1a22;
+  --surface2: #22222e;
+  --border: #2e2e3e;
+  --accent: #FF8000;
+  --accent2: #71D997;
+  --accent3: #ffd93d;
+  --danger: #ff6b6b;
+  --text: #f0f0f5;
+  --text2: #9090a8;
+  --radius: 12px;
+  --sidebar: 240px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; display:flex; }
+
+/* LOGIN */
+#login-screen {
+  position:fixed; inset:0;
+  background:var(--bg);
+  display:flex; align-items:center; justify-content:center;
+  z-index:100;
+  background-image: radial-gradient(ellipse at 20% 50%, rgba(255,128,0,0.08) 0%, transparent 60%),
+                    radial-gradient(ellipse at 80% 20%, rgba(113,217,151,0.06) 0%, transparent 50%);
+}
+
+.login-box {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:48px;
+  width:100%; max-width:400px;
+  text-align:center;
+}
+
+.login-logo {
+  font-family:'Montserrat',sans-serif;
+  font-weight:800;
+  font-size:22px;
+  margin-bottom:4px;
+}
+
+.login-subtitle { color:var(--text2); font-size:13px; margin-bottom:32px; }
+
+.login-box input {
+  width:100%;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:12px 16px;
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-size:15px;
+  margin-bottom:12px;
+  outline:none;
+  transition:border-color 0.2s;
+}
+
+.login-box input:focus { border-color:var(--accent); }
+
+.btn-primary {
+  width:100%;
+  background:var(--accent);
+  color:white;
+  border:none;
+  border-radius:var(--radius);
+  padding:13px;
+  font-family:'Syne',sans-serif;
+  font-weight:700;
+  font-size:15px;
+  cursor:pointer;
+  transition:opacity 0.2s;
+  margin-top:4px;
+}
+
+.btn-primary:hover { opacity:0.9; }
+.login-error { color:var(--danger); font-size:13px; margin-top:12px; display:none; }
+
+/* APP */
+#app { display:none; width:100%; }
+
+/* SIDEBAR */
+.sidebar {
+  width:var(--sidebar);
+  min-height:100vh;
+  background:var(--surface);
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  position:fixed;
+  top:0; left:0; bottom:0;
+  z-index:10;
+}
+
+.sidebar-brand { padding:24px 20px 20px; border-bottom:1px solid var(--border); }
+
+.brand-top {
+  font-size:11px;
+  color:var(--text2);
+  text-transform:uppercase;
+  letter-spacing:1.5px;
+  margin-bottom:4px;
+}
+
+.brand-name {
+  font-family:'Syne',sans-serif;
+  font-weight:800;
+  font-size:16px;
+  color:var(--accent);
+}
+
+.brand-role {
+  font-size:11px;
+  color:var(--accent2);
+  margin-top:2px;
+}
+
+.sidebar-nav { flex:1; padding:12px 0; }
+
+.nav-section {
+  padding:8px 16px 4px;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:1.5px;
+  color:var(--text2);
+  text-transform:uppercase;
+}
+
+.nav-item {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 20px;
+  color:var(--text2);
+  cursor:pointer;
+  transition:all 0.15s;
+  font-size:14px;
+  border-left:3px solid transparent;
+  user-select:none;
+}
+
+.nav-item:hover { color:var(--text); background:var(--surface2); }
+.nav-item.active { color:var(--accent); background:rgba(255,128,0,0.08); border-left-color:var(--accent); }
+.nav-icon { font-size:16px; min-width:20px; text-align:center; }
+
+.sidebar-footer { padding:16px 20px; border-top:1px solid var(--border); }
+
+.gtia-logo {
+  text-align:center;
+  font-family:'Montserrat',sans-serif;
+  font-weight:800;
+  font-size:14px;
+  margin-bottom:4px;
+}
+
+.btn-logout {
+  width:100%;
+  background:transparent;
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:9px;
+  color:var(--text2);
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;
+  cursor:pointer;
+  transition:all 0.2s;
+  margin-top:8px;
+}
+
+.btn-logout:hover { border-color:var(--danger); color:var(--danger); }
+
+/* MAIN */
+.main { margin-left:var(--sidebar); flex:1; padding:32px; min-height:100vh; }
+.page { display:none; }
+.page.active { display:block; }
+
+/* TOPBAR */
+.topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:32px; }
+.page-title { font-family:'Syne',sans-serif; font-size:26px; font-weight:800; }
+.page-subtitle { color:var(--text2); font-size:14px; margin-top:2px; }
+
+/* STATS */
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; margin-bottom:32px; }
+
+.stat-card {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:20px;
+}
+
+.stat-label { font-size:11px; color:var(--text2); text-transform:uppercase; letter-spacing:1px; }
+.stat-value { font-family:'Syne',sans-serif; font-size:36px; font-weight:800; margin-top:4px; }
+.stat-accent { color:var(--accent); }
+.stat-green { color:var(--accent2); }
+.stat-yellow { color:var(--accent3); }
+
+/* TABLA */
+.table-container {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+}
+
+.table-header {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:16px 20px;
+  border-bottom:1px solid var(--border);
+}
+
+.table-title { font-family:'Syne',sans-serif; font-weight:700; font-size:16px; }
+
+table { width:100%; border-collapse:collapse; }
+thead th {
+  background:var(--surface2);
+  padding:10px 16px;
+  text-align:left;
+  font-size:11px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:1px;
+  color:var(--text2);
+}
+
+tbody tr { border-bottom:1px solid var(--border); transition:background 0.15s; }
+tbody tr:last-child { border-bottom:none; }
+tbody tr:hover { background:var(--surface2); }
+tbody td { padding:12px 16px; font-size:14px; }
+
+/* BADGES */
+.badge {
+  display:inline-block;
+  padding:3px 10px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:600;
+}
+
+.badge-activo { background:rgba(113,217,151,0.15); color:var(--accent2); }
+.badge-trial { background:rgba(255,211,61,0.15); color:var(--accent3); }
+.badge-inactivo { background:rgba(255,107,107,0.15); color:var(--danger); }
+.badge-vencido { background:rgba(144,144,168,0.15); color:var(--text2); }
+
+/* BOTONES */
+.btn {
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 16px;
+  border-radius:var(--radius);
+  font-family:'DM Sans',sans-serif;
+  font-size:13px;
+  font-weight:500;
+  cursor:pointer;
+  border:none;
+  transition:all 0.15s;
+}
+
+.btn-sm { padding:5px 10px; font-size:12px; }
+.btn-accent { background:var(--accent); color:white; }
+.btn-accent:hover { opacity:0.85; }
+.btn-green { background:var(--accent2); color:#0f2010; }
+.btn-green:hover { opacity:0.85; }
+.btn-ghost { background:transparent; color:var(--text2); border:1px solid var(--border); }
+.btn-ghost:hover { color:var(--text); border-color:var(--text2); }
+.btn-danger { background:transparent; color:var(--danger); border:1px solid rgba(255,107,107,0.3); }
+.btn-danger:hover { background:rgba(255,107,107,0.1); }
+
+/* FORM */
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.form-group { display:flex; flex-direction:column; gap:6px; }
+.form-group.full { grid-column:1/-1; }
+
+label {
+  font-size:12px;
+  font-weight:600;
+  text-transform:uppercase;
+  letter-spacing:0.8px;
+  color:var(--text2);
+}
+
+input, select, textarea {
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:10px 14px;
+  color:var(--text);
+  font-family:'DM Sans',sans-serif;
+  font-size:14px;
+  outline:none;
+  transition:border-color 0.2s;
+  width:100%;
+}
+
+input:focus, select:focus, textarea:focus { border-color:var(--accent); }
+select option { background:var(--surface2); }
+
+/* MODAL */
+.modal-overlay {
+  position:fixed; inset:0;
+  background:rgba(0,0,0,0.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:50;
+  padding:20px;
+}
+
+.modal-overlay.open { display:flex; }
+
+.modal {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:32px;
+  width:100%;
+  max-width:560px;
+  max-height:90vh;
+  overflow-y:auto;
+}
+
+.modal-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; margin-bottom:24px; }
+.modal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:24px; }
+
+/* CONFIG */
+.config-section {
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:24px;
+  margin-bottom:20px;
+}
+
+.config-section-title {
+  font-family:'Syne',sans-serif;
+  font-weight:700;
+  font-size:15px;
+  margin-bottom:20px;
+  padding-bottom:12px;
+  border-bottom:1px solid var(--border);
+}
+
+/* TOAST */
+.toast {
+  position:fixed;
+  bottom:24px; right:24px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:14px 20px;
+  font-size:14px;
+  z-index:200;
+  transform:translateY(80px);
+  opacity:0;
+  transition:all 0.3s;
+  max-width:320px;
+}
+
+.toast.show { transform:translateY(0); opacity:1; }
+.toast.success { border-left:3px solid var(--accent2); }
+.toast.error { border-left:3px solid var(--danger); }
+
+.loading { text-align:center; padding:40px; color:var(--text2); }
+.empty-state { text-align:center; padding:60px 20px; color:var(--text2); }
+.empty-state-icon { font-size:48px; margin-bottom:12px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <span style="color:#ffffff">Gestiona</span><span style="color:#FF8000">Te</span><span style="color:#71D997">IA</span>
+    </div>
+    <div class="login-subtitle">QueFiestaApp · Panel superadmin</div>
+    <input type="password" id="sa-password" placeholder="Contraseña de superadmin">
+    <button class="btn-primary" onclick="doLogin()">Ingresar</button>
+    <div class="login-error" id="login-error">Contraseña incorrecta</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-top">QueFiestaApp</div>
+      <div class="brand-name">Superadmin</div>
+      <div class="brand-role">GestionaTeIA</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Panel</div>
+      <div class="nav-item active" onclick="showPage('dashboard')">
+        <span class="nav-icon">📊</span> Dashboard
+      </div>
+      <div class="nav-section">Salones</div>
+      <div class="nav-item" onclick="showPage('tenants')">
+        <span class="nav-icon">🎪</span> Salones
+      </div>
+      <div class="nav-item" onclick="showPage('nuevo-tenant')">
+        <span class="nav-icon">➕</span> Nuevo salón
+      </div>
+      <div class="nav-section">Facturación</div>
+      <div class="nav-item" onclick="showPage('suscripciones')">
+        <span class="nav-icon">💰</span> Suscripciones
+      </div>
+      <div class="nav-section">Sistema</div>
+      <div class="nav-item" onclick="showPage('configuracion')">
+        <span class="nav-icon">⚙️</span> Configuración
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="gtia-logo">
+        <a href="https://gestionateia.com" target="_blank" style="text-decoration:none;">
+          <span style="color:#ffffff">Gestiona</span><span style="color:#FF8000">Te</span><span style="color:#71D997">IA</span>
+        </a>
+      </div>
+      <div style="text-align:center;font-size:11px;color:var(--text2);margin-bottom:4px;">
+        <a href="https://gestionateia.com/soporte" target="_blank" style="color:var(--text2);text-decoration:none;">Soporte</a>
+        · <a href="https://gestionateia.com/politica-de-privacidad/" target="_blank" style="color:var(--text2);text-decoration:none;">Privacidad</a>
+      </div>
+      <button class="btn-logout" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <div id="page-dashboard" class="page active">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Dashboard 📊</div>
+          <div class="page-subtitle" id="dashboard-fecha"></div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total salones</div>
+          <div class="stat-value" id="stat-total">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Suscriptos activos</div>
+          <div class="stat-value stat-green" id="stat-activos">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">En período trial</div>
+          <div class="stat-value stat-yellow" id="stat-trial">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total reservas</div>
+          <div class="stat-value stat-accent" id="stat-reservas">—</div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <div class="table-header">
+          <div class="table-title">Salones recientes</div>
+          <button class="btn btn-accent btn-sm" onclick="showPage('nuevo-tenant');document.querySelectorAll('.nav-item')[3].classList.add('active')">+ Nuevo salón</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Salón</th>
+              <th>Slug</th>
+              <th>Email</th>
+              <th>Estado</th>
+              <th>Vence</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="dashboard-tenants-tbody">
+            <tr><td colspan="6" class="loading">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TENANTS -->
+    <div id="page-tenants" class="page">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Salones 🎪</div>
+          <div class="page-subtitle">Gestión de todos los salones registrados</div>
+        </div>
+        <button class="btn btn-accent" onclick="showPage('nuevo-tenant')">+ Nuevo salón</button>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;">
+        <select id="filtro-estado-tenant" onchange="cargarTenants()" style="width:auto;">
+          <option value="">Todos</option>
+          <option value="activo">Suscriptos</option>
+          <option value="trial">En trial</option>
+          <option value="inactivo">Inactivos</option>
+        </select>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Salón</th>
+              <th>Slug / URL</th>
+              <th>Email admin</th>
+              <th>Estado</th>
+              <th>Trial hasta</th>
+              <th>Suscripción vence</th>
+              <th>Activo</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tenants-tbody">
+            <tr><td colspan="8" class="loading">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- NUEVO TENANT -->
+    <div id="page-nuevo-tenant" class="page">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Nuevo salón ➕</div>
+          <div class="page-subtitle">Registrar un nuevo salón de fiestas</div>
+        </div>
+      </div>
+
+      <div class="config-section" style="max-width:680px;">
+        <div class="config-section-title">Datos del salón</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nombre del salón *</label>
+            <input type="text" id="nt-nombre" placeholder="Ej: Salón Feliz">
+          </div>
+          <div class="form-group">
+            <label>Slug (URL) *</label>
+            <input type="text" id="nt-slug" placeholder="salon-feliz" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9-]/g,'')">
+          </div>
+          <div class="form-group">
+            <label>Nombre visible *</label>
+            <input type="text" id="nt-nombre-visible" placeholder="Como aparece en la página pública">
+          </div>
+          <div class="form-group">
+            <label>Email del administrador *</label>
+            <input type="email" id="nt-email" placeholder="admin@salon.com">
+          </div>
+          <div class="form-group">
+            <label>Contraseña inicial *</label>
+            <input type="text" id="nt-password" placeholder="Mínimo 8 caracteres">
+          </div>
+        </div>
+        <div style="margin-top:20px;font-size:13px;color:var(--text2);background:var(--surface2);border-radius:var(--radius);padding:12px 16px;">
+          💡 El salón recibirá 30 días de trial gratuito desde el momento del alta.<br>
+          La URL pública quedará: <strong>quefiestaapp.gestionateia.com?salon=<span id="nt-slug-preview">slug</span></strong>
+        </div>
+        <div style="margin-top:20px;">
+          <button class="btn btn-accent" onclick="crearTenant()">✓ Crear salón</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUSCRIPCIONES -->
+    <div id="page-suscripciones" class="page">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Suscripciones 💰</div>
+          <div class="page-subtitle">Registro de pagos recibidos</div>
+        </div>
+        <button class="btn btn-accent" onclick="openModal('modal-suscripcion')">+ Registrar pago</button>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Salón</th>
+              <th>Monto USD</th>
+              <th>Fecha pago</th>
+              <th>Período</th>
+              <th>Método</th>
+              <th>Referencia</th>
+              <th>Notas</th>
+            </tr>
+          </thead>
+          <tbody id="suscripciones-tbody">
+            <tr><td colspan="7" class="loading">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CONFIGURACIÓN -->
+    <div id="page-configuracion" class="page">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Configuración ⚙️</div>
+          <div class="page-subtitle">Parámetros globales del sistema</div>
+        </div>
+        <button class="btn btn-green" onclick="guardarConfiguracion()">💾 Guardar</button>
+      </div>
+
+      <div class="config-section" style="max-width:600px;">
+        <div class="config-section-title">Parámetros del negocio</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Precio mensual (USD)</label>
+            <input type="number" id="cfg-precio" min="1" step="1" placeholder="25">
+          </div>
+          <div class="form-group">
+            <label>Tipo de cambio USD/ARS</label>
+            <input type="number" id="cfg-tc" min="1" step="1" placeholder="1415">
+          </div>
+          <div class="form-group">
+            <label>Días de trial gratuito</label>
+            <input type="number" id="cfg-trial" min="1" step="1" placeholder="30">
+          </div>
+          <div class="form-group">
+            <label>Contraseña superadmin</label>
+            <input type="password" id="cfg-password" placeholder="Nueva contraseña (dejar vacío para no cambiar)">
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL SUSCRIPCION -->
+<div class="modal-overlay" id="modal-suscripcion">
+  <div class="modal">
+    <div class="modal-title">Registrar pago de suscripción</div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Salón *</label>
+        <select id="sus-tenant">
+          <option value="">Seleccioná un salón...</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Monto USD *</label>
+        <input type="number" id="sus-monto" min="1" step="0.01" placeholder="25">
+      </div>
+      <div class="form-group">
+        <label>Fecha de pago *</label>
+        <input type="date" id="sus-fecha">
+      </div>
+      <div class="form-group">
+        <label>Período desde *</label>
+        <input type="date" id="sus-desde">
+      </div>
+      <div class="form-group">
+        <label>Período hasta *</label>
+        <input type="date" id="sus-hasta">
+      </div>
+      <div class="form-group">
+        <label>Método de pago</label>
+        <select id="sus-metodo">
+          <option value="transferencia">Transferencia</option>
+          <option value="mercadopago">MercadoPago</option>
+          <option value="efectivo">Efectivo</option>
+          <option value="otro">Otro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Referencia / Comprobante</label>
+        <input type="text" id="sus-referencia" placeholder="Nº de transferencia...">
+      </div>
+      <div class="form-group full">
+        <label>Notas</label>
+        <textarea id="sus-notas" rows="2"></textarea>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-suscripcion')">Cancelar</button>
+      <button class="btn btn-accent" onclick="registrarSuscripcion()">Registrar pago</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR TENANT -->
+<div class="modal-overlay" id="modal-tenant">
+  <div class="modal">
+    <div class="modal-title">Editar salón</div>
+    <input type="hidden" id="edit-tenant-id">
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Estado de suscripción</label>
+        <select id="edit-suscripcion-activa">
+          <option value="true">Activa</option>
+          <option value="false">Inactiva</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Suscripción vence</label>
+        <input type="date" id="edit-suscripcion-vence">
+      </div>
+      <div class="form-group">
+        <label>Trial hasta</label>
+        <input type="date" id="edit-trial-hasta">
+      </div>
+      <div class="form-group full">
+        <label>Activo en el sistema</label>
+        <select id="edit-activo">
+          <option value="true">Sí</option>
+          <option value="false">No (desactivado)</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-tenant')">Cancelar</button>
+      <button class="btn btn-accent" onclick="guardarTenant()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://reserva-aulas.onrender.com/quefiestaapp';
+let SA_TOKEN = sessionStorage.getItem('qfa_sa_token') || '';
+let tenantsList = [];
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload = () => {
+  document.getElementById('dashboard-fecha').textContent = new Date().toLocaleDateString('es-AR', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+  document.getElementById('sa-password').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  document.getElementById('nt-slug').addEventListener('input', e => {
+    document.getElementById('nt-slug-preview').textContent = e.target.value || 'slug';
+  });
+
+  if (SA_TOKEN) showApp();
+};
+
+// ============================================================
+// AUTH
+// ============================================================
+async function doLogin() {
+  const password = document.getElementById('sa-password').value;
+  if (!password) return;
+
+  const res = await fetch(`${API}/superadmin/stats`, {
+    headers: { 'x-superadmin-token': password }
+  });
+
+  if (res.ok) {
+    SA_TOKEN = password;
+    sessionStorage.setItem('qfa_sa_token', SA_TOKEN);
+    showApp();
+  } else {
+    const err = document.getElementById('login-error');
+    err.style.display = 'block';
+  }
+}
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  cargarDashboard();
+}
+
+function logout() {
+  SA_TOKEN = '';
+  sessionStorage.removeItem('qfa_sa_token');
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app').style.display = 'none';
+}
+
+// ============================================================
+// NAVEGACIÓN
+// ============================================================
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`page-${name}`).classList.add('active');
+  if (event?.currentTarget) event.currentTarget.classList.add('active');
+
+  const loaders = {
+    dashboard: cargarDashboard,
+    tenants: cargarTenants,
+    suscripciones: cargarSuscripciones,
+    configuracion: cargarConfiguracion
+  };
+  if (loaders[name]) loaders[name]();
+}
+
+// ============================================================
+// API HELPERS
+// ============================================================
+async function api(method, path, body) {
+  const res = await fetch(`${API}${path}`, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-superadmin-token': SA_TOKEN
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  if (res.status === 401) { logout(); return null; }
+  return res;
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+async function cargarDashboard() {
+  const res = await api('GET', '/superadmin/stats');
+  if (!res) return;
+  const stats = await res.json();
+
+  document.getElementById('stat-total').textContent = stats.total_salones || 0;
+  document.getElementById('stat-activos').textContent = stats.suscriptos || 0;
+  document.getElementById('stat-trial').textContent = stats.en_trial || 0;
+  document.getElementById('stat-reservas').textContent = stats.total_reservas || 0;
+
+  // Cargar tabla de tenants recientes
+  const res2 = await api('GET', '/superadmin/tenants');
+  if (!res2) return;
+  tenantsList = await res2.json();
+
+  const tbody = document.getElementById('dashboard-tenants-tbody');
+  if (!tenantsList.length) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="empty-state-icon">🎪</div>No hay salones registrados aún.</div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = tenantsList.slice(0,8).map(t => `
+    <tr>
+      <td><strong>${t.nombre_visible || t.nombre}</strong></td>
+      <td><span style="font-family:monospace;font-size:12px;color:var(--text2)">${t.slug}</span></td>
+      <td style="font-size:13px;color:var(--text2)">${t.email_admin}</td>
+      <td>${badgeTenant(t)}</td>
+      <td style="font-size:12px;color:var(--text2)">${t.suscripcion_vence || '—'}</td>
+      <td>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-ghost btn-sm" onclick="editarTenant('${t.id}')">✏️</button>
+          <a href="quefiestaapp.gestionateia.com?salon=${t.slug}" target="_blank" class="btn btn-ghost btn-sm">🔗</a>
+          <button class="btn btn-danger btn-sm" onclick="eliminarTenant('${t.id}','${t.nombre_visible || t.nombre}')">🗑</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ============================================================
+// TENANTS
+// ============================================================
+async function cargarTenants() {
+  const res = await api('GET', '/superadmin/tenants');
+  if (!res) return;
+  tenantsList = await res.json();
+
+  const filtro = document.getElementById('filtro-estado-tenant')?.value || '';
+  let lista = tenantsList;
+
+  if (filtro === 'activo') lista = lista.filter(t => t.suscripcion_activa);
+  else if (filtro === 'trial') lista = lista.filter(t => !t.suscripcion_activa && t.trial_hasta >= new Date().toISOString().split('T')[0]);
+  else if (filtro === 'inactivo') lista = lista.filter(t => !t.suscripcion_activa && (!t.trial_hasta || t.trial_hasta < new Date().toISOString().split('T')[0]));
+
+  const tbody = document.getElementById('tenants-tbody');
+
+  if (!lista.length) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-state-icon">🎪</div>No hay salones.</div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = lista.map(t => `
+    <tr>
+      <td><strong>${t.nombre_visible || t.nombre}</strong></td>
+      <td>
+        <span style="font-family:monospace;font-size:12px;color:var(--text2)">${t.slug}</span>
+      </td>
+      <td style="font-size:13px">${t.email_admin}</td>
+      <td>${badgeTenant(t)}</td>
+      <td style="font-size:12px;color:var(--text2)">${t.trial_hasta || '—'}</td>
+      <td style="font-size:12px;color:var(--text2)">${t.suscripcion_vence || '—'}</td>
+      <td>
+        <span style="color:${t.activo ? 'var(--accent2)' : 'var(--danger)'}">
+          ${t.activo ? '✓ Sí' : '✗ No'}
+        </span>
+      </td>
+      <td>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn btn-ghost btn-sm" onclick="editarTenant('${t.id}')">✏️ Editar</button>
+          <button class="btn btn-accent btn-sm" onclick="abrirModalSuscripcion('${t.id}','${t.nombre_visible || t.nombre}')">💰 Pago</button>
+          <button class="btn btn-danger btn-sm" onclick="eliminarTenant('${t.id}','${t.nombre_visible || t.nombre}')">🗑 Baja</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function badgeTenant(t) {
+  const hoy = new Date().toISOString().split('T')[0];
+  if (t.suscripcion_activa) return `<span class="badge badge-activo">Suscripto</span>`;
+  if (t.trial_hasta && t.trial_hasta >= hoy) return `<span class="badge badge-trial">Trial</span>`;
+  if (!t.activo) return `<span class="badge badge-inactivo">Desactivado</span>`;
+  return `<span class="badge badge-vencido">Vencido</span>`;
+}
+
+function editarTenant(id) {
+  const t = tenantsList.find(x => x.id === id);
+  if (!t) return;
+  document.getElementById('edit-tenant-id').value = id;
+  document.getElementById('edit-suscripcion-activa').value = String(t.suscripcion_activa);
+  document.getElementById('edit-suscripcion-vence').value = t.suscripcion_vence || '';
+  document.getElementById('edit-trial-hasta').value = t.trial_hasta || '';
+  document.getElementById('edit-activo').value = String(t.activo);
+  openModal('modal-tenant');
+}
+
+async function guardarTenant() {
+  const id = document.getElementById('edit-tenant-id').value;
+  const body = {
+    suscripcion_activa: document.getElementById('edit-suscripcion-activa').value === 'true',
+    suscripcion_vence: document.getElementById('edit-suscripcion-vence').value || null,
+    trial_hasta: document.getElementById('edit-trial-hasta').value || null,
+    activo: document.getElementById('edit-activo').value === 'true'
+  };
+
+  const res = await api('PATCH', `/superadmin/tenants/${id}`, body);
+  if (res?.ok) {
+    toast('Salón actualizado', 'success');
+    closeModal('modal-tenant');
+    cargarTenants();
+  } else toast('Error al actualizar', 'error');
+}
+
+// ============================================================
+// NUEVO TENANT
+// ============================================================
+async function crearTenant() {
+  const body = {
+    nombre: document.getElementById('nt-nombre').value,
+    slug: document.getElementById('nt-slug').value,
+    email_admin: document.getElementById('nt-email').value,
+    password: document.getElementById('nt-password').value,
+    nombre_visible: document.getElementById('nt-nombre-visible').value
+  };
+
+  if (!body.nombre || !body.slug || !body.email_admin || !body.password) {
+    toast('Completá todos los campos obligatorios', 'error'); return;
+  }
+
+  if (body.password.length < 8) {
+    toast('La contraseña debe tener al menos 8 caracteres', 'error'); return;
+  }
+
+  const res = await api('POST', '/superadmin/tenants', body);
+  if (res?.ok) {
+    toast('Salón creado exitosamente 🎉', 'success');
+    // Limpiar form
+    ['nt-nombre','nt-slug','nt-email','nt-password','nt-nombre-visible'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('nt-slug-preview').textContent = 'slug';
+  } else {
+    const data = await res?.json();
+    toast(data?.detail || 'Error al crear salón', 'error');
+  }
+}
+
+// ============================================================
+// SUSCRIPCIONES
+// ============================================================
+async function cargarSuscripciones() {
+  // Cargar lista de tenants para el select
+  if (!tenantsList.length) {
+    const res = await api('GET', '/superadmin/tenants');
+    if (res?.ok) tenantsList = await res.json();
+  }
+
+  const select = document.getElementById('sus-tenant');
+  select.innerHTML = '<option value="">Seleccioná un salón...</option>' +
+    tenantsList.map(t => `<option value="${t.id}">${t.nombre_visible || t.nombre} (${t.slug})</option>`).join('');
+
+  // Por ahora mostramos un mensaje — en el futuro podemos listar los pagos
+  document.getElementById('suscripciones-tbody').innerHTML = `
+    <tr><td colspan="7">
+      <div class="empty-state">
+        <div class="empty-state-icon">💰</div>
+        <div>Usá el botón "Registrar pago" para cargar un nuevo pago.</div>
+      </div>
+    </td></tr>`;
+}
+
+function abrirModalSuscripcion(tenantId, nombre) {
+  if (!tenantsList.length) {
+    openModal('modal-suscripcion'); return;
+  }
+  const select = document.getElementById('sus-tenant');
+  select.innerHTML = '<option value="">Seleccioná un salón...</option>' +
+    tenantsList.map(t => `<option value="${t.id}" ${t.id === tenantId ? 'selected' : ''}>${t.nombre_visible || t.nombre} (${t.slug})</option>`).join('');
+
+  // Setear fecha de hoy
+  const hoy = new Date().toISOString().split('T')[0];
+  document.getElementById('sus-fecha').value = hoy;
+  document.getElementById('sus-desde').value = hoy;
+
+  // Calcular hasta (30 días)
+  const hasta = new Date();
+  hasta.setDate(hasta.getDate() + 30);
+  document.getElementById('sus-hasta').value = hasta.toISOString().split('T')[0];
+
+  openModal('modal-suscripcion');
+}
+
+async function registrarSuscripcion() {
+  const body = {
+    tenant_id: document.getElementById('sus-tenant').value,
+    monto_usd: parseFloat(document.getElementById('sus-monto').value),
+    fecha_pago: document.getElementById('sus-fecha').value,
+    periodo_desde: document.getElementById('sus-desde').value,
+    periodo_hasta: document.getElementById('sus-hasta').value,
+    metodo: document.getElementById('sus-metodo').value,
+    referencia: document.getElementById('sus-referencia').value || null,
+    notas: document.getElementById('sus-notas').value || null
+  };
+
+  if (!body.tenant_id || !body.monto_usd || !body.fecha_pago || !body.periodo_desde || !body.periodo_hasta) {
+    toast('Completá los campos obligatorios', 'error'); return;
+  }
+
+  const res = await api('POST', '/superadmin/suscripciones', body);
+  if (res?.ok) {
+    toast('Pago registrado y suscripción activada ✓', 'success');
+    closeModal('modal-suscripcion');
+    cargarDashboard();
+  } else {
+    const data = await res?.json();
+    toast(data?.detail || 'Error al registrar pago', 'error');
+  }
+}
+
+// ============================================================
+// CONFIGURACIÓN
+// ============================================================
+async function cargarConfiguracion() {
+  // Los valores vienen de qfa_configuracion_global
+  // Por ahora mostramos los defaults conocidos
+  document.getElementById('cfg-precio').value = '25';
+  document.getElementById('cfg-tc').value = '1415';
+  document.getElementById('cfg-trial').value = '30';
+}
+
+async function guardarConfiguracion() {
+  toast('Configuración guardada (función en desarrollo)', 'success');
+}
+
+// ============================================================
+// UI HELPERS
+// ============================================================
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast ${type} show`;
+  setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+function formatFecha(f) {
+  if (!f) return '—';
+  const [y,m,d] = f.split('T')[0].split('-');
+  return `${d}/${m}/${y}`;
+}
+
+// ============================================================
+// ELIMINAR TENANT
+// ============================================================
+async function eliminarTenant(id, nombre) {
+  // Primera confirmación
+  if (!confirm(`⚠️ ¿Eliminar el salón "${nombre}"?\n\nEsta acción eliminará TODOS sus datos:\n- Menú e ítems\n- Juegos y adicionales\n- Horarios\n- Reservas\n- Historial de pagos\n\nEsta acción es IRREVERSIBLE.`)) return;
+
+  // Segunda confirmación
+  const confirmacion = prompt(`Para confirmar, escribí el nombre del salón:\n"${nombre}"`);
+  if (confirmacion !== nombre) {
+    alert('El nombre no coincide. Operación cancelada.');
+    return;
+  }
+
+  const res = await api('DELETE', `/superadmin/tenants/${id}`);
+  if (res?.ok) {
+    toast(`Salón "${nombre}" eliminado definitivamente`, 'success');
+    cargarTenants();
+    cargarDashboard();
+  } else {
+    const data = await res?.json();
+    toast(data?.detail || 'Error al eliminar', 'error');
+  }
+}
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+</script>
+</body>
+</html>
