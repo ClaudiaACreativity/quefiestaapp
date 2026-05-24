@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preguntas frecuentes — QueFiestaApp</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Montserrat:wght@800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color1: #ff6b6b;
+  --color2: #ffd93d;
+  --text: #1a1a2e;
+  --text2: #5a5a7a;
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --border: #ebebf0;
+  --radius: 14px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* HEADER */
+header {
+  background: linear-gradient(135deg, var(--color1) 0%, var(--color2) 100%);
+  padding: 60px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+header::before {
+  content: '🎉🎈🎊🎁🎂';
+  position: absolute;
+  font-size: 80px;
+  opacity: 0.08;
+  top: -10px; left: -20px;
+  letter-spacing: 20px;
+  white-space: nowrap;
+}
+
+.header-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.25);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+
+header h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(28px, 5vw, 48px);
+  font-weight: 900;
+  color: white;
+  margin-bottom: 12px;
+}
+
+header p {
+  color: rgba(255,255,255,0.85);
+  font-size: 16px;
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* BREADCRUMB */
+.breadcrumb {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.breadcrumb a { color: var(--color1); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+
+/* LAYOUT */
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+/* INDICE */
+.indice {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  margin-bottom: 40px;
+}
+
+.indice-title {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.indice-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.indice-list a {
+  color: var(--color1);
+  text-decoration: none;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.15s;
+}
+
+.indice-list a:hover { opacity: 0.75; }
+.indice-list .num {
+  background: rgba(255,107,107,0.1);
+  color: var(--color1);
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* FAQ ITEMS */
+.faq-section {
+  margin-bottom: 16px;
+}
+
+.faq-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 12px;
+  transition: border-color 0.2s;
+}
+
+.faq-item:hover { border-color: var(--color1); }
+.faq-item.open { border-color: var(--color1); }
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  cursor: pointer;
+  gap: 16px;
+  user-select: none;
+}
+
+.faq-question-text {
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.faq-icon {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: rgba(255,107,107,0.1);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
+  transition: transform 0.3s;
+  color: var(--color1);
+}
+
+.faq-item.open .faq-icon { transform: rotate(45deg); }
+
+.faq-answer {
+  display: none;
+  padding: 0 24px 20px;
+  color: var(--text2);
+  font-size: 14px;
+  line-height: 1.8;
+  border-top: 1px solid var(--border);
+}
+
+.faq-item.open .faq-answer { display: block; }
+.faq-answer p { margin-bottom: 10px; }
+.faq-answer p:last-child { margin-bottom: 0; }
+.faq-answer strong { color: var(--text); }
+
+.faq-answer ul {
+  margin: 8px 0 10px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.faq-answer .tip {
+  background: rgba(255,217,61,0.1);
+  border-left: 3px solid var(--color2);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.faq-answer .info {
+  background: rgba(255,107,107,0.06);
+  border-left: 3px solid var(--color1);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+/* CONTACTO */
+.contacto-box {
+  background: linear-gradient(135deg, rgba(255,107,107,0.08), rgba(255,217,61,0.08));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  text-align: center;
+  margin-top: 40px;
+}
+
+.contacto-box h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.contacto-box p {
+  color: var(--text2);
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.btn-contacto {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color1);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: opacity 0.2s;
+}
+
+.btn-contacto:hover { opacity: 0.85; }
+
+/* FOOTER */
+footer {
+  background: #1a1a2e;
+  color: rgba(255,255,255,0.6);
+  text-align: center;
+  padding: 40px 24px;
+  font-size: 13px;
+  margin-top: 60px;
+}
+
+footer a { color: rgba(255,255,255,0.7); text-decoration: none; }
+footer a:hover { color: white; }
+
+.footer-links {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.gtia-logo {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  margin-top: 8px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">Ayuda para clientes</div>
+  <h1>Preguntas frecuentes</h1>
+  <p>Todo lo que necesitás saber para reservar tu fiesta con QueFiestaApp</p>
+</header>
+
+<div class="breadcrumb">
+  <a href="https://gestionateia.com/quefiestaapp">QueFiestaApp</a> › Preguntas frecuentes — Clientes
+</div>
+
+<div class="container">
+
+  <div class="indice">
+    <div class="indice-title">📋 En esta página</div>
+    <ul class="indice-list">
+      <li><a href="#como-funciona"><span class="num">1</span> ¿Cómo funciona la reserva?</a></li>
+      <li><a href="#que-incluye"><span class="num">2</span> ¿Qué incluye el presupuesto?</a></li>
+      <li><a href="#como-pago"><span class="num">3</span> ¿Cómo pago la seña?</a></li>
+      <li><a href="#cuando-confirman"><span class="num">4</span> ¿Cuándo me confirman la reserva?</a></li>
+      <li><a href="#cancelar"><span class="num">5</span> ¿Qué pasa si necesito cancelar?</a></li>
+      <li><a href="#modificar"><span class="num">6</span> ¿Puedo modificar la fecha después de reservar?</a></li>
+      <li><a href="#no-confirma"><span class="num">7</span> ¿Qué pasa si el salón no confirma?</a></li>
+    </ul>
+  </div>
+
+  <!-- PREGUNTA 1 -->
+  <div class="faq-item" id="como-funciona">
+    <div class="faq-question" onclick="toggle(this)">
+      <div class="faq-question-text">¿Cómo funciona la reserva?</div>
+      <div class="faq-icon">+</div>
+    </div>
+    <div class="faq-answer">
+      <p>Reservar tu fiesta es muy simple y se hace en 4 pasos:</p>
+      <ul>
+        <li><strong>Paso 1 — Elegí tu propuesta:</strong> podés seleccionar un <strong>combo cerrado</strong> (paquete con precio fijo) o armar tu propio presupuesto eligiendo la cantidad de invitados, los ítems de menú y los juegos o adicionales que querés incluir.</li>
+        <li><strong>Paso 2 — Elegí la fecha y horario:</strong> el calendario muestra en verde los días disponibles. Hacé clic en el día que querés y elegí el horario.</li>
+        <li><strong>Paso 3 — Completá tus datos:</strong> nombre, email, teléfono y el nombre del festejado/a. Si la modalidad de cobro es por transferencia, también adjuntás el comprobante de la seña. Si el salón acepta MercadoPago, el pago se realiza online en ese mismo paso.</li>
+        <li><strong>Paso 4 — Confirmación:</strong> si el salón acepta MercadoPago y el pago se procesó correctamente, la reserva se confirma automáticamente. Si el pago es por transferencia, el salón verifica el comprobante y te confirma por email en las siguientes 24-48 horas hábiles.</li>
+      </ul>
+      <div class="tip">💡 Una vez que enviás la solicitud, la fecha y horario quedan reservados mientras el salón verifica tu pago.</div>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 2 -->
+  <div class="faq-item" id="que-incluye">
+    <div class="faq-question" onclick="toggle(this)">
+      <div class="faq-question-text">¿Qué incluye el presupuesto que veo en pantalla?</div>
+      <div class="faq-icon">+</div>
+    </div>
+    <div class="faq-answer">
+      <p>El presupuesto se arma en tiempo real mientras elegís las opciones. Incluye:</p>
+      <ul>
+        <li><strong>Precio del salón:</strong> el costo base del lugar para la cantidad de invitados indicada.</li>
+        <li><strong>Menú:</strong> la suma de todos los ítems de comida y bebida que seleccionaste.</li>
+        <li><strong>Juegos y adicionales:</strong> los servicios extra que agregaste (animación, cama elástica, etc.).</li>
+      </ul>
+      <p>El precio base de cada ítem cubre una cantidad determinada de niños. Si tu fiesta supera esa cantidad, el sistema agrega automáticamente el costo proporcional por cada niño extra.</p>
+      <div class="info">📌 El presupuesto mostrado es orientativo. El salón lo confirmará antes de dar por cerrada la reserva.</div>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 3 -->
+  <div class="faq-item" id="como-pago">
+    <div class="faq-question" onclick="toggle(this)">
+      <div class="faq-question-text">¿Cómo pago la seña?</div>
+      <div class="faq-icon">+</div>
+    </div>
+    <div class="faq-answer">
+      <p>El método de pago lo define cada salón según su preferencia. Las opciones más comunes son:</p>
+      <ul>
+        <li><strong>Transferencia bancaria:</strong> transferís la seña al alias o CBU del salón (lo ves en la página de reserva) y adjuntás el comprobante al enviar el formulario.</li>
+        <li><strong>MercadoPago:</strong> algunos salones ofrecen pago online directo desde la página.</li>
+      </ul>
+      <p>En todos los casos, el salón te indicará el monto de la seña y las instrucciones completas en la sección de pago de la página de reservas.</p>
+      <div class="tip">💡 Guardá el comprobante de transferencia hasta que el salón confirme tu reserva por email.</div>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 4 -->
+  <div class="faq-item" id="cuando-confirman">
+    <div class="faq-question" onclick="toggle(this)">
+      <div class="faq-question-text">¿Cuándo me confirman la reserva?</div>
+      <div class="faq-icon">+</div>
+    </div>
+    <div class="faq-answer">
+      <p>Depende del método de pago que haya configurado el salón:</p>
+      <ul>
+        <li><strong>MercadoPago:</strong> si el pago se procesa correctamente, la reserva se confirma de forma automática e inmediata. Recibís un email de confirmación al instante.</li>
+        <li><strong>Transferencia bancaria:</strong> el salón recibe tu solicitud y verifica el comprobante adjunto. El tiempo de respuesta es en general dentro de las <strong>24 a 48 horas hábiles</strong>. Cuando confirmen, recibís un email con todos los detalles.</li>
+      </ul>
+      <div class="info">📌 Mientras esperás la confirmación, la fecha y horario están reservados. Ningún otro cliente puede reservar ese mismo turno.</div>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 5 -->
+  <div class="faq-item" id="cancelar">
+    <div class="faq-question" onclick="toggle(this)">
+      <div class="faq-question-text">¿Qué pasa si necesito cancelar?</div>
+      <div class="faq-icon">+</div>
+    </div>
+    <div class="faq-answer">
+      <p>Cada salón define su propia política de cancelación, que podés leer en la página de reservas antes de confirmar. En general contempla:</p>
+      <ul>
+        <li><strong>Anticipación mínima:</strong> cuántos días antes del evento podés cancelar.</li>
+        <li><strong>Devolución de seña:</strong> si cancelás con suficiente anticipación, el salón puede devolver parte o la totalidad de la seña. Con poca anticipación, la seña generalmente no es reembolsable.</li>
+      </ul>
+      <p>Para cancelar, comunicate directamente con el salón por WhatsApp o email.</p>
+      <div class="tip">💡 Siempre leé la política de cancelación antes de confirmar tu reserva. Aparece publicada en la página del salón.</div>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 6 -->
+  <div class="faq-item" id="modificar">
+    <div class="faq-question" onclick="toggle(this)">
+      <div class="faq-question-text">¿Puedo modificar la fecha o el menú después de reservar?</div>
+      <div class="faq-icon">+</div>
+    </div>
+    <div class="faq-answer">
+      <p>Cualquier modificación luego de enviada la solicitud debe coordinarse directamente con el salón. No es posible modificar la reserva desde la página.</p>
+      <p>Para cambios, comunicate con el salón a través de:</p>
+      <ul>
+        <li>El WhatsApp que aparece en la página del salón.</li>
+        <li>El email de contacto del salón.</li>
+      </ul>
+      <div class="info">📌 Los cambios están sujetos a disponibilidad y al criterio del salón.</div>
+    </div>
+  </div>
+
+  <!-- PREGUNTA 7 -->
+  <div class="faq-item" id="no-confirma">
+    <div class="faq-question" onclick="toggle(this)">
+      <div class="faq-question-text">¿Qué pasa si el salón no confirma mi reserva?</div>
+      <div class="faq-icon">+</div>
+    </div>
+    <div class="faq-answer">
+      <p>Si el salón no confirma tu reserva (por ejemplo, porque no pudo verificar el pago), te notificará por email o WhatsApp para indicarte los pasos a seguir.</p>
+      <p>En caso de que la reserva sea cancelada por el salón:</p>
+      <ul>
+        <li>El horario vuelve a estar disponible para otras reservas.</li>
+        <li>Si ya habías abonado la seña, el salón te indicará cómo proceder con la devolución.</li>
+      </ul>
+      <div class="tip">💡 Si pasaron más de 48 horas y no recibiste respuesta, comunicarte directamente con el salón es lo más rápido.</div>
+    </div>
+  </div>
+
+  <!-- CONTACTO -->
+  <div class="contacto-box">
+    <h3>¿Tenés otra pregunta? 🎈</h3>
+    <p>Si no encontraste lo que buscabas, comunicate directamente con el salón a través del WhatsApp o email que aparece en su página de reservas.</p>
+    <a href="https://gestionateia.com/soporte" class="btn-contacto">💬 Contactar soporte técnico</a>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://gestionateia.com/quefiestaapp">QueFiestaApp</a>
+    <a href="https://gestionateia.com/soporte">Soporte</a>
+    <a href="https://gestionateia.com/terminos-y-condiciones/">Términos y condiciones</a>
+    <a href="https://gestionateia.com/politica-de-privacidad/">Política de privacidad</a>
+  </div>
+  <div style="margin-bottom:8px;font-size:12px;">Un producto de</div>
+  <div class="gtia-logo">
+    <a href="https://gestionateia.com" target="_blank" style="text-decoration:none;">
+      <span style="color:#ffffff">Gestiona</span><span style="color:#FF8000">Te</span><span style="color:#71D997">IA</span>
+    </a>
+  </div>
+</footer>
+
+<script>
+function toggle(el) {
+  const item = el.parentElement;
+  item.classList.toggle('open');
+}
+
+// Abrir FAQ desde URL hash
+window.onload = () => {
+  const hash = window.location.hash.replace('#', '');
+  if (hash) {
+    const el = document.getElementById(hash);
+    if (el) {
+      el.classList.add('open');
+      setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+  }
+};
+</script>
+</body>
+</html>

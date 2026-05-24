@@ -922,11 +922,54 @@ select option { background: var(--surface2); }
             <input type="text" id="cfg-alias" placeholder="Ej: salon.feliz.mp">
           </div>
           <div class="form-group full">
-            <label>Mensaje de pago (se muestra al cliente)</label>
-            <textarea id="cfg-mensaje-pago" placeholder="Ej: Para confirmar tu reserva, enviá el comprobante de la seña al WhatsApp..."></textarea>
+            <label>Mensaje de pago (se muestra al cliente al reservar)</label>
+            <textarea id="cfg-mensaje-pago" rows="4" placeholder="Ej: Para confirmar tu reserva, transferí el 30% del total al alias salon.feliz y adjuntá el comprobante..."></textarea>
+            <div style="margin-top:6px;font-size:12px;color:var(--text2);">
+              Textos modelo según tu modalidad:
+              <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
+                <button class="btn btn-ghost btn-sm" style="font-size:11px;" onclick="usarModeloPago('sena_efectivo')">📋 Seña + resto en efectivo</button>
+                <button class="btn btn-ghost btn-sm" style="font-size:11px;" onclick="usarModeloPago('sena_transferencia')">📋 Seña + resto por transferencia</button>
+                <button class="btn btn-ghost btn-sm" style="font-size:11px;" onclick="usarModeloPago('total')">📋 Pago total anticipado</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <div class="config-section">
+        <div class="config-section-title">Política de cancelación</div>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label>Texto de política (visible en la página de reservas)</label>
+            <textarea id="cfg-politica-cancelacion" rows="4" placeholder="Ej: Para cancelar una reserva, el cliente debe comunicarse con un mínimo de 7 días de anticipación..."></textarea>
+            <div style="margin-top:6px;">
+              <button class="btn btn-ghost btn-sm" style="font-size:11px;" onclick="usarModeloCancelacion()">📋 Usar texto modelo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="config-section">
+        <div class="config-section-title">Mi cuenta</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Contraseña actual</label>
+            <input type="password" id="cfg-pwd-actual" placeholder="••••••••">
+          </div>
+          <div class="form-group">
+            <label>Nueva contraseña</label>
+            <input type="password" id="cfg-pwd-nueva" placeholder="Mínimo 8 caracteres">
+          </div>
+          <div class="form-group">
+            <label>Confirmar nueva contraseña</label>
+            <input type="password" id="cfg-pwd-confirmar" placeholder="Repetí la nueva contraseña">
+          </div>
+          <div class="form-group full" style="align-items:flex-start;">
+            <button class="btn btn-ghost" onclick="cambiarContrasena()">🔑 Cambiar contraseña</button>
+          </div>
+        </div>
+      </div>
+
     </div>
 
   </main>
@@ -1853,6 +1896,7 @@ async function cargarConfiguracion() {
   document.getElementById('cfg-porcentaje-seña').value = cfg.porcentaje_seña || 30;
   document.getElementById('cfg-alias').value = cfg.alias_transferencia || '';
   document.getElementById('cfg-mensaje-pago').value = cfg.mensaje_pago || '';
+  document.getElementById('cfg-politica-cancelacion').value = cfg.politica_cancelacion || '';
   toggleSeñaGroup();
 }
 
@@ -1879,6 +1923,7 @@ async function guardarConfiguracion() {
     porcentaje_seña: parseInt(document.getElementById('cfg-porcentaje-seña').value) || null,
     alias_transferencia: document.getElementById('cfg-alias').value || null,
     mensaje_pago: document.getElementById('cfg-mensaje-pago').value || null,
+    politica_cancelacion: document.getElementById('cfg-politica-cancelacion').value || null,
   };
 
   const res = await api('PATCH', `/admin/${SLUG}/configuracion`, body);
@@ -2048,6 +2093,55 @@ async function subirImagen(input, campoId, previewId, imgId) {
     toast('Imagen subida correctamente', 'success');
   } catch(e) {
     toast('Error al subir imagen', 'error');
+  }
+}
+
+// ============================================================
+// TEXTOS MODELO Y CAMBIO DE CONTRASEÑA
+// ============================================================
+function usarModeloPago(tipo) {
+  const alias = document.getElementById('cfg-alias').value || '[alias/CBU]';
+  const porcentaje = document.getElementById('cfg-porcentaje-seña').value || '30';
+  let texto = '';
+  if (tipo === 'sena_efectivo') {
+    texto = `Para confirmar tu reserva, transferí el ${porcentaje}% del total al alias ${alias} y adjuntá el comprobante. El saldo restante se abona en efectivo el día del evento.`;
+  } else if (tipo === 'sena_transferencia') {
+    texto = `Para confirmar tu reserva, transferí el ${porcentaje}% del total al alias ${alias} y adjuntá el comprobante. El saldo restante deberá abonarse por transferencia al mismo alias antes del evento.`;
+  } else if (tipo === 'total') {
+    texto = `Para confirmar tu reserva, transferí el 100% del total al alias ${alias} y adjuntá el comprobante. Sin pago completo no se confirma la reserva.`;
+  }
+  document.getElementById('cfg-mensaje-pago').value = texto;
+  toast('Texto modelo aplicado — editalo como necesites', 'success');
+}
+
+function usarModeloCancelacion() {
+  const texto = 'Para cancelar una reserva, el cliente debe comunicarse con un mínimo de 7 días de anticipación a la fecha del evento. Con más de 7 días de anticipación, se devuelve el 50% de la seña abonada. Con menos de 7 días de anticipación, la seña no es reembolsable.';
+  document.getElementById('cfg-politica-cancelacion').value = texto;
+  toast('Texto modelo aplicado — editalo como necesites', 'success');
+}
+
+async function cambiarContrasena() {
+  const actual = document.getElementById('cfg-pwd-actual').value;
+  const nueva = document.getElementById('cfg-pwd-nueva').value;
+  const confirmar = document.getElementById('cfg-pwd-confirmar').value;
+
+  if (!actual || !nueva || !confirmar) { toast('Completá todos los campos', 'error'); return; }
+  if (nueva.length < 8) { toast('La nueva contraseña debe tener al menos 8 caracteres', 'error'); return; }
+  if (nueva !== confirmar) { toast('Las contraseñas no coinciden', 'error'); return; }
+
+  const res = await api('PATCH', `/admin/${SLUG}/configuracion`, {
+    password_actual: actual,
+    password_nueva: nueva
+  });
+
+  if (res?.ok) {
+    toast('Contraseña actualizada correctamente', 'success');
+    document.getElementById('cfg-pwd-actual').value = '';
+    document.getElementById('cfg-pwd-nueva').value = '';
+    document.getElementById('cfg-pwd-confirmar').value = '';
+  } else {
+    const data = await res?.json();
+    toast(data?.detail || 'Error al cambiar contraseña', 'error');
   }
 }
 

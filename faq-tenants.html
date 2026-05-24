@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía para salones — QueFiestaApp</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Montserrat:wght@800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color1: #ff6b6b;
+  --color2: #ffd93d;
+  --color3: #6bcb77;
+  --text: #1a1a2e;
+  --text2: #5a5a7a;
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --border: #ebebf0;
+  --radius: 14px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+header {
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d2d44 100%);
+  padding: 60px 24px;
+  text-align: center;
+}
+
+.header-badge {
+  display: inline-block;
+  background: rgba(255,107,107,0.2);
+  color: var(--color1);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+
+header h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(28px, 5vw, 48px);
+  font-weight: 900;
+  color: white;
+  margin-bottom: 12px;
+}
+
+header p {
+  color: rgba(255,255,255,0.7);
+  font-size: 16px;
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.breadcrumb {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 24px;
+  font-size: 13px;
+  color: var(--text2);
+}
+
+.breadcrumb a { color: var(--color1); text-decoration: none; }
+.breadcrumb a:hover { text-decoration: underline; }
+
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 24px;
+  gap: 40px;
+  align-items: start;
+}
+
+@media (max-width: 768px) {
+  .layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+}
+
+/* SIDEBAR */
+.sidebar {
+  position: sticky;
+  top: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+
+.sidebar-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text2);
+  margin-bottom: 12px;
+}
+
+.sidebar-nav {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebar-nav a {
+  display: block;
+  padding: 7px 10px;
+  border-radius: 8px;
+  color: var(--text2);
+  text-decoration: none;
+  font-size: 13px;
+  transition: all 0.15s;
+}
+
+.sidebar-nav a:hover {
+  background: rgba(255,107,107,0.08);
+  color: var(--color1);
+}
+
+/* CONTENIDO */
+.content {}
+
+.faq-section { margin-bottom: 40px; }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--border);
+}
+
+.section-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: rgba(255,107,107,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+/* FAQ ITEMS */
+.faq-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 10px;
+  transition: border-color 0.2s;
+}
+
+.faq-item:hover { border-color: var(--color1); }
+.faq-item.open { border-color: var(--color1); }
+
+.faq-question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  cursor: pointer;
+  gap: 16px;
+  user-select: none;
+}
+
+.faq-question-text {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.faq-icon {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: rgba(255,107,107,0.1);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 16px;
+  transition: transform 0.3s;
+  color: var(--color1);
+}
+
+.faq-item.open .faq-icon { transform: rotate(45deg); }
+
+.faq-answer {
+  display: none;
+  padding: 0 20px 18px;
+  color: var(--text2);
+  font-size: 14px;
+  line-height: 1.8;
+  border-top: 1px solid var(--border);
+}
+
+.faq-item.open .faq-answer { display: block; }
+
+.faq-answer p { margin-bottom: 10px; }
+.faq-answer p:last-child { margin-bottom: 0; }
+.faq-answer strong { color: var(--text); }
+
+.faq-answer ol, .faq-answer ul {
+  margin: 8px 0 10px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tip {
+  background: rgba(255,217,61,0.1);
+  border-left: 3px solid var(--color2);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.info {
+  background: rgba(107,203,119,0.08);
+  border-left: 3px solid var(--color3);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.warning {
+  background: rgba(255,107,107,0.06);
+  border-left: 3px solid var(--color1);
+  border-radius: 0 8px 8px 0;
+  padding: 10px 14px;
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+/* CONTACTO */
+.contacto-box {
+  background: linear-gradient(135deg, rgba(255,107,107,0.06), rgba(255,217,61,0.06));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 32px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.contacto-box h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.contacto-box p { color: var(--text2); font-size: 14px; margin-bottom: 20px; }
+
+.btn-contacto {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color1);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  transition: opacity 0.2s;
+}
+
+.btn-contacto:hover { opacity: 0.85; }
+
+/* FOOTER */
+footer {
+  background: #1a1a2e;
+  color: rgba(255,255,255,0.6);
+  text-align: center;
+  padding: 40px 24px;
+  font-size: 13px;
+  margin-top: 60px;
+}
+
+footer a { color: rgba(255,255,255,0.7); text-decoration: none; }
+footer a:hover { color: white; }
+
+.footer-links {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.gtia-logo {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  margin-top: 8px;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">Guía para salones</div>
+  <h1>Centro de ayuda</h1>
+  <p>Todo lo que necesitás saber para administrar tu salón con QueFiestaApp</p>
+</header>
+
+<div class="breadcrumb">
+  <a href="https://gestionateia.com/quefiestaapp">QueFiestaApp</a> › Guía para salones
+</div>
+
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Contenido</div>
+    <ul class="sidebar-nav">
+      <li><a href="#configurar">⚙️ Configurar mi página</a></li>
+      <li><a href="#menu">🍕 Gestionar el menú</a></li>
+      <li><a href="#horarios">🕐 Horarios y fechas</a></li>
+      <li><a href="#reservas">📅 Gestionar reservas</a></li>
+      <li><a href="#cobro">💰 Modalidad de cobro</a></li>
+      <li><a href="#suscripcion">🔑 Mi suscripción</a></li>
+    </ul>
+  </aside>
+
+  <!-- CONTENIDO -->
+  <main class="content">
+
+    <!-- CONFIGURAR -->
+    <div class="faq-section" id="configurar">
+      <div class="section-header">
+        <div class="section-icon">⚙️</div>
+        <div class="section-title">Configurar mi página</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Cómo configuro mi página de reservas?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>Toda la configuración se hace desde el <strong>Panel Admin</strong>. Para acceder, ingresá en <strong>quefiestaapp.gestionateia.com/admin.html</strong> con tu ID de salón y contraseña. Tu ID de salón es el que recibiste en el email de bienvenida (ej: si tu salón se llama "Salón Feliz", tu ID podría ser <strong>salon-feliz</strong>).</p>
+          <p>Dentro del panel, andá a <strong>Configuración ⚙️</strong> en el menú lateral. Ahí podés configurar:</p>
+          <ul>
+            <li><strong>Identidad:</strong> nombre visible, WhatsApp, email de contacto y dirección.</li>
+            <li><strong>Colores:</strong> color principal y secundario de tu página pública.</li>
+            <li><strong>Imágenes:</strong> logo y foto de portada (se pueden subir desde tu ordenador).</li>
+            <li><strong>Precios base:</strong> precio del salón y cantidad base de niños incluidos.</li>
+            <li><strong>Modalidad de cobro:</strong> cómo vas a cobrar la seña o el total.</li>
+          </ul>
+          <div class="tip">💡 Hacé clic en "Guardar cambios" después de modificar cualquier dato para que se actualicen en tu página pública.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Cómo subo mi logo y la foto de portada?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>En la sección <strong>Configuración → Identidad del salón</strong>, cada campo de imagen tiene un botón <strong>📁 Subir</strong>. Hacé clic y elegí el archivo desde tu computadora.</p>
+          <ul>
+            <li>Formatos admitidos: JPG, PNG, WEBP.</li>
+            <li>Tamaño máximo: 5MB por imagen.</li>
+            <li>También podés pegar una URL de imagen si ya la tenés subida en otro lado.</li>
+          </ul>
+          <div class="tip">💡 Para la foto de portada, usá una imagen horizontal (paisaje) de buena resolución. Recomendamos mínimo 1200px de ancho.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MENÚ -->
+    <div class="faq-section" id="menu">
+      <div class="section-header">
+        <div class="section-icon">🍕</div>
+        <div class="section-title">Gestionar el menú y juegos</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Cómo agrego ítems al menú?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>Desde el panel admin, andá a <strong>Menú 🍕</strong> en el menú lateral y hacé clic en <strong>+ Agregar ítem</strong>.</p>
+          <p>Completá:</p>
+          <ul>
+            <li><strong>Nombre:</strong> ej. "Sandwiches de miga", "Panchitos", "Jugos".</li>
+            <li><strong>Precio base:</strong> el precio del ítem para la cantidad base de niños configurada.</li>
+            <li><strong>Precio por niño extra:</strong> lo que se suma por cada niño que supere la cantidad base.</li>
+            <li><strong>Descripción e imagen:</strong> opcionales, pero ayudan al cliente a elegir.</li>
+          </ul>
+          <div class="info">✅ Los ítems activos aparecen en la página de reservas. Podés desactivar un ítem temporalmente sin eliminarlo.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Cómo funcionan los precios del menú?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>Cada ítem del menú tiene dos precios:</p>
+          <ul>
+            <li><strong>Precio base:</strong> cubre la cantidad base de niños que configuraste en la sección Configuración (por defecto 20 niños).</li>
+            <li><strong>Precio por niño extra:</strong> se multiplica por cada niño que supere esa cantidad base.</li>
+          </ul>
+          <p><strong>Ejemplo:</strong> si el precio base de los sandwiches es $5.000 (para 20 niños) y el precio extra es $250, una fiesta de 25 niños cobraría $5.000 + (5 × $250) = $6.250.</p>
+          <div class="tip">💡 Si querés un precio fijo sin importar la cantidad de niños, ponés $0 en el campo de precio por niño extra.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Cómo agrego juegos o servicios adicionales?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>Desde el panel admin, andá a <strong>Juegos y adicionales 🎪</strong> y hacé clic en <strong>+ Agregar juego</strong>.</p>
+          <p>Cada juego puede tener:</p>
+          <ul>
+            <li><strong>Precio fijo:</strong> un costo que no varía con la cantidad de niños (ej. un mago que cobra por show).</li>
+            <li><strong>Precio por niño:</strong> un costo que se multiplica por la cantidad de niños (ej. pintacaras).</li>
+            <li>También podés combinar ambos (precio fijo + precio por niño).</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Qué son los combos y cómo los configuro?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>Los <strong>combos</strong> son paquetes con precio cerrado que aparecen en la página pública antes del presupuestador a medida. Son ideales para mostrar ofertas especiales o paquetes armados.</p>
+          <p>Para agregar un combo, andá a <strong>Combos / Ofertas 🎁</strong> y hacé clic en <strong>+ Agregar combo</strong>. Completá nombre, descripción, precio cerrado e imagen.</p>
+          <div class="info">✅ Si no tenés combos configurados, esa sección no aparece en la página pública. No es obligatorio tenerlos.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HORARIOS -->
+    <div class="faq-section" id="horarios">
+      <div class="section-header">
+        <div class="section-icon">🕐</div>
+        <div class="section-title">Horarios y fechas disponibles</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Cómo configuro los días y horarios disponibles?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>Desde el panel admin, andá a <strong>Horarios 🕐</strong> y hacé clic en <strong>+ Agregar horario</strong>.</p>
+          <p>Para cada horario elegís:</p>
+          <ul>
+            <li><strong>Día de la semana:</strong> domingo, lunes, martes, etc.</li>
+            <li><strong>Hora de inicio y fin:</strong> ej. 15:00 a 20:00.</li>
+          </ul>
+          <p>Podés agregar múltiples horarios para el mismo día (ej. sábado a las 15hs y sábado a las 20hs).</p>
+          <div class="tip">💡 Solo los días con horarios configurados aparecen como disponibles en el calendario de la página pública.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Cómo bloqueo una fecha?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>Desde el panel admin, andá a <strong>Fechas bloqueadas 🚫</strong> y hacé clic en <strong>+ Bloquear fecha</strong>.</p>
+          <p>Podés bloquear:</p>
+          <ul>
+            <li><strong>Un día entero:</strong> dejás los campos de hora vacíos.</li>
+            <li><strong>Una franja horaria:</strong> especificás hora de inicio y fin (útil si ya tenés una reserva externa).</li>
+          </ul>
+          <p>Podés agregar un motivo (ej. "Evento privado", "Vacaciones") que solo verás vos en el panel.</p>
+          <div class="warning">⚠️ Las fechas bloqueadas aparecen en gris en el calendario de la página pública y no se pueden reservar.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESERVAS -->
+    <div class="faq-section" id="reservas">
+      <div class="section-header">
+        <div class="section-icon">📅</div>
+        <div class="section-title">Gestionar reservas</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Cómo confirmo una reserva?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>Cuando un cliente envía una solicitud, la reserva aparece en el panel admin con estado <strong>Pendiente</strong>. Para confirmarla:</p>
+          <ol>
+            <li>Andá a <strong>Reservas 📅</strong> en el menú lateral.</li>
+            <li>Buscá la reserva pendiente y hacé clic en el botón <strong>✓ (confirmar)</strong>.</li>
+            <li>La reserva pasa a estado <strong>Confirmada</strong> y el slot queda bloqueado definitivamente.</li>
+          </ol>
+          <div class="tip">💡 Antes de confirmar, verificá el comprobante de transferencia haciendo clic en 👁 para ver el detalle de la reserva.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Cómo veo el comprobante de transferencia?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>En la tabla de reservas, hacé clic en el botón <strong>👁 (ver detalle)</strong> de la reserva que querés revisar. Se abre un panel con todos los datos del cliente y, si adjuntó un comprobante, encontrás el botón <strong>📎 Ver comprobante</strong> que abre la imagen o PDF en una nueva pestaña.</p>
+          <div class="warning">⚠️ Si una reserva no tiene comprobante adjunto, aparece el texto "Sin comprobante adjunto". En ese caso, pedile al cliente que te lo envíe por WhatsApp o email antes de confirmar.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Puedo cargar una reserva manualmente?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>Sí. Esto es útil cuando una reserva llega por WhatsApp o teléfono. Desde <strong>Reservas 📅</strong>, hacé clic en <strong>+ Nueva reserva manual</strong> y completá todos los datos del cliente y el evento.</p>
+          <p>Las reservas manuales bloquean el slot igual que las online, así no hay superposición.</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Cómo registro el pago de la seña o el total?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>En el detalle de cada reserva (botón 👁), encontrás los botones:</p>
+          <ul>
+            <li><strong>Marcar seña como pagada:</strong> para registrar que la seña fue verificada y acreditada.</li>
+            <li><strong>Marcar total pagado:</strong> para registrar que el pago completo fue recibido.</li>
+          </ul>
+          <p>Estos estados son solo para tu control interno — no generan ningún movimiento de dinero en el sistema.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- COBRO -->
+    <div class="faq-section" id="cobro">
+      <div class="section-header">
+        <div class="section-icon">💰</div>
+        <div class="section-title">Modalidad de cobro</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Cómo cambio la modalidad de cobro?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>Desde <strong>Configuración ⚙️</strong>, en la sección <strong>Modalidad de cobro</strong>, podés elegir entre:</p>
+          <ul>
+            <li><strong>Pago total anticipado por transferencia:</strong> el cliente transfiere el 100% antes del evento.</li>
+            <li><strong>Seña por transferencia + resto en efectivo:</strong> el cliente transfiere la seña y el resto lo paga el día del evento en efectivo.</li>
+            <li><strong>Seña por transferencia + resto por transferencia:</strong> ambos pagos son por transferencia.</li>
+            <li><strong>MercadoPago:</strong> el cliente paga online (requiere configurar tu cuenta de MercadoPago).</li>
+          </ul>
+          <div class="tip">💡 Si elegís una modalidad con seña, también configurás el porcentaje (ej. 30% = el cliente transfiere el 30% del total).</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Dónde configuro mi alias o CBU para transferencias?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>En <strong>Configuración ⚙️</strong>, sección <strong>Modalidad de cobro</strong>, encontrás el campo <strong>Alias / CBU para transferencia</strong>. Ingresá tu alias de MercadoPago, Cuenta DNI o el CBU de tu cuenta bancaria.</p>
+          <p>También podés agregar un <strong>mensaje de pago</strong> personalizado que se muestra al cliente al momento de reservar (ej. "Enviá el comprobante al WhatsApp 03496-123456").</p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Cómo configuro el mensaje de instrucciones de pago para mis clientes?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>En <strong>Configuración ⚙️</strong>, sección <strong>Modalidad de cobro</strong>, encontrás el campo <strong>Mensaje de pago</strong>. Ahí escribís el texto que verá el cliente al momento de reservar.</p>
+          <p>Según tu modalidad, te sugerimos estos textos modelo (podés editarlos como quieras):</p>
+          <p><strong>Seña + saldo el día del evento:</strong><br>
+          <em>"Para confirmar tu reserva, transferí el [X]% del total al alias [alias] y adjuntá el comprobante. El saldo restante se abona en efectivo/transferencia el día del evento."</em></p>
+          <p><strong>Seña + saldo con anticipación:</strong><br>
+          <em>"Para confirmar tu reserva, transferí el [X]% del total al alias [alias] y adjuntá el comprobante. El saldo restante deberá abonarse [X días] antes del evento."</em></p>
+          <p><strong>Pago total anticipado:</strong><br>
+          <em>"Para confirmar tu reserva, transferí el 100% del total al alias [alias] y adjuntá el comprobante. Sin pago completo no se confirma la reserva."</em></p>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Cómo configuro la política de cancelación?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>En <strong>Configuración ⚙️</strong>, sección <strong>Política de cancelación</strong>, podés escribir el texto que aparecerá publicado en tu página de reservas para que los clientes lo lean antes de confirmar.</p>
+          <p>Te sugerimos este texto modelo:</p>
+          <p><em>"Para cancelar una reserva, el cliente debe comunicarse con un mínimo de [X] días de anticipación a la fecha del evento. Con más de [X] días de anticipación, se devuelve el [X]% de la seña abonada. Con menos de [X] días de anticipación, la seña no es reembolsable."</em></p>
+          <div class="warning">⚠️ Si no configurás una política de cancelación, la página de reservas no mostrará ningún texto al respecto. Te recomendamos siempre tenerla visible para evitar malentendidos.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- SUSCRIPCIÓN -->
+    <div class="faq-section" id="suscripcion">
+      <div class="section-header">
+        <div class="section-icon">🔑</div>
+        <div class="section-title">Mi suscripción</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Qué pasa cuando vence el período de prueba?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>Al registrarte, tenés <strong>30 días de prueba gratuita</strong> con acceso a todas las funcionalidades. Cuando el período vence:</p>
+          <ul>
+            <li>Tu página de reservas deja de estar disponible para los clientes.</li>
+            <li>Tus datos se mantienen seguros — no se eliminan.</li>
+            <li>Para reactivar, contactá a GestionaTeIA para abonar la suscripción mensual.</li>
+          </ul>
+          <div class="info">✅ Una vez acreditado el pago, tu cuenta se reactiva automáticamente.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Cómo pago la suscripción mensual?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>Podés elegir entre dos métodos de pago:</p>
+          <ul>
+            <li><strong>MercadoPago:</strong> pagás online desde la página de suscripción. La activación es <strong>automática e inmediata</strong> una vez acreditado el pago.</li>
+            <li><strong>Transferencia bancaria:</strong> transferís el importe a la cuenta de GestionaTeIA y enviás el comprobante a <strong>pagos@gestionateia.com</strong>. La activación es <strong>manual</strong> — se procesa dentro de las 24 horas hábiles.</li>
+          </ul>
+          <div class="info">✅ No aceptamos efectivo. Una vez activada la suscripción, tu cuenta queda habilitada por 30 días más.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Qué pasa si no renuevo a tiempo?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>Si la suscripción vence sin renovar:</p>
+          <ul>
+            <li>Recibís avisos por email 7, 3 y 1 día antes del vencimiento.</li>
+            <li>Al vencer, tu página de reservas deja de estar disponible para los clientes.</li>
+            <li>Tus datos (reservas, menú, configuración) se conservan — no se eliminan.</li>
+            <li>Para reactivar, simplemente abonás la suscripción y la cuenta vuelve a estar activa.</li>
+          </ul>
+          <div class="tip">💡 Te recomendamos renovar antes del vencimiento para no interrumpir el servicio.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Puedo cambiar mi contraseña?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>Sí. Desde el panel admin, andá a <strong>Configuración ⚙️</strong> → sección <strong>Mi cuenta</strong> y encontrás el campo para cambiar tu contraseña. Ingresá la contraseña actual y la nueva dos veces para confirmar.</p>
+          <div class="tip">💡 Por seguridad, te recomendamos cambiar la contraseña temporal que recibiste al registrarte a la brevedad.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggle(this)">
+          <div class="faq-question-text">¿Puedo delegar la administración a otra persona?</div>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer">
+          <p>Sí. Podés crear un segundo usuario administrador para que otra persona (un empleado, socio o familiar) gestione el panel con sus propias credenciales.</p>
+          <p>Para hacerlo, andá a <strong>Configuración ⚙️</strong> → sección <strong>Usuarios admin</strong> y hacé clic en <strong>+ Agregar administrador</strong>. Completá el nombre, email y contraseña del nuevo usuario.</p>
+          <p>El usuario administrador adicional tiene acceso completo al panel — puede ver y gestionar reservas, menú, horarios y configuración igual que vos.</p>
+          <div class="warning">⚠️ Por ahora no hay distinción de roles — todos los administradores tienen los mismos permisos. Si necesitás restringir el acceso, contactá a soporte.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTACTO -->
+    <div class="contacto-box">
+      <h3>¿No encontraste lo que buscabas? 🎪</h3>
+      <p>El equipo de GestionaTeIA está para ayudarte. Escribinos y te respondemos a la brevedad.</p>
+      <a href="https://gestionateia.com/soporte" class="btn-contacto">💬 Contactar soporte técnico</a>
+    </div>
+
+  </main>
+</div>
+
+<footer>
+  <div class="footer-links">
+    <a href="https://gestionateia.com/quefiestaapp">QueFiestaApp</a>
+    <a href="https://gestionateia.com/soporte">Soporte</a>
+    <a href="https://gestionateia.com/terminos-y-condiciones/">Términos y condiciones</a>
+    <a href="https://gestionateia.com/politica-de-privacidad/">Política de privacidad</a>
+  </div>
+  <div style="margin-bottom:8px;font-size:12px;">Un producto de</div>
+  <div class="gtia-logo">
+    <a href="https://gestionateia.com" target="_blank" style="text-decoration:none;">
+      <span style="color:#ffffff">Gestiona</span><span style="color:#FF8000">Te</span><span style="color:#71D997">IA</span>
+    </a>
+  </div>
+</footer>
+
+<script>
+function toggle(el) {
+  const item = el.parentElement;
+  item.classList.toggle('open');
+}
+
+window.onload = () => {
+  const hash = window.location.hash.replace('#', '');
+  if (hash) {
+    const el = document.getElementById(hash);
+    if (el) {
+      el.classList.add('open');
+      setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+  }
+};
+</script>
+</body>
+</html>

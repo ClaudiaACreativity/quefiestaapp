@@ -873,6 +873,14 @@ footer strong { color: white; }
         </div>
       </div>
 
+      <!-- POLÍTICA DE CANCELACIÓN -->
+      <div style="display:none;" id="politica-wrap">
+        <div class="presup-panel" style="border-left:3px solid var(--color1);">
+          <div class="presup-panel-title" style="font-size:16px;">📋 Política de cancelación</div>
+          <p id="politica-cancelacion" style="font-size:14px;color:var(--text2);line-height:1.7;"></p>
+        </div>
+      </div>
+
       <!-- FORMULARIO -->
       <div class="form-reserva" id="formulario">
         <div class="presup-panel-title" style="margin-bottom:20px;">📝 Tus datos</div>
@@ -1112,6 +1120,15 @@ async function cargarSalon() {
   if (salon.whatsapp) contacto.push('📱 ' + salon.whatsapp);
   if (salon.email_contacto) contacto.push('✉️ ' + salon.email_contacto);
   document.getElementById('footer-contacto').textContent = contacto.join('  ·  ');
+
+  // Política de cancelación
+  if (salon.politica_cancelacion) {
+    const polDiv = document.getElementById('politica-cancelacion');
+    if (polDiv) {
+      polDiv.textContent = salon.politica_cancelacion;
+      document.getElementById('politica-wrap').style.display = 'block';
+    }
+  }
 
   // Info de pago
   if (salon.mensaje_pago) {
