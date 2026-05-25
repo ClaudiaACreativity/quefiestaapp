@@ -2129,7 +2129,7 @@ async function cambiarContrasena() {
   if (nueva.length < 8) { toast('La nueva contraseña debe tener al menos 8 caracteres', 'error'); return; }
   if (nueva !== confirmar) { toast('Las contraseñas no coinciden', 'error'); return; }
 
-  const res = await api('PATCH', `/admin/${SLUG}/configuracion`, {
+  const res = await api('POST', `/admin/${SLUG}/cambiar-password`, {
     password_actual: actual,
     password_nueva: nueva
   });
