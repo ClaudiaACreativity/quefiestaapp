@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QueFiestaApp — Gestioná tu salón de fiestas online</title>
+<meta name="description" content="QueFiestaApp: la plataforma para que los salones de fiestas reciban reservas y presupuestos online. Probalo 30 días gratis.">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Montserrat:wght@800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --color1: #ff6b6b;
+  --color2: #8761E8;
+  --color3: #6bcb77;
+  --dark: #1a1a2e;
+  --dark2: #22223a;
+  --text: #1a1a2e;
+  --text2: #5a5a7a;
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --border: #ebebf0;
+  --radius: 16px;
+  --radius-lg: 24px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 100;
+}
+
+.nav-logo {
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--color1);
+  text-decoration: none;
+}
+
+.nav-logo span { color: var(--text); }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--text2);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 0.15s;
+}
+
+.nav-links a:hover { color: var(--text); }
+
+.btn-nav {
+  background: var(--color1);
+  color: white !important;
+  padding: 9px 20px;
+  border-radius: 50px;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+}
+
+.btn-nav:hover { opacity: 0.9; }
+
+/* HERO */
+.hero {
+  padding: 140px 24px 80px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(180deg, #fff9f9 0%, var(--bg) 100%);
+}
+
+.hero-confetti {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 15% 30%, rgba(255,107,107,0.08) 0%, transparent 40%),
+    radial-gradient(circle at 85% 20%, rgba(255,217,61,0.07) 0%, transparent 40%),
+    radial-gradient(circle at 50% 80%, rgba(107,203,119,0.06) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,107,107,0.1);
+  color: var(--color1);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+
+.hero h1 {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: 900;
+  line-height: 1.05;
+  max-width: 800px;
+  margin: 0 auto 20px;
+}
+
+.hero h1 .accent { color: var(--color1); }
+
+.hero-sub {
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--text2);
+  max-width: 560px;
+  margin: 0 auto 40px;
+  line-height: 1.6;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 60px;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color1);
+  color: white;
+  padding: 16px 32px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 16px;
+  text-decoration: none;
+  transition: all 0.2s;
+  box-shadow: 0 8px 24px rgba(255,107,107,0.3);
+  border: none;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 32px rgba(255,107,107,0.4); }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  color: var(--text);
+  padding: 16px 32px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 16px;
+  text-decoration: none;
+  border: 2px solid var(--border);
+  transition: all 0.2s;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.btn-secondary:hover { border-color: var(--color1); color: var(--color1); }
+
+.hero-proof {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  color: var(--text2);
+  font-size: 13px;
+}
+
+.hero-proof-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hero-proof-item .check {
+  width: 18px; height: 18px;
+  background: var(--color3);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  color: white;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* MOCKUP */
+.hero-mockup {
+  max-width: 900px;
+  margin: 0 auto;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 32px 80px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.mockup-bar {
+  background: var(--dark);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mockup-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+}
+
+.mockup-url {
+  flex: 1;
+  background: rgba(255,255,255,0.1);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+  font-family: monospace;
+  margin: 0 8px;
+}
+
+.mockup-content {
+  padding: 32px;
+  background: linear-gradient(135deg, rgba(255,107,107,0.04) 0%, rgba(255,217,61,0.04) 100%);
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.mockup-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  min-width: 140px;
+}
+
+.mockup-card .icon { font-size: 32px; margin-bottom: 8px; }
+.mockup-card .label { font-size: 12px; color: var(--text2); }
+.mockup-card .value { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 900; color: var(--color1); }
+
+/* SECCIÓN */
+section { padding: 80px 24px; }
+.container { max-width: 1100px; margin: 0 auto; }
+
+.section-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--color1);
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 900;
+  margin-bottom: 16px;
+  line-height: 1.15;
+}
+
+.section-subtitle {
+  color: var(--text2);
+  font-size: 17px;
+  max-width: 560px;
+  line-height: 1.6;
+  margin-bottom: 56px;
+}
+
+/* FEATURES */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.feature-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  transition: all 0.25s;
+}
+
+.feature-card:hover {
+  border-color: var(--color1);
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(255,107,107,0.08);
+}
+
+.feature-icon {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px;
+  margin-bottom: 16px;
+}
+
+.feature-title {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.feature-desc {
+  color: var(--text2);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+/* FLUJO */
+.flujo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0;
+  position: relative;
+}
+
+.flujo-step {
+  text-align: center;
+  padding: 32px 20px;
+  position: relative;
+}
+
+.flujo-step::after {
+  content: '→';
+  position: absolute;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+  color: var(--border);
+}
+
+.flujo-step:last-child::after { display: none; }
+
+.flujo-num {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, var(--color1), var(--color2));
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Fraunces', serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: white;
+  margin: 0 auto 16px;
+}
+
+.flujo-title {
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+
+.flujo-desc {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+/* PARA QUIENES */
+.para-quien-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.para-quien-card {
+  background: var(--dark);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  text-align: center;
+  color: white;
+}
+
+.para-quien-icon { font-size: 36px; margin-bottom: 12px; display:flex; justify-content:center; align-items:center; }
+.para-quien-title { font-weight: 700; font-size: 15px; }
+.para-quien-desc { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+
+/* TESTIMONIOS */
+.testimonios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.testimonio-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+}
+
+.testimonio-stars {
+  color: var(--color2);
+  font-size: 18px;
+  margin-bottom: 14px;
+  letter-spacing: 2px;
+}
+
+.testimonio-text {
+  font-style: italic;
+  color: var(--text2);
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+
+.testimonio-autor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.testimonio-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color1), var(--color2));
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.testimonio-nombre { font-weight: 700; font-size: 14px; }
+.testimonio-cargo { font-size: 12px; color: var(--text2); }
+
+/* PRECIO */
+.precio-section { background: var(--dark); }
+
+.precio-card {
+  max-width: 480px;
+  margin: 0 auto;
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 40px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.precio-badge {
+  position: absolute;
+  top: 20px; right: 20px;
+  background: var(--color2);
+  color: var(--dark);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+.precio-title {
+  font-family: 'Fraunces', serif;
+  font-size: 24px;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.precio-valor {
+  font-family: 'Fraunces', serif;
+  font-size: 64px;
+  font-weight: 900;
+  color: var(--color1);
+  line-height: 1;
+  margin: 16px 0 4px;
+}
+
+.precio-periodo { color: var(--text2); font-size: 15px; margin-bottom: 32px; }
+
+.precio-lista {
+  list-style: none;
+  text-align: left;
+  margin-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.precio-lista li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--text2);
+}
+
+.precio-lista .check {
+  width: 20px; height: 20px;
+  background: var(--color3);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  color: white;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.precio-trial {
+  background: rgba(107,203,119,0.1);
+  border: 1px solid rgba(107,203,119,0.3);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 24px;
+}
+
+/* FORMULARIO */
+.form-section { background: linear-gradient(135deg, var(--color1) 0%, var(--color2) 100%); }
+
+.form-card {
+  max-width: 580px;
+  margin: 0 auto;
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 40px;
+}
+
+.form-title {
+  font-family: 'Fraunces', serif;
+  font-size: 28px;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.form-subtitle { color: var(--text2); font-size: 15px; margin-bottom: 28px; line-height: 1.5; }
+
+.form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+
+.form-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text2);
+}
+
+.form-input {
+  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  padding: 13px 16px;
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.form-input:focus { border-color: var(--color1); }
+
+.form-slug-preview {
+  font-size: 12px;
+  color: var(--text2);
+  margin-top: 4px;
+  font-family: monospace;
+}
+
+.form-slug-preview span { color: var(--color1); font-weight: 600; }
+
+.form-terms {
+  font-size: 12px;
+  color: var(--text2);
+  text-align: center;
+  margin-top: 12px;
+  line-height: 1.5;
+}
+
+.form-terms a { color: var(--color1); text-decoration: none; }
+
+.form-success {
+  display: none;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.form-success-icon { font-size: 56px; margin-bottom: 16px; }
+.form-success-title { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 900; margin-bottom: 8px; }
+.form-success-text { color: var(--text2); font-size: 15px; line-height: 1.6; }
+
+/* FAQ */
+.faq-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 700px) { .faq-grid { grid-template-columns: 1fr; } }
+
+.faq-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.faq-item.open { border-color: var(--color1); }
+
+.faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  cursor: pointer;
+  gap: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  user-select: none;
+}
+
+.faq-icon {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: rgba(255,107,107,0.1);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  color: var(--color1);
+  flex-shrink: 0;
+  transition: transform 0.3s;
+}
+
+.faq-item.open .faq-icon { transform: rotate(45deg); }
+
+.faq-a {
+  display: none;
+  padding: 0 20px 16px;
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.7;
+  border-top: 1px solid var(--border);
+}
+
+.faq-item.open .faq-a { display: block; }
+
+/* CTA FINAL */
+.cta-section {
+  background: var(--dark);
+  text-align: center;
+  padding: 80px 24px;
+}
+
+.cta-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 900;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.cta-sub { color: rgba(255,255,255,0.6); font-size: 16px; margin-bottom: 36px; }
+
+/* FOOTER */
+footer {
+  background: #111120;
+  padding: 40px 24px;
+  text-align: center;
+  color: rgba(255,255,255,0.5);
+  font-size: 13px;
+}
+
+.footer-logo {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.footer-links a { color: rgba(255,255,255,0.5); text-decoration: none; }
+.footer-links a:hover { color: white; }
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  background: var(--dark);
+  color: white;
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  font-size: 14px;
+  z-index: 200;
+  transform: translateY(80px);
+  opacity: 0;
+  transition: all 0.3s;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.error { background: var(--color1); }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  nav { padding: 14px 20px; }
+  .nav-links { display: none; }
+  .flujo-step::after { display: none; }
+  .precio-card { padding: 28px 20px; }
+  .form-card { padding: 28px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Que<span>Fiesta</span>App</a>
+  <ul class="nav-links">
+    <li><a href="#caracteristicas">Características</a></li>
+    <li><a href="#precio">Precio</a></li>
+    <li><a href="#faq">FAQ</a></li>
+    <li><a href="faq-tenants.html">Guía</a></li>
+    <li><a href="#registro" class="btn-nav">Probalo gratis</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-confetti"></div>
+  <div class="hero-badge">🎉 Nuevo en GestionaTeIA</div>
+  <h1>Tu salón de fiestas,<br><span class="accent">siempre reservado</span></h1>
+  <p class="hero-sub">QueFiestaApp te permite recibir reservas y presupuestos online, 24/7. Los papás arman su fiesta desde el celular y vos confirmás con un clic.</p>
+  <div class="hero-actions">
+    <a href="#registro" class="btn-primary">🎈 Empezar prueba gratuita</a>
+    <a href="#caracteristicas" class="btn-secondary">Ver características</a>
+  </div>
+  <div class="hero-proof">
+    <div class="hero-proof-item"><div class="check">✓</div> 30 días gratis, sin tarjeta</div>
+    <div class="hero-proof-item"><div class="check">✓</div> Configuración en minutos</div>
+    <div class="hero-proof-item"><div class="check">✓</div> Soporte incluido</div>
+  </div>
+
+  <!-- CELULAR MOCKUP -->
+  <div style="margin-top:60px;display:flex;justify-content:center;">
+    <div style="
+      width:280px;
+      background:#1a1a2e;
+      border-radius:36px;
+      padding:12px;
+      box-shadow:0 40px 80px rgba(0,0,0,0.25);
+      position:relative;
+    ">
+      <!-- Notch -->
+      <div style="width:80px;height:20px;background:#0f0f18;border-radius:10px;margin:0 auto 10px;"></div>
+      <!-- Pantalla -->
+      <div style="background:#f9f9fb;border-radius:24px;overflow:hidden;">
+        <!-- Header app -->
+        <div style="background:#1a1a2e;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-family:Arial;font-weight:800;font-size:14px;">
+            <span style="color:#ff6b6b">Que</span><span style="color:#fff">Fiesta</span>
+          </div>
+          <div style="width:28px;height:28px;background:#ff6b6b;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;">👤</div>
+        </div>
+        <!-- Stats -->
+        <div style="padding:12px;display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="background:white;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+            <div style="margin-bottom:2px;"><svg width="20" height="20" viewBox="0 0 32 32" fill="none"><rect x="4" y="6" width="24" height="22" rx="3" fill="#FF6B6B"/><rect x="4" y="10" width="24" height="3" fill="#c94444"/><rect x="8" y="5" width="3" height="6" rx="1.5" fill="#c94444"/><rect x="21" y="5" width="3" height="6" rx="1.5" fill="#c94444"/><rect x="8" y="15" width="4" height="4" rx="1" fill="white" opacity="0.8"/><rect x="14" y="15" width="4" height="4" rx="1" fill="white" opacity="0.8"/><rect x="20" y="15" width="4" height="4" rx="1" fill="white" opacity="0.8"/></svg></div>
+            <div style="font-size:18px;font-weight:900;color:#ff6b6b;font-family:Georgia">12</div>
+            <div style="font-size:9px;color:#999;">Reservas / mes</div>
+          </div>
+          <div style="background:white;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+            <div style="font-size:20px;margin-bottom:2px;">⏳</div>
+            <div style="font-size:18px;font-weight:900;color:#8761E8;font-family:Georgia">3</div>
+            <div style="font-size:9px;color:#999;">Pendientes</div>
+          </div>
+          <div style="background:white;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+            <div style="margin-bottom:2px;"><svg width="20" height="20" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="13" fill="#6bcb77"/><path d="M16 8v2M16 22v2M10 16h12" stroke="white" stroke-width="2.5" stroke-linecap="round"/><circle cx="16" cy="16" r="4" fill="white" opacity="0.3"/><text x="12" y="20" font-size="10" fill="white" font-weight="bold">$</text></svg></div>
+            <div style="font-size:18px;font-weight:900;color:#6bcb77;font-family:Georgia">$840k</div>
+            <div style="font-size:9px;color:#999;">Facturado</div>
+          </div>
+          <div style="background:white;border-radius:12px;padding:12px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+            <div style="margin-bottom:2px;"><svg width="20" height="20" viewBox="0 0 32 32" fill="none"><rect x="4" y="16" width="24" height="12" rx="3" fill="#FF6B6B"/><rect x="4" y="12" width="24" height="6" rx="3" fill="#ffd93d"/><rect x="10" y="8" width="3" height="6" rx="1.5" fill="#8761E8"/><rect x="18" y="7" width="3" height="7" rx="1.5" fill="#8761E8"/><circle cx="11.5" cy="7" r="2" fill="#ffd93d"/><circle cx="19.5" cy="6" r="2" fill="#ffd93d"/></svg></div>
+            <div style="font-size:18px;font-weight:900;color:#1a1a2e;font-family:Georgia">Sáb</div>
+            <div style="font-size:9px;color:#999;">Próx. evento</div>
+          </div>
+        </div>
+        <!-- Próxima reserva -->
+        <div style="margin:0 12px 12px;background:linear-gradient(135deg,#ff6b6b,#8761E8);border-radius:12px;padding:14px;color:white;">
+          <div style="font-size:10px;opacity:0.8;margin-bottom:4px;">PRÓXIMA RESERVA</div>
+          <div style="font-weight:700;font-size:13px;">Cumple de Valentina 🎂</div>
+          <div style="font-size:11px;opacity:0.8;margin-top:2px;">Sáb 31 · 15:00 hs · 25 invitados</div>
+          <div style="margin-top:8px;background:rgba(255,255,255,0.2);border-radius:6px;padding:5px 10px;font-size:10px;font-weight:600;display:inline-block;">✓ Confirmada</div>
+        </div>
+      </div>
+      <!-- Barra inferior -->
+      <div style="height:4px;background:#333;border-radius:2px;width:80px;margin:10px auto 0;"></div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--text2);">
+    Administrá todo desde tu celular, en cualquier momento
+  </div>
+</section>
+
+<!-- PARA QUIÉNES -->
+<section style="background:var(--dark);padding:60px 24px;">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:40px;">
+      <div class="section-label" style="color:rgba(255,255,255,0.5);">Pensado para</div>
+      <div class="section-title" style="color:white;">Cualquier tipo de evento 🎊</div>
+    </div>
+    <div class="para-quien-grid">
+      <div class="para-quien-card">
+        <div class="para-quien-icon"><svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="8" y="28" width="48" height="30" rx="4" fill="#FF6B6B"/>
+  <rect x="8" y="30" width="48" height="4" fill="#e85555"/>
+  <polygon points="4,30 32,10 60,30" fill="#ff8c8c"/>
+  <polygon points="4,32 32,12 60,32" fill="#e85555" opacity="0.3"/>
+  <rect x="24" y="38" width="16" height="20" rx="3" fill="#c94444"/>
+  <rect x="14" y="36" width="10" height="10" rx="2" fill="white" opacity="0.8"/>
+  <rect x="40" y="36" width="10" height="10" rx="2" fill="white" opacity="0.8"/>
+  <circle cx="18" cy="22" r="3" fill="#ffd93d"/>
+  <circle cx="28" cy="18" r="3" fill="#6bcb77"/>
+  <circle cx="38" cy="20" r="3" fill="#8761E8"/>
+  <circle cx="46" cy="24" r="3" fill="#ffd93d"/>
+  <path d="M18 22 Q23 16 28 18 Q33 14 38 20 Q42 17 46 24" stroke="white" stroke-width="1.5" fill="none" opacity="0.6"/>
+</svg></div>
+        <div class="para-quien-title">Salones de fiestas</div>
+        <div class="para-quien-desc">Tu salón, siempre reservado</div>
+      </div>
+      <div class="para-quien-card">
+        <div class="para-quien-icon"><svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="6" y="30" width="52" height="26" rx="4" fill="#8761E8"/>
+  <rect x="6" y="30" width="52" height="6" fill="#6a4bc9"/>
+  <ellipse cx="20" cy="46" rx="8" ry="8" fill="#FF6B6B"/>
+  <ellipse cx="20" cy="46" rx="8" ry="8" fill="url(#ball1)"/>
+  <ellipse cx="36" cy="44" rx="10" ry="10" fill="#ffd93d"/>
+  <ellipse cx="50" cy="46" rx="8" ry="8" fill="#6bcb77"/>
+  <path d="M10 30 Q32 8 54 30" stroke="#ffd93d" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <path d="M10 30 Q32 8 54 30" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.4"/>
+  <circle cx="20" cy="46" r="3" fill="white" opacity="0.3"/>
+  <circle cx="36" cy="44" r="4" fill="white" opacity="0.3"/>
+  <circle cx="50" cy="46" r="3" fill="white" opacity="0.3"/>
+</svg></div>
+        <div class="para-quien-title">Peloteros</div>
+        <div class="para-quien-desc">Gestión simple y online</div>
+      </div>
+      <div class="para-quien-card">
+        <div class="para-quien-icon"><svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="32" cy="46" rx="26" ry="6" fill="#e0e0e0"/>
+  <ellipse cx="32" cy="44" rx="26" ry="4" fill="#f0f0f0"/>
+  <path d="M10 44 Q10 20 32 18 Q54 20 54 44" fill="#FF6B6B"/>
+  <path d="M12 44 Q12 22 32 20 Q52 22 52 44" fill="#ff8c8c"/>
+  <ellipse cx="32" cy="20" rx="6" ry="3" fill="#c94444"/>
+  <rect x="29" y="14" width="6" height="8" rx="3" fill="#c94444"/>
+  <circle cx="32" cy="13" r="3" fill="#ffd93d"/>
+  <ellipse cx="32" cy="44" rx="20" ry="3" fill="white" opacity="0.15"/>
+</svg></div>
+        <div class="para-quien-title">Servicios de catering</div>
+        <div class="para-quien-desc">Menú a medida por evento</div>
+      </div>
+      <div class="para-quien-card">
+        <div class="para-quien-icon"><svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="32" cy="50" rx="22" ry="6" fill="#c94444" opacity="0.3"/>
+  <rect x="10" y="34" width="44" height="18" rx="4" fill="#FF6B6B"/>
+  <rect x="10" y="34" width="44" height="6" fill="#ff8c8c"/>
+  <rect x="10" y="22" width="44" height="14" rx="4" fill="#ffd93d"/>
+  <rect x="10" y="22" width="44" height="5" fill="#ffe566"/>
+  <rect x="10" y="36" width="44" height="3" fill="white" opacity="0.2"/>
+  <path d="M10 28 Q20 24 32 28 Q44 32 54 28" stroke="white" stroke-width="2" fill="none" opacity="0.4"/>
+  <rect x="22" y="12" width="4" height="12" rx="2" fill="#8761E8"/>
+  <rect x="30" y="10" width="4" height="14" rx="2" fill="#FF6B6B"/>
+  <rect x="38" y="13" width="4" height="11" rx="2" fill="#6bcb77"/>
+  <ellipse cx="24" cy="11" rx="3" ry="4" fill="#ffd93d"/>
+  <ellipse cx="32" cy="9" rx="3" ry="4" fill="#ffd93d"/>
+  <ellipse cx="40" cy="12" rx="3" ry="4" fill="#ffd93d"/>
+  <circle cx="24" cy="9" r="1.5" fill="#FF6B6B"/>
+  <circle cx="32" cy="7" r="1.5" fill="#8761E8"/>
+  <circle cx="40" cy="10" r="1.5" fill="#6bcb77"/>
+</svg></div>
+        <div class="para-quien-title">Repostería y tortas</div>
+        <div class="para-quien-desc">Pedidos y presupuestos online</div>
+      </div>
+      <div class="para-quien-card">
+        <div class="para-quien-icon"><svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="28" y="28" width="8" height="32" rx="4" fill="#8761E8" transform="rotate(-45 32 44)"/>
+  <rect x="30" y="30" width="4" height="32" rx="2" fill="#a07de8" transform="rotate(-45 32 44)" opacity="0.5"/>
+  <polygon points="32,4 34,12 42,12 36,17 38,25 32,20 26,25 28,17 22,12 30,12" fill="#ffd93d"/>
+  <polygon points="32,6 33.5,11 38,11 34.5,14 35.8,19 32,16 28.2,19 29.5,14 26,11 30.5,11" fill="#ffe566"/>
+  <circle cx="48" cy="20" r="4" fill="#FF6B6B" opacity="0.9"/>
+  <circle cx="52" cy="32" r="3" fill="#6bcb77" opacity="0.9"/>
+  <circle cx="44" cy="10" r="2.5" fill="#8761E8" opacity="0.9"/>
+  <circle cx="16" cy="44" r="3" fill="#ffd93d" opacity="0.9"/>
+  <circle cx="12" cy="32" r="2" fill="#FF6B6B" opacity="0.7"/>
+</svg></div>
+        <div class="para-quien-title">Animación y entretenimiento</div>
+        <div class="para-quien-desc">Shows, juegos y más</div>
+      </div>
+      <div class="para-quien-card" style="background:rgba(135,97,232,0.2);border:1px solid rgba(135,97,232,0.3);">
+        <div class="para-quien-icon"><svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="32" cy="32" r="26" fill="#6bcb77" opacity="0.15"/>
+  <circle cx="32" cy="32" r="22" fill="#6bcb77" opacity="0.2"/>
+  <rect x="28" y="14" width="8" height="36" rx="4" fill="#6bcb77"/>
+  <rect x="14" y="28" width="36" height="8" rx="4" fill="#6bcb77"/>
+  <circle cx="18" cy="18" r="4" fill="#FF6B6B" opacity="0.8"/>
+  <circle cx="46" cy="18" r="3" fill="#ffd93d" opacity="0.8"/>
+  <circle cx="46" cy="46" r="4" fill="#8761E8" opacity="0.8"/>
+  <circle cx="18" cy="46" r="3" fill="#FF6B6B" opacity="0.8"/>
+  <circle cx="32" cy="32" r="4" fill="white" opacity="0.6"/>
+</svg></div>
+        <div class="para-quien-title" style="color:white;">¡Y muchas más!</div>
+        <div class="para-quien-desc">El límite lo ponés vos — adaptá la app a cualquier evento o servicio</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CARACTERÍSTICAS -->
+<section id="caracteristicas">
+  <div class="container">
+    <div class="section-label">Funcionalidades</div>
+    <div class="section-title">Todo lo que necesitás para gestionar tu salón</div>
+    <div class="section-subtitle">Sin planillas de Excel, sin WhatsApps interminables. Todo organizado en un solo lugar.</div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background:transparent;padding:0;"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" rx="8" fill="#FF6B6B" fill-opacity="0.15"/>
+  <rect x="7" y="9" width="18" height="16" rx="3" fill="#FF6B6B"/>
+  <rect x="10" y="7" width="3" height="5" rx="1.5" fill="#c94444"/>
+  <rect x="19" y="7" width="3" height="5" rx="1.5" fill="#c94444"/>
+  <rect x="7" y="13" width="18" height="2" fill="#c94444"/>
+  <rect x="10" y="17" width="3" height="3" rx="1" fill="white"/>
+  <rect x="14.5" y="17" width="3" height="3" rx="1" fill="white"/>
+  <rect x="19" y="17" width="3" height="3" rx="1" fill="white"/>
+</svg></div>
+        <div class="feature-title">Calendario de disponibilidad</div>
+        <div class="feature-desc">Tus clientes ven en tiempo real qué fechas y horarios están disponibles. Sin llamadas para consultar.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:transparent;padding:0;"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" rx="8" fill="#8761E8" fill-opacity="0.15"/>
+  <rect x="8" y="7" width="16" height="18" rx="3" fill="#8761E8"/>
+  <rect x="11" y="10" width="10" height="3" rx="1.5" fill="white"/>
+  <rect x="11" y="15" width="3" height="3" rx="1" fill="white" fill-opacity="0.8"/>
+  <rect x="14.5" y="15" width="3" height="3" rx="1" fill="white" fill-opacity="0.8"/>
+  <rect x="18" y="15" width="3" height="3" rx="1" fill="white" fill-opacity="0.8"/>
+  <rect x="11" y="19" width="3" height="3" rx="1" fill="white" fill-opacity="0.8"/>
+  <rect x="14.5" y="19" width="3" height="3" rx="1" fill="white" fill-opacity="0.8"/>
+  <rect x="18" y="19" width="3" height="3" rx="1" fill="white"/>
+</svg></div>
+        <div class="feature-title">Presupuestador interactivo</div>
+        <div class="feature-desc">El cliente elige menú, juegos y cantidad de invitados. El precio se actualiza en tiempo real. Cero idas y vueltas.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:transparent;padding:0;"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" rx="8" fill="#6BCB77" fill-opacity="0.15"/>
+  <rect x="7" y="14" width="18" height="11" rx="2" fill="#6BCB77"/>
+  <rect x="7" y="11" width="18" height="5" rx="2" fill="#4aaa56"/>
+  <rect x="14.5" y="7" width="3" height="18" rx="1.5" fill="white" fill-opacity="0.6"/>
+  <ellipse cx="12" cy="10" rx="3" ry="2" fill="white" fill-opacity="0.5"/>
+  <ellipse cx="20" cy="10" rx="3" ry="2" fill="white" fill-opacity="0.5"/>
+</svg></div>
+        <div class="feature-title">Combos y ofertas</div>
+        <div class="feature-desc">Mostrá paquetes cerrados antes del presupuestador. Ideal para promociones y fechas especiales.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:transparent;padding:0;"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" rx="8" fill="#FF6B6B" fill-opacity="0.15"/>
+  <path d="M16 6L8 10V17C8 21.4 11.6 25.4 16 26C20.4 25.4 24 21.4 24 17V10L16 6Z" fill="#FF6B6B"/>
+  <path d="M13 16L15 18L19 14" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg></div>
+        <div class="feature-title">Gestión de pagos y señas</div>
+        <div class="feature-desc">El cliente adjunta el comprobante al reservar. Vos confirmás cuando verificás el pago. Simple y ordenado.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:transparent;padding:0;"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" rx="8" fill="#8761E8" fill-opacity="0.15"/>
+  <circle cx="16" cy="16" r="9" fill="#8761E8"/>
+  <circle cx="12" cy="13" r="2.5" fill="white"/>
+  <circle cx="20" cy="13" r="2.5" fill="#FFD93D"/>
+  <circle cx="12" cy="19" r="2.5" fill="#6BCB77"/>
+  <circle cx="20" cy="19" r="2.5" fill="#FF6B6B"/>
+  <circle cx="16" cy="16" r="3" fill="white"/>
+</svg></div>
+        <div class="feature-title">Página personalizada</div>
+        <div class="feature-desc">Tu logo, tus colores, tus fotos. La página de reservas es tuya. Tus clientes no saben que usás QueFiestaApp.</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon" style="background:transparent;padding:0;"><svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" rx="8" fill="#6BCB77" fill-opacity="0.15"/>
+  <rect x="6" y="10" width="20" height="14" rx="3" fill="#6BCB77"/>
+  <path d="M6 12L16 18L26 12" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="23" cy="9" r="4" fill="#FF6B6B"/>
+  <path d="M23 7V9.5M23 11H23.01" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+</svg></div>
+        <div class="feature-title">Emails automáticos</div>
+        <div class="feature-desc">Confirmaciones, instrucciones de pago y recordatorios. Todo se envía solo, sin que tengas que hacer nada.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FLUJO -->
+<section style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:48px;">
+      <div class="section-label">Cómo funciona</div>
+      <div class="section-title">Del primer contacto a la fiesta confirmada</div>
+    </div>
+    <div class="flujo-grid">
+      <div class="flujo-step">
+        <div class="flujo-num">1</div>
+        <div class="flujo-title">Configurás tu página</div>
+        <div class="flujo-desc">Cargás tu menú, juegos, fotos y precios. Elegís tus colores y logo. Listo en minutos.</div>
+      </div>
+      <div class="flujo-step">
+        <div class="flujo-num">2</div>
+        <div class="flujo-title">Tus clientes reservan solos</div>
+        <div class="flujo-desc">Entran a tu página, arman el presupuesto, eligen fecha y adjuntan el comprobante de pago.</div>
+      </div>
+      <div class="flujo-step">
+        <div class="flujo-num">3</div>
+        <div class="flujo-title">Recibís la solicitud</div>
+        <div class="flujo-desc">Te llega un aviso con todos los datos: cliente, menú elegido, fecha, horario y comprobante.</div>
+      </div>
+      <div class="flujo-step">
+        <div class="flujo-num">4</div>
+        <div class="flujo-title">Confirmás con un clic</div>
+        <div class="flujo-desc">Verificás el pago desde el panel y confirmás. El cliente recibe la confirmación por email.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIOS -->
+<section id="testimonios">
+  <div class="container">
+    <div class="section-label">Testimonios</div>
+    <div class="section-title">Lo que dicen nuestros clientes</div>
+    <div class="section-subtitle">Salones que ya gestionan sus reservas con QueFiestaApp.</div>
+
+    <div class="testimonios-grid">
+      <div class="testimonio-card">
+        <div class="testimonio-stars">★★★★★</div>
+        <div class="testimonio-text">"Antes perdía horas respondiendo WhatsApps con preguntas de precios y fechas. Ahora los papás ven todo solos y yo solo confirmo. Un cambio enorme."</div>
+        <div class="testimonio-autor">
+          <div class="testimonio-avatar">M</div>
+          <div>
+            <div class="testimonio-nombre">María G.</div>
+            <div class="testimonio-cargo">Salón de fiestas, Buenos Aires — Placeholder</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonio-card">
+        <div class="testimonio-stars">★★★★★</div>
+        <div class="testimonio-text">"Lo que más me gustó es que la página queda con mi logo y mis colores. Los clientes no saben que uso un sistema externo. Se ve muy profesional."</div>
+        <div class="testimonio-autor">
+          <div class="testimonio-avatar">R</div>
+          <div>
+            <div class="testimonio-nombre">Roberto P.</div>
+            <div class="testimonio-cargo">Salón de eventos, Córdoba — Placeholder</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonio-card">
+        <div class="testimonio-stars">★★★★★</div>
+        <div class="testimonio-text">"Configuré todo en una tarde. Subí el menú, los juegos y mis fotos. Al día siguiente ya tenía la primera reserva. No lo podía creer."</div>
+        <div class="testimonio-autor">
+          <div class="testimonio-avatar">L</div>
+          <div>
+            <div class="testimonio-nombre">Laura M.</div>
+            <div class="testimonio-cargo">Servicio de catering, Rosario — Placeholder</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRECIO -->
+<section id="precio" class="precio-section">
+  <div class="container" style="text-align:center;">
+    <div class="section-label" style="color:rgba(255,255,255,0.5);">Precio</div>
+    <div class="section-title" style="color:white;margin-bottom:48px;">Un plan, todo incluido</div>
+
+    <div class="precio-card">
+      <div class="precio-badge">⭐ Más popular</div>
+      <div class="precio-title">QueFiestaApp</div>
+      <div class="precio-valor">USD 30</div>
+      <div class="precio-periodo">por mes · todo incluido</div>
+
+      <div class="precio-trial">
+        🎉 <strong>30 días de prueba gratuita</strong> — sin tarjeta de crédito
+      </div>
+
+      <ul class="precio-lista">
+        <li><div class="check">✓</div> Página de reservas personalizada</li>
+        <li><div class="check">✓</div> Presupuestador interactivo ilimitado</li>
+        <li><div class="check">✓</div> Combos y ofertas</li>
+        <li><div class="check">✓</div> Gestión de pagos y comprobantes</li>
+        <li><div class="check">✓</div> Emails automáticos</li>
+        <li><div class="check">✓</div> Panel admin completo</div></li>
+        <li><div class="check">✓</div> Usuarios admin adicionales</li>
+        <li><div class="check">✓</div> Soporte técnico incluido</li>
+      </ul>
+
+      <a href="#registro" class="btn-primary" style="width:100%;justify-content:center;">
+        🎈 Empezar prueba gratuita
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:48px;">
+      <div class="section-label">Preguntas frecuentes</div>
+      <div class="section-title">Dudas comunes</div>
+    </div>
+
+    <div class="faq-grid">
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          ¿Necesito saber programación para usarlo?
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-a">No. Todo se configura desde un panel visual sin código. Cargás tu menú, tus fotos y tus precios, y la página queda lista.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          ¿Cómo cobro la seña?
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-a">El cliente adjunta el comprobante de transferencia al reservar. Vos lo verificás y confirmás la reserva desde el panel. También podés configurar MercadoPago para cobro automático.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          ¿Qué pasa cuando termina el período de prueba?
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-a">3 días antes del vencimiento recibís un email con los datos para renovar por transferencia. Si no renovás, la página se desactiva pero tus datos se conservan.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          ¿Puedo personalizar la página con mi marca?
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-a">Sí. Cargás tu logo, elegís tus colores y subís tus fotos. La página de reservas refleja la identidad de tu salón. Los clientes no saben que usás QueFiestaApp.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          ¿Funciona para cualquier tipo de fiesta?
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-a">Sí. Está pensado para cumpleaños infantiles pero funciona igual para sweet 16, baby shower, casamientos íntimos o servicios de catering.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+          ¿Puedo tener más de un usuario admin?
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-a">Sí. Podés crear usuarios admin adicionales para delegar la gestión del panel a empleados o socios, con sus propias credenciales.</div>
+      </div>
+    </div>
+
+    <div style="text-align:center;margin-top:32px;">
+      <a href="faq-tenants.html" class="btn-secondary">Ver guía completa para salones en la página de FAQs →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FORMULARIO DE REGISTRO -->
+<section id="registro" class="form-section">
+  <div class="container">
+    <div style="text-align:center;margin-bottom:40px;">
+      <div class="section-title" style="color:white;">¡Empezá hoy, gratis! 🎉</div>
+      <div style="color:rgba(255,255,255,0.8);font-size:16px;margin-top:8px;">30 días de prueba sin tarjeta de crédito</div>
+    </div>
+
+    <div class="form-card">
+      <div id="form-contenido">
+        <div class="form-title">Crear mi cuenta</div>
+        <div class="form-subtitle">Completá tus datos y en segundos tenés tu página de reservas lista.</div>
+
+        <div class="form-group">
+          <label class="form-label">Tu nombre y apellido *</label>
+          <input type="text" class="form-input" id="reg-responsable" placeholder="Ej: María González">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nombre de tu salón o empresa *</label>
+          <input type="text" class="form-input" id="reg-nombre" placeholder="Ej: Salón Feliz"
+                 oninput="actualizarSlug(this.value)">
+          <div class="form-slug-preview">Tu URL: quefiestaapp.gestionateia.com?salon=<span id="slug-preview">tu-salon</span></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Tu email *</label>
+          <input type="email" class="form-input" id="reg-email" placeholder="hola@tusalon.com">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">WhatsApp *</label>
+          <input type="tel" class="form-input" id="reg-whatsapp" placeholder="Ej: 5493492123456">
+          <div style="font-size:11px;color:var(--text2);margin-top:4px;">Con código de país, sin espacios ni guiones. Ej: 5493492123456</div>
+        </div>
+
+        <button class="btn-primary" style="width:100%;justify-content:center;margin-top:8px;" onclick="registrar()">
+          🎈 Crear cuenta gratis
+        </button>
+
+        <div class="form-terms">
+          Al registrarte aceptás los <a href="https://gestionateia.com/terminos-y-condiciones/" target="_blank">Términos y condiciones</a>
+          y la <a href="https://gestionateia.com/politica-de-privacidad/" target="_blank">Política de privacidad</a> de GestionaTeIA.
+        </div>
+      </div>
+
+      <div class="form-success" id="form-success">
+        <div class="form-success-icon">🎊</div>
+        <div class="form-success-title">¡Cuenta creada!</div>
+        <div class="form-success-text">
+          Revisá tu email — te enviamos los datos de acceso a tu panel de administración.<br><br>
+          Tenés <strong>30 días gratis</strong> para probar todas las funcionalidades.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA FINAL -->
+<section class="cta-section">
+  <div class="cta-title">¿Seguís respondiendo presupuestos por WhatsApp? 📱</div>
+  <div class="cta-sub">Con QueFiestaApp, tus clientes arman su fiesta solos. Vos solo confirmás.</div>
+  <a href="#registro" class="btn-primary">🎈 Empezar prueba gratuita</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <a href="https://gestionateia.com" target="_blank" style="text-decoration:none;">
+      <span style="color:#ffffff">Gestiona</span><span style="color:#FF8000">Te</span><span style="color:#71D997">IA</span>
+    </a>
+  </div>
+  <div class="footer-links">
+    <a href="faq-tenants.html">Guía para salones</a>
+    <a href="faq-usuarios.html">FAQ clientes</a>
+    <a href="https://gestionateia.com/soporte">Soporte</a>
+    <a href="https://gestionateia.com/terminos-y-condiciones/">Términos</a>
+    <a href="https://gestionateia.com/politica-de-privacidad/">Privacidad</a>
+  </div>
+  <div>© 2026 GestionaTeIA · QueFiestaApp · Todos los derechos reservados</div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://reserva-aulas.onrender.com/quefiestaapp';
+
+function slugify(text) {
+  return text.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40);
+}
+
+function actualizarSlug(valor) {
+  const slug = slugify(valor) || 'tu-salon';
+  document.getElementById('slug-preview').textContent = slug;
+}
+
+async function registrar() {
+  const nombre = document.getElementById('reg-nombre').value.trim();
+  const email = document.getElementById('reg-email').value.trim();
+  const whatsapp = document.getElementById('reg-whatsapp').value.trim();
+
+  const responsable = document.getElementById('reg-responsable').value.trim();
+  if (!responsable) { toast('Ingresá tu nombre y apellido', 'error'); return; }
+  if (!nombre) { toast('Ingresá el nombre de tu salón', 'error'); return; }
+  if (!email || !email.includes('@')) { toast('Ingresá un email válido', 'error'); return; }
+  if (!whatsapp || whatsapp.length < 8) { toast('Ingresá tu número de WhatsApp', 'error'); return; }
+
+  const btn = document.querySelector('.form-card button');
+  btn.disabled = true;
+  btn.textContent = 'Creando tu cuenta...';
+
+  try {
+    const res = await fetch(`${API}/registro`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre_salon: nombre, email_admin: email, whatsapp: whatsapp, nombre_responsable: responsable })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      document.getElementById('form-contenido').style.display = 'none';
+      document.getElementById('form-success').style.display = 'block';
+    } else {
+      toast(data.detail || 'Error al crear la cuenta', 'error');
+      btn.disabled = false;
+      btn.textContent = '🎈 Crear cuenta gratis';
+    }
+  } catch(e) {
+    toast('Error de conexión. Intentá de nuevo.', 'error');
+    btn.disabled = false;
+    btn.textContent = '🎈 Crear cuenta gratis';
+  }
+}
+
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast ${type} show`;
+  setTimeout(() => el.classList.remove('show'), 3500);
+}
+</script>
+</body>
+</html>
