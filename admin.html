@@ -613,6 +613,9 @@ select option { background: var(--surface2); }
         <span class="nav-icon">🚫</span> Fechas bloqueadas
       </div>
       <div class="nav-section">Cuenta</div>
+      <div class="nav-item" onclick="showPage('usuarios')">
+        <span class="nav-icon">👥</span> Usuarios admin
+      </div>
       <div class="nav-item" onclick="showPage('configuracion')">
         <span class="nav-icon">⚙️</span> Configuración
       </div>
@@ -800,6 +803,38 @@ select option { background: var(--surface2); }
           </thead>
           <tbody id="bloqueadas-tbody">
             <tr><td colspan="4" class="loading">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- USUARIOS ADMIN -->
+    <div id="page-usuarios" class="page">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Usuarios admin 👥</div>
+          <div class="page-subtitle">Delegá la administración a otra persona</div>
+        </div>
+        <button class="btn btn-accent" onclick="openModal('modal-usuario')">+ Agregar usuario</button>
+      </div>
+
+      <div style="background:rgba(255,217,61,0.1);border:1px solid rgba(255,217,61,0.3);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;font-size:13px;color:var(--text2);">
+        💡 Los usuarios adicionales tienen acceso completo al panel. Usá el slug del salón como identificador al iniciar sesión.
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Estado</th>
+              <th>Creado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="usuarios-tbody">
+            <tr><td colspan="5" class="loading">Cargando...</td></tr>
           </tbody>
         </table>
       </div>
@@ -1273,6 +1308,38 @@ select option { background: var(--surface2); }
   </div>
 </div>
 
+<!-- Modal Usuario Admin -->
+<div class="modal-overlay" id="modal-usuario">
+  <div class="modal">
+    <div class="modal-title">Agregar usuario administrador</div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Nombre completo</label>
+        <input type="text" id="u-nombre" placeholder="Ej: María González">
+      </div>
+      <div class="form-group full">
+        <label>Email (se usa para iniciar sesión)</label>
+        <input type="email" id="u-email" placeholder="maria@salon.com">
+      </div>
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" id="u-password" placeholder="Mínimo 8 caracteres">
+      </div>
+      <div class="form-group">
+        <label>Confirmar contraseña</label>
+        <input type="password" id="u-password-confirmar" placeholder="Repetí la contraseña">
+      </div>
+    </div>
+    <div style="margin-top:12px;font-size:13px;color:var(--text2);background:var(--surface2);border-radius:var(--radius);padding:12px 16px;">
+      💡 Para iniciar sesión, este usuario usará el slug del salón (<strong>${SLUG}</strong>) como identificador y su email como contraseña complementaria.
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-usuario')">Cancelar</button>
+      <button class="btn btn-accent" onclick="crearUsuario()">Crear usuario</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -1374,6 +1441,7 @@ function showPage(name) {
     menu: cargarMenu,
     juegos: cargarJuegos,
     combos: cargarCombos,
+    usuarios: cargarUsuarios,
     horarios: cargarHorarios,
     bloqueadas: cargarBloqueadas,
     configuracion: cargarConfiguracion
@@ -2094,6 +2162,65 @@ async function subirImagen(input, campoId, previewId, imgId) {
   } catch(e) {
     toast('Error al subir imagen', 'error');
   }
+}
+
+// ============================================================
+// USUARIOS ADMIN
+// ============================================================
+async function cargarUsuarios() {
+  const res = await api('GET', `/admin/${SLUG}/usuarios`);
+  if (!res) return;
+  const usuarios = await res.json();
+  const tbody = document.getElementById('usuarios-tbody');
+
+  if (!usuarios.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-state-icon">👥</div><div class="empty-state-text">No hay usuarios adicionales. ¡Agregá el primero!</div></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = usuarios.map(u => `
+    <tr>
+      <td>${u.nombre}</td>
+      <td style="font-size:13px;color:var(--text2)">${u.email}</td>
+      <td><span class="badge ${u.activo ? 'badge-confirmada' : 'badge-cancelada'}">${u.activo ? 'Activo' : 'Inactivo'}</span></td>
+      <td style="font-size:12px;color:var(--text2)">${u.created_at?.slice(0,10) || '—'}</td>
+      <td>
+        <button class="btn btn-danger btn-sm" onclick="eliminarUsuario('${u.id}','${u.nombre}')">🗑 Eliminar</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function crearUsuario() {
+  const nombre = document.getElementById('u-nombre').value.trim();
+  const email = document.getElementById('u-email').value.trim();
+  const password = document.getElementById('u-password').value;
+  const confirmar = document.getElementById('u-password-confirmar').value;
+
+  if (!nombre || !email || !password) { toast('Completá todos los campos', 'error'); return; }
+  if (password.length < 8) { toast('La contraseña debe tener al menos 8 caracteres', 'error'); return; }
+  if (password !== confirmar) { toast('Las contraseñas no coinciden', 'error'); return; }
+
+  const res = await api('POST', `/admin/${SLUG}/usuarios`, { nombre, email, password });
+  if (res?.ok) {
+    toast('Usuario creado correctamente', 'success');
+    closeModal('modal-usuario');
+    document.getElementById('u-nombre').value = '';
+    document.getElementById('u-email').value = '';
+    document.getElementById('u-password').value = '';
+    document.getElementById('u-password-confirmar').value = '';
+    cargarUsuarios();
+  } else {
+    const data = await res?.json();
+    toast(data?.detail || 'Error al crear usuario', 'error');
+  }
+}
+
+async function eliminarUsuario(id, nombre) {
+  if (!confirm(`¿Eliminar al usuario "${nombre}"?`)) return;
+  const res = await api('DELETE', `/admin/${SLUG}/usuarios/${id}`);
+  if (res?.ok) { toast('Usuario eliminado', 'success'); cargarUsuarios(); }
+  else toast('Error al eliminar', 'error');
 }
 
 // ============================================================
