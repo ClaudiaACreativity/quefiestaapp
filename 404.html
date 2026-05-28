@@ -4,29 +4,21 @@
   <meta charset="UTF-8">
   <title>QueFiestaApp</title>
   <script>
-    // GitHub Pages routing — convierte URLs limpias en parámetros
-    // /salonfeliz          → /?salon=salonfeliz
-    // /admin/salonfeliz    → /admin.html?tenant=salonfeliz
     (function() {
       var path = window.location.pathname;
       var segments = path.replace(/^\//, '').replace(/\/$/, '').split('/');
 
       if (segments[0] === 'admin' && segments[1]) {
-        // URL de admin: /admin/salonfeliz → admin.html?tenant=salonfeliz
+        // /admin/salonfeliz → admin.html?tenant=salonfeliz
         window.location.replace(
           '/admin.html?tenant=' + segments[1] +
-          window.location.search.replace('?','&') +
           window.location.hash
         );
-      } else if (segments[0] && segments[0] !== '404') {
-        // URL pública: /salonfeliz → /?salon=salonfeliz
-        window.location.replace(
-          '/?salon=' + segments[0] +
-          window.location.search.replace('?','&') +
-          window.location.hash
-        );
+      } else if (segments[0] && segments[0] !== '404' && segments[0] !== 'landing-quefiestaapp.html') {
+        // /salonfeliz → index.html con ?salon= pero luego replaceState limpia la URL
+        var newUrl = '/?salon=' + segments[0] + window.location.hash;
+        window.location.replace(newUrl);
       } else {
-        // No matchea nada → home
         window.location.replace('/');
       }
     })();
