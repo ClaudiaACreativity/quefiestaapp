@@ -6,20 +6,23 @@
   <script>
     (function() {
       var path = window.location.pathname;
+
+      // Si es la raíz o solo tiene barras → mostrar landing
+      if (!path || path === '/' || path === '/index.html' || path.replace(/\//g, '') === '') {
+        window.location.replace('/index.html');
+        return;
+      }
+
       var segments = path.replace(/^\//, '').replace(/\/$/, '').split('/');
 
       if (segments[0] === 'admin' && segments[1]) {
-        // /admin/salonfeliz → admin.html?tenant=salonfeliz
-        window.location.replace(
-          '/admin.html?tenant=' + segments[1] +
-          window.location.hash
-        );
-      } else if (segments[0] && segments[0] !== '404' && segments[0] !== 'landing-quefiestaapp.html') {
-        // /salonfeliz → index.html con ?salon= pero luego replaceState limpia la URL
-        var newUrl = '/?salon=' + segments[0] + window.location.hash;
-        window.location.replace(newUrl);
+        window.location.replace('/admin.html?tenant=' + segments[1] + window.location.hash);
+      } else if (segments[0] && segments[0] !== '404' && segments[0] !== 'index.html' 
+                 && segments[0] !== 'empresas.html' && segments[0] !== 'admin.html'
+                 && segments[0] !== 'superadmin.html') {
+        window.location.replace('/empresas.html?salon=' + segments[0] + window.location.hash);
       } else {
-        window.location.replace('/');
+        window.location.replace('/index.html');
       }
     })();
   </script>
