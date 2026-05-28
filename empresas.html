@@ -1029,7 +1029,9 @@ function getSlug() {
   const host = window.location.hostname;
   const parts = host.split('.');
   if (parts.length >= 3 && parts[0] !== 'www' && parts[0] !== 'quefiestaapp') return parts[0];
-  return 'prueba'; // fallback
+  // Sin slug válido → redirigir a la landing
+  window.location.replace('/');
+  return null;; // fallback
 }
 
 const SLUG = getSlug();
