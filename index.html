@@ -152,7 +152,7 @@ body {
 
 .btn-hero-secondary:hover { border-color: var(--color1); color: var(--color1); }
 
-/* SECCIôN */
+/* SECCIÓN */
 .section { padding: 64px 24px; max-width: 1100px; margin: 0 auto; }
 .section-sm { padding: 40px 24px; max-width: 1100px; margin: 0 auto; }
 
@@ -319,7 +319,7 @@ body {
   gap: 10px;
 }
 
-/* CANTIDAD NI├æOS */
+/* CANTIDAD NIÑOS */
 .ninos-control {
   display: flex;
   align-items: center;
@@ -772,11 +772,11 @@ footer strong { color: white; }
   <img id="hero-img" class="hero-img" src="" alt="" style="display:none">
   <div class="hero-content">
     <img id="hero-logo" class="hero-logo" src="" alt="">
-    <div class="hero-badge" id="hero-badge">­ƒÄë Reservas online</div>
+    <div class="hero-badge" id="hero-badge">🎉 Reservas online</div>
     <h1 class="hero-title" id="hero-title">Tu fiesta, <span>perfecta</span></h1>
-    <p class="hero-subtitle" id="hero-subtitle">Armá el festejo ideal para ese d├¡a especial. Eleg├¡ menú, juegos y fecha desde acá.</p>
+    <p class="hero-subtitle" id="hero-subtitle">Armá el festejo ideal para ese día especial. Elegí menú, juegos y fecha desde acá.</p>
     <div class="hero-actions">
-      <a href="#presupuestador" class="btn-hero btn-hero-primary">­ƒÄê Armar mi presupuesto</a>
+      <a href="#presupuestador" class="btn-hero btn-hero-primary">🎈 Armar mi presupuesto</a>
       <a href="#combos" class="btn-hero btn-hero-secondary">Ver combos</a>
     </div>
   </div>
@@ -786,32 +786,32 @@ footer strong { color: white; }
 <section class="section" id="combos">
   <div class="section-label">Ofertas especiales</div>
   <div class="section-title">Combos armados</div>
-  <div class="section-subtitle" id="combos-subtitle">Paquetes con todo incluido a precio cerrado. ┬íEleg├¡ el que más te gusta!</div>
+  <div class="section-subtitle" id="combos-subtitle">Paquetes con todo incluido a precio cerrado. ¡Elegí el que más te gusta!</div>
   <div class="combos-grid" id="combos-grid">
     <!-- se carga dinámicamente -->
   </div>
 </section>
 
 <div class="divisor">
-  <span class="divisor-text">┬┐Quer├®s personalizar? Armá tu combo a medida ­ƒæç</span>
+  <span class="divisor-text">¿Querés personalizar? Armá tu combo a medida 👇</span>
 </div>
 
 <!-- PRESUPUESTADOR -->
 <section class="section" id="presupuestador">
   <div class="section-label">Presupuestador</div>
   <div class="section-title">Armá tu fiesta a medida</div>
-  <div class="section-subtitle">Eleg├¡ lo que quer├®s incluir y el precio se actualiza en tiempo real</div>
+  <div class="section-subtitle">Elegí lo que querés incluir y el precio se actualiza en tiempo real</div>
 
   <div class="presup-container">
     <!-- COLUMNA IZQUIERDA -->
     <div>
 
-      <!-- CANTIDAD DE NI├æOS -->
+      <!-- CANTIDAD DE NIÑOS -->
       <div class="presup-panel">
-        <div class="presup-panel-title">­ƒæÂ Cantidad de niños</div>
+        <div class="presup-panel-title">👶 Cantidad de niños</div>
         <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
           <div class="ninos-control">
-            <button class="ninos-btn" onclick="cambiarNinos(-1)">ÔêÆ</button>
+            <button class="ninos-btn" onclick="cambiarNinos(-1)">−</button>
             <div>
               <div class="ninos-value" id="ninos-value">20</div>
               <div class="ninos-label">niños</div>
@@ -820,14 +820,14 @@ footer strong { color: white; }
           </div>
           <div style="font-size:13px;color:var(--text2);line-height:1.5;">
             El precio base incluye hasta <strong id="ninos-base-label">20</strong> niños.<br>
-            Cada niño extra tiene un costo adicional por ├¡tem.
+            Cada niño extra tiene un costo adicional por ítem.
           </div>
         </div>
       </div>
 
-      <!-- MEN├Ü -->
+      <!-- MENÚ -->
       <div class="presup-panel">
-        <div class="presup-panel-title">­ƒìò Menú</div>
+        <div class="presup-panel-title">🍕 Menú</div>
         <div class="items-list" id="menu-list">
           <div style="color:var(--text2);font-size:14px;">Cargando...</div>
         </div>
@@ -835,7 +835,7 @@ footer strong { color: white; }
 
       <!-- JUEGOS -->
       <div class="presup-panel">
-        <div class="presup-panel-title">­ƒÄ¬ Juegos y adicionales</div>
+        <div class="presup-panel-title">🎪 Juegos y adicionales</div>
         <div class="items-list" id="juegos-list">
           <div style="color:var(--text2);font-size:14px;">Cargando...</div>
         </div>
@@ -843,18 +843,18 @@ footer strong { color: white; }
 
       <!-- CALENDARIO -->
       <div class="presup-panel">
-        <div class="presup-panel-title">­ƒôà Eleg├¡ la fecha</div>
+        <div class="presup-panel-title">📅 Elegí la fecha</div>
         <div class="calendario">
           <div class="cal-header">
-            <button class="cal-nav" onclick="cambiarMes(-1)">ÔÇ╣</button>
+            <button class="cal-nav" onclick="cambiarMes(-1)">‹</button>
             <div class="cal-mes" id="cal-mes-label"></div>
-            <button class="cal-nav" onclick="cambiarMes(1)">ÔÇ║</button>
+            <button class="cal-nav" onclick="cambiarMes(1)">›</button>
           </div>
           <div class="cal-dias-semana">
             <div class="cal-dia-label">Dom</div>
             <div class="cal-dia-label">Lun</div>
             <div class="cal-dia-label">Mar</div>
-            <div class="cal-dia-label">Mi├®</div>
+            <div class="cal-dia-label">Mié</div>
             <div class="cal-dia-label">Jue</div>
             <div class="cal-dia-label">Vie</div>
             <div class="cal-dia-label">Sáb</div>
@@ -873,17 +873,17 @@ footer strong { color: white; }
         </div>
       </div>
 
-      <!-- POL├ìTICA DE CANCELACIôN -->
+      <!-- POLÍTICA DE CANCELACIÓN -->
       <div style="display:none;" id="politica-wrap">
         <div class="presup-panel" style="border-left:3px solid var(--color1);">
-          <div class="presup-panel-title" style="font-size:16px;">­ƒôï Pol├¡tica de cancelación</div>
+          <div class="presup-panel-title" style="font-size:16px;">📋 Política de cancelación</div>
           <p id="politica-cancelacion" style="font-size:14px;color:var(--text2);line-height:1.7;"></p>
         </div>
       </div>
 
       <!-- FORMULARIO -->
       <div class="form-reserva" id="formulario">
-        <div class="presup-panel-title" style="margin-bottom:20px;">­ƒôØ Tus datos</div>
+        <div class="presup-panel-title" style="margin-bottom:20px;">📝 Tus datos</div>
         <div class="form-grid">
           <div class="form-group">
             <label class="form-label">Tu nombre *</label>
@@ -894,12 +894,12 @@ footer strong { color: white; }
             <input type="email" class="form-input" id="f-email" placeholder="tu@email.com">
           </div>
           <div class="form-group">
-            <label class="form-label">Tel├®fono</label>
+            <label class="form-label">Teléfono</label>
             <input type="tel" class="form-input" id="f-tel" placeholder="Ej: 3492123456">
           </div>
           <div class="form-group">
             <label class="form-label">Nombre del festejado/a</label>
-            <input type="text" class="form-input" id="f-festejado" placeholder="┬┐Qui├®n cumple?">
+            <input type="text" class="form-input" id="f-festejado" placeholder="¿Quién cumple?">
           </div>
           <div class="form-group full">
             <label class="form-label">Observaciones</label>
@@ -915,12 +915,12 @@ footer strong { color: white; }
                  ondrop="handleComprobanteDrop(event)">
               <input type="file" id="f-comprobante" accept="image/*,application/pdf" style="display:none" onchange="handleComprobanteChange(this)">
               <div id="comprobante-placeholder">
-                <div style="font-size:32px;margin-bottom:8px;">­ƒôÄ</div>
+                <div style="font-size:32px;margin-bottom:8px;">📎</div>
                 <div style="font-size:14px;font-weight:600;color:var(--text);">Adjuntá el comprobante</div>
-                <div style="font-size:12px;color:var(--text2);margin-top:4px;">Imagen o PDF ┬À Máx. 5MB</div>
+                <div style="font-size:12px;color:var(--text2);margin-top:4px;">Imagen o PDF · Máx. 5MB</div>
               </div>
               <div id="comprobante-preview" style="display:none;">
-                <div style="font-size:32px;margin-bottom:8px;">Ô£à</div>
+                <div style="font-size:32px;margin-bottom:8px;">✅</div>
                 <div style="font-size:14px;font-weight:600;color:var(--text);" id="comprobante-nombre"></div>
                 <div style="font-size:12px;color:var(--text2);margin-top:4px;">Clic para cambiar</div>
               </div>
@@ -932,14 +932,14 @@ footer strong { color: white; }
         <div class="pago-info" id="pago-info" style="display:none;"></div>
 
         <button class="btn-reservar" id="btn-reservar" onclick="enviarReserva()">
-          ­ƒÄë Solicitar reserva
+          🎉 Solicitar reserva
         </button>
       </div>
 
       <!-- SUCCESS -->
       <div class="success-screen" id="success-screen">
-        <div class="success-icon">­ƒÄè</div>
-        <div class="success-title">┬íSolicitud enviada!</div>
+        <div class="success-icon">🎊</div>
+        <div class="success-title">¡Solicitud enviada!</div>
         <div class="success-text" id="success-text">
           Recibimos tu solicitud. Nos pondremos en contacto a la brevedad para confirmar tu reserva.
         </div>
@@ -947,10 +947,10 @@ footer strong { color: white; }
 
     </div>
 
-    <!-- COLUMNA DERECHA – RESUMEN -->
+    <!-- COLUMNA DERECHA — RESUMEN -->
     <div>
       <div class="resumen">
-        <div class="resumen-title">Tu presupuesto ­ƒÄê</div>
+        <div class="resumen-title">Tu presupuesto 🎈</div>
 
         <div class="resumen-linea">
           <span class="resumen-linea-label">Salón (<span id="res-ninos">20</span> niños)</span>
@@ -966,11 +966,11 @@ footer strong { color: white; }
         </div>
         <div class="resumen-linea" id="res-fecha-linea" style="display:none;">
           <span class="resumen-linea-label">Fecha</span>
-          <span class="resumen-linea-valor" id="res-fecha">–</span>
+          <span class="resumen-linea-valor" id="res-fecha">—</span>
         </div>
         <div class="resumen-linea" id="res-horario-linea" style="display:none;">
           <span class="resumen-linea-label">Horario</span>
-          <span class="resumen-linea-valor" id="res-horario">–</span>
+          <span class="resumen-linea-valor" id="res-horario">—</span>
         </div>
 
         <div class="resumen-total">
@@ -994,8 +994,8 @@ footer strong { color: white; }
   <div style="margin-bottom:20px;">
     <a href="https://gestionateia.com/quefiestaapp" style="color:rgba(255,255,255,0.7);text-decoration:none;margin:0 12px;">QueFiestaApp</a>
     <a href="https://gestionateia.com/soporte" target="_blank" style="color:rgba(255,255,255,0.7);text-decoration:none;margin:0 12px;">Soporte</a>
-    <a href="https://gestionateia.com/terminos-y-condiciones/" target="_blank" style="color:rgba(255,255,255,0.7);text-decoration:none;margin:0 12px;">T├®rminos y condiciones</a>
-    <a href="https://gestionateia.com/politica-de-privacidad/" target="_blank" style="color:rgba(255,255,255,0.7);text-decoration:none;margin:0 12px;">Pol├¡tica de privacidad</a>
+    <a href="https://gestionateia.com/terminos-y-condiciones/" target="_blank" style="color:rgba(255,255,255,0.7);text-decoration:none;margin:0 12px;">Términos y condiciones</a>
+    <a href="https://gestionateia.com/politica-de-privacidad/" target="_blank" style="color:rgba(255,255,255,0.7);text-decoration:none;margin:0 12px;">Política de privacidad</a>
   </div>
 
   <div style="display:flex;align-items:center;justify-content:center;gap:8px;">
@@ -1008,7 +1008,7 @@ footer strong { color: white; }
 
 <!-- WHATSAPP FLOAT -->
 <a class="whatsapp-btn" id="whatsapp-btn" href="#" target="_blank" style="display:none;">
-  ­ƒÆ¼ Consultar por WhatsApp
+  💬 Consultar por WhatsApp
 </a>
 
 <!-- TOAST -->
@@ -1064,7 +1064,7 @@ window.onload = async () => {
     console.error(e);
     document.getElementById('loading-screen').innerHTML = `
       <div style="text-align:center;padding:40px;color:#999;">
-        <div style="font-size:40px;margin-bottom:12px;">🎉</div>
+        <div style="font-size:40px;margin-bottom:12px;">😕</div>
         <div>No pudimos cargar la página. Intentá de nuevo más tarde.</div>
       </div>`;
     return;
@@ -1116,12 +1116,12 @@ async function cargarSalon() {
 
   // Footer
   let contacto = [];
-  if (salon.direccion) contacto.push('­ƒôì ' + salon.direccion);
-  if (salon.whatsapp) contacto.push('­ƒô▒ ' + salon.whatsapp);
-  if (salon.email_contacto) contacto.push('Ô£ë´©Å ' + salon.email_contacto);
-  document.getElementById('footer-contacto').textContent = contacto.join('  ┬À  ');
+  if (salon.direccion) contacto.push('📍 ' + salon.direccion);
+  if (salon.whatsapp) contacto.push('📱 ' + salon.whatsapp);
+  if (salon.email_contacto) contacto.push('✉️ ' + salon.email_contacto);
+  document.getElementById('footer-contacto').textContent = contacto.join('  ·  ');
 
-  // Pol├¡tica de cancelación
+  // Política de cancelación
   if (salon.politica_cancelacion) {
     const polDiv = document.getElementById('politica-cancelacion');
     if (polDiv) {
@@ -1167,14 +1167,14 @@ async function cargarCombos() {
       <div class="combo-img">
         ${c.imagen_url
           ? `<img src="${c.imagen_url}" style="width:100%;height:100%;object-fit:cover;">`
-          : '­ƒÄü'}
+          : '🎁'}
       </div>
       <div class="combo-body">
         <div class="combo-name">${c.nombre}</div>
         ${c.descripcion ? `<div class="combo-desc">${c.descripcion}</div>` : ''}
         <div class="combo-price-label">Precio cerrado</div>
         <div class="combo-price">${formatPrecio(c.precio_cerrado)}</div>
-        <div class="combo-check">Ô£ô Seleccionado</div>
+        <div class="combo-check">✓ Seleccionado</div>
       </div>
     </div>
   `).join('');
@@ -1207,7 +1207,7 @@ async function cargarDisponibilidad() {
 function renderMenuList() {
   const list = document.getElementById('menu-list');
   if (!menuItems.length) {
-    list.innerHTML = '<div style="color:var(--text2);font-size:14px;">No hay ├¡tems de menú configurados.</div>';
+    list.innerHTML = '<div style="color:var(--text2);font-size:14px;">No hay ítems de menú configurados.</div>';
     return;
   }
 
@@ -1216,13 +1216,13 @@ function renderMenuList() {
     const checked = !!seleccionado;
     return `
       <div class="item-check ${checked ? 'checked' : ''}" onclick="toggleMenu('${item.id}')">
-        <div class="item-check-box">${checked ? 'Ô£ô' : ''}</div>
+        <div class="item-check-box">${checked ? '✓' : ''}</div>
         <div class="item-check-img">
-          ${item.imagen_url ? `<img src="${item.imagen_url}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">` : '­ƒìò'}
+          ${item.imagen_url ? `<img src="${item.imagen_url}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">` : '🍕'}
         </div>
         <div class="item-check-info">
           <div class="item-check-name">${item.nombre}</div>
-          <div class="item-check-desc">Base ${formatPrecio(item.precio_base)} ┬À Extra: ${formatPrecio(item.precio_por_nino_extra)}/niño</div>
+          <div class="item-check-desc">Base ${formatPrecio(item.precio_base)} · Extra: ${formatPrecio(item.precio_por_nino_extra)}/niño</div>
         </div>
       </div>
     `;
@@ -1245,9 +1245,9 @@ function renderJuegosList() {
 
     return `
       <div class="item-check ${checked ? 'checked' : ''}" onclick="toggleJuego('${j.id}')">
-        <div class="item-check-box">${checked ? 'Ô£ô' : ''}</div>
+        <div class="item-check-box">${checked ? '✓' : ''}</div>
         <div class="item-check-img">
-          ${j.imagen_url ? `<img src="${j.imagen_url}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">` : '­ƒÄ¬'}
+          ${j.imagen_url ? `<img src="${j.imagen_url}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">` : '🎪'}
         </div>
         <div class="item-check-info">
           <div class="item-check-name">${j.nombre}</div>
@@ -1306,17 +1306,17 @@ function renderCalendario() {
   const grid = document.getElementById('cal-grid');
   grid.innerHTML = '';
 
-  // Primer d├¡a del mes
+  // Primer día del mes
   const primerDia = new Date(calAnio, calMes - 1, 1).getDay();
 
-  // D├¡as vac├¡os al inicio
+  // Días vacíos al inicio
   for (let i = 0; i < primerDia; i++) {
     const vacio = document.createElement('div');
     vacio.className = 'cal-dia vacio';
     grid.appendChild(vacio);
   }
 
-  // D├¡as del mes
+  // Días del mes
   const diasEnMes = new Date(calAnio, calMes, 0).getDate();
   for (let d = 1; d <= diasEnMes; d++) {
     const fecha = `${calAnio}-${String(calMes).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
@@ -1367,7 +1367,7 @@ function seleccionarFecha(fecha, horarios) {
   document.getElementById('res-fecha').textContent = `${d}/${m}/${y}`;
   document.getElementById('res-fecha-linea').style.display = 'flex';
   document.getElementById('res-horario-linea').style.display = 'none';
-  document.getElementById('res-horario').textContent = '–';
+  document.getElementById('res-horario').textContent = '—';
   actualizarResumen();
 }
 
@@ -1381,7 +1381,7 @@ function seleccionarHorario(el, inicio, fin) {
 }
 
 // ============================================================
-// RESUMEN Y CüLCULO
+// RESUMEN Y CÁLCULO
 // ============================================================
 function calcularTotal() {
   if (!salon) return { salon: 0, menu: 0, juegos: 0, total: 0 };
@@ -1420,7 +1420,7 @@ function actualizarResumen() {
 
   if (pm > 0) {
     const labels = menuSeleccionado.map(m => m.nombre).join(', ');
-    document.getElementById('res-menu-label').textContent = labels.length > 30 ? labels.slice(0,30)+'ÔÇª' : labels;
+    document.getElementById('res-menu-label').textContent = labels.length > 30 ? labels.slice(0,30)+'…' : labels;
     document.getElementById('res-menu').textContent = formatPrecio(pm);
     document.getElementById('res-menu-linea').style.display = 'flex';
   } else {
@@ -1456,8 +1456,8 @@ async function enviarReserva() {
   const email = document.getElementById('f-email').value.trim();
 
   if (!nombre || !email) { toast('Completá nombre y email', 'error'); return; }
-  if (!fechaSeleccionada) { toast('Eleg├¡ una fecha del calendario', 'error'); return; }
-  if (!horarioSeleccionado) { toast('Eleg├¡ un horario', 'error'); return; }
+  if (!fechaSeleccionada) { toast('Elegí una fecha del calendario', 'error'); return; }
+  if (!horarioSeleccionado) { toast('Elegí un horario', 'error'); return; }
 
   // Validar comprobante si es modalidad transferencia
   const modalidad = salon?.modalidad_cobro || '';
@@ -1517,12 +1517,12 @@ async function enviarReserva() {
     } else {
       toast(data.detail || 'Error al enviar', 'error');
       btn.disabled = false;
-      btn.textContent = '­ƒÄë Solicitar reserva';
+      btn.textContent = '🎉 Solicitar reserva';
     }
   } catch(e) {
     toast('Error de conexión', 'error');
     btn.disabled = false;
-    btn.textContent = '­ƒÄë Solicitar reserva';
+    btn.textContent = '🎉 Solicitar reserva';
   }
 }
 
