@@ -5,13 +5,15 @@
 <script>
 (function() {
   var path = window.location.pathname;
+  // Solo redirigir si hay un path real (no la raíz)
+  if (!path || path === '/' || path === '/index.html') return;
   var segments = path.replace(/^\//, '').replace(/\/$/, '').split('/');
+  var archivos = ['index.html','empresas.html','admin.html','404.html',
+                  'superadmin.html','faq-usuarios.html','faq-tenants.html',
+                  'landing-quefiestaapp.html','CNAME','README.md'];
   if (segments[0] === 'admin' && segments[1]) {
     window.location.replace('/admin.html?tenant=' + segments[1]);
-  } else if (segments[0] && segments[0] !== '' && segments[0] !== 'index.html' && 
-             segments[0] !== 'empresas.html' && segments[0] !== 'admin.html' &&
-             segments[0] !== '404.html' && segments[0] !== 'superadmin.html' &&
-             segments[0] !== 'faq-usuarios.html' && segments[0] !== 'faq-tenants.html') {
+  } else if (segments[0] && archivos.indexOf(segments[0]) === -1) {
     window.location.replace('/empresas.html?salon=' + segments[0]);
   }
 })();
