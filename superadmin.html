@@ -998,7 +998,8 @@ async function cargarSuscripciones() {
   const tbody = document.getElementById('suscripciones-tbody');
   tbody.innerHTML = '<tr><td colspan="7" class="loading">Cargando...</td></tr>';
 
-  const sus = await api('GET', '/superadmin/suscripciones');
+  const susRes = await api('GET', '/superadmin/suscripciones');
+  const sus = susRes?.ok ? await susRes.json() : [];
   if (!Array.isArray(sus) || !sus.length) {
     tbody.innerHTML = `<tr><td colspan="7">
       <div class="empty-state">
@@ -1042,7 +1043,8 @@ async function abrirModalSuscripcion(tenantId, nombre) {
 
   // Autocompletar precio desde configuración global
   try {
-    const cfg = await api('GET', '/superadmin/configuracion');
+    const cfgRes = await api('GET', '/superadmin/configuracion');
+    const cfg = cfgRes?.ok ? await cfgRes.json() : null;
     if (cfg?.precio_mensual_usd) {
       document.getElementById('sus-monto').value = cfg.precio_mensual_usd;
     }
@@ -1084,7 +1086,8 @@ async function registrarSuscripcion() {
 // ============================================================
 async function cargarConfiguracion() {
   try {
-    const cfg = await api('GET', '/superadmin/configuracion');
+    const res = await api('GET', '/superadmin/configuracion');
+    const cfg = res?.ok ? await res.json() : null;
     if (cfg?.precio_mensual_usd) document.getElementById('cfg-precio').value = cfg.precio_mensual_usd;
     if (cfg?.valor_dolar_oficial) document.getElementById('cfg-tc').value = cfg.valor_dolar_oficial;
     if (cfg?.dias_trial) document.getElementById('cfg-trial').value = cfg.dias_trial;
@@ -1105,11 +1108,12 @@ async function guardarConfiguracion() {
   if (nuevaPassword) body.superadmin_password = nuevaPassword;
 
   const res = await api('POST', '/superadmin/configuracion', body);
+  const data = res?.ok !== undefined ? (res.ok ? await res.json() : await res.json()) : res;
   if (res?.ok) {
     toast('Configuración guardada ✓', 'success');
     document.getElementById('cfg-password').value = '';
   } else {
-    toast(res?.detail || 'Error al guardar', 'error');
+    toast(data?.detail || 'Error al guardar', 'error');
   }
 }
 
