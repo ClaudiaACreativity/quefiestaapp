@@ -1020,6 +1020,12 @@ function abrirModalSuscripcion(tenantId, nombre) {
   hasta.setDate(hasta.getDate() + 30);
   document.getElementById('sus-hasta').value = hasta.toISOString().split('T')[0];
 
+  // Autocompletar precio desde configuración global
+  const precioConfig = document.getElementById('cfg-precio-mensual')?.value;
+  if (precioConfig) {
+    document.getElementById('sus-monto').value = precioConfig;
+  }
+
   openModal('modal-suscripcion');
 }
 
@@ -1043,10 +1049,11 @@ async function registrarSuscripcion() {
   if (res?.ok) {
     toast('Pago registrado y suscripción activada ✓', 'success');
     closeModal('modal-suscripcion');
+    cargarTenants();
+    cargarSuscripciones();
     cargarDashboard();
   } else {
-    const data = await res?.json();
-    toast(data?.detail || 'Error al registrar pago', 'error');
+    toast(res?.detail || res?.message || 'Error al registrar pago', 'error');
   }
 }
 
