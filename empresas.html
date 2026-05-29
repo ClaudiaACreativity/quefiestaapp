@@ -1033,6 +1033,10 @@ function getSlug() {
 }
 
 const SLUG = getSlug();
+// Limpiar URL — reemplazar /empresas.html?salon=slug por /slug
+if (SLUG && window.location.pathname.includes('empresas.html')) {
+    window.history.replaceState({}, '', '/' + SLUG);
+}
 
 // Estado
 let salon = null;
