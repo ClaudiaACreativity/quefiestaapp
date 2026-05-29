@@ -985,21 +985,41 @@ async function cargarSuscripciones() {
   // Cargar lista de tenants para el select
   if (!tenantsList.length) {
     const res = await api('GET', '/superadmin/tenants');
-    if (res?.ok) tenantsList = await res.json();
+    if (Array.isArray(res)) tenantsList = res;
   }
 
   const select = document.getElementById('sus-tenant');
-  select.innerHTML = '<option value="">Seleccioná un salón...</option>' +
-    tenantsList.map(t => `<option value="${t.id}">${t.nombre_visible || t.nombre} (${t.slug})</option>`).join('');
+  if (select) {
+    select.innerHTML = '<option value="">Seleccioná un salón...</option>' +
+      tenantsList.map(t => `<option value="${t.id}">${t.nombre_visible || t.nombre} (${t.slug})</option>`).join('');
+  }
 
-  // Por ahora mostramos un mensaje — en el futuro podemos listar los pagos
-  document.getElementById('suscripciones-tbody').innerHTML = `
-    <tr><td colspan="7">
+  // Cargar historial de pagos
+  const tbody = document.getElementById('suscripciones-tbody');
+  tbody.innerHTML = '<tr><td colspan="7" class="loading">Cargando...</td></tr>';
+
+  const sus = await api('GET', '/superadmin/suscripciones');
+  if (!Array.isArray(sus) || !sus.length) {
+    tbody.innerHTML = `<tr><td colspan="7">
       <div class="empty-state">
         <div class="empty-state-icon">💰</div>
-        <div>Usá el botón "Registrar pago" para cargar un nuevo pago.</div>
+        <div>No hay pagos registrados todavía.</div>
       </div>
     </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = sus.map(s => `
+    <tr>
+      <td>${s.tenant_nombre || '—'}</td>
+      <td>USD ${Number(s.monto_usd).toFixed(2)}</td>
+      <td>${formatFecha(s.fecha_pago)}</td>
+      <td>${formatFecha(s.periodo_desde)} → ${formatFecha(s.periodo_hasta)}</td>
+      <td>${s.metodo || '—'}</td>
+      <td>${s.referencia || '—'}</td>
+      <td>${s.notas || '—'}</td>
+    </tr>
+  `).join('');
 }
 
 async function abrirModalSuscripcion(tenantId, nombre) {
@@ -1063,15 +1083,34 @@ async function registrarSuscripcion() {
 // CONFIGURACIÓN
 // ============================================================
 async function cargarConfiguracion() {
-  // Los valores vienen de qfa_configuracion_global
-  // Por ahora mostramos los defaults conocidos
-  document.getElementById('cfg-precio').value = '25';
-  document.getElementById('cfg-tc').value = '1415';
-  document.getElementById('cfg-trial').value = '30';
+  try {
+    const cfg = await api('GET', '/superadmin/configuracion');
+    if (cfg?.precio_mensual_usd) document.getElementById('cfg-precio').value = cfg.precio_mensual_usd;
+    if (cfg?.valor_dolar_oficial) document.getElementById('cfg-tc').value = cfg.valor_dolar_oficial;
+    if (cfg?.dias_trial) document.getElementById('cfg-trial').value = cfg.dias_trial;
+  } catch(e) {
+    document.getElementById('cfg-precio').value = '25';
+    document.getElementById('cfg-tc').value = '1415';
+    document.getElementById('cfg-trial').value = '30';
+  }
 }
 
 async function guardarConfiguracion() {
-  toast('Configuración guardada (función en desarrollo)', 'success');
+  const body = {
+    precio_mensual_usd: document.getElementById('cfg-precio').value,
+    valor_dolar_oficial: document.getElementById('cfg-tc').value,
+    dias_trial: document.getElementById('cfg-trial').value,
+  };
+  const nuevaPassword = document.getElementById('cfg-password').value;
+  if (nuevaPassword) body.superadmin_password = nuevaPassword;
+
+  const res = await api('POST', '/superadmin/configuracion', body);
+  if (res?.ok) {
+    toast('Configuración guardada ✓', 'success');
+    document.getElementById('cfg-password').value = '';
+  } else {
+    toast(res?.detail || 'Error al guardar', 'error');
+  }
 }
 
 // ============================================================
