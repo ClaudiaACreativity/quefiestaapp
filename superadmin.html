@@ -852,7 +852,7 @@ async function cargarDashboard() {
       <td>
         <div style="display:flex;gap:6px;">
           <button class="btn btn-ghost btn-sm" onclick="editarTenant('${t.id}')">✏️</button>
-          <a href="quefiestaapp.gestionateia.com?salon=${t.slug}" target="_blank" class="btn btn-ghost btn-sm">🔗</a>
+          <a href="https://quefiestaapp.gestionateia.com/${t.slug}" target="_blank" class="btn btn-ghost btn-sm">🔗</a>
           <button class="btn btn-danger btn-sm" onclick="eliminarTenant('${t.id}','${t.nombre_visible || t.nombre}')">🗑</button>
         </div>
       </td>
@@ -1002,7 +1002,7 @@ async function cargarSuscripciones() {
     </td></tr>`;
 }
 
-function abrirModalSuscripcion(tenantId, nombre) {
+async function abrirModalSuscripcion(tenantId, nombre) {
   if (!tenantsList.length) {
     openModal('modal-suscripcion'); return;
   }
@@ -1021,10 +1021,12 @@ function abrirModalSuscripcion(tenantId, nombre) {
   document.getElementById('sus-hasta').value = hasta.toISOString().split('T')[0];
 
   // Autocompletar precio desde configuración global
-  const precioConfig = document.getElementById('cfg-precio-mensual')?.value;
-  if (precioConfig) {
-    document.getElementById('sus-monto').value = precioConfig;
-  }
+  try {
+    const cfg = await api('GET', '/superadmin/configuracion');
+    if (cfg?.precio_mensual_usd) {
+      document.getElementById('sus-monto').value = cfg.precio_mensual_usd;
+    }
+  } catch(e) { console.warn('No se pudo cargar precio:', e); }
 
   openModal('modal-suscripcion');
 }
