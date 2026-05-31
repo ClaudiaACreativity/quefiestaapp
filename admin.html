@@ -600,7 +600,7 @@ select option { background: var(--surface2); }
         <span class="nav-icon">🍕</span> Menú
       </div>
       <div class="nav-item" onclick="showPage('juegos')">
-        <span class="nav-icon">🎪</span> Juegos y adicionales
+        <span class="nav-icon">🎪</span> Adicionales
       </div>
       <div class="nav-item" onclick="showPage('combos')">
         <span class="nav-icon">🎁</span> Combos / Ofertas
@@ -670,8 +670,8 @@ select option { background: var(--surface2); }
               <th>Fecha</th>
               <th>Horario</th>
               <th>Cliente</th>
-              <th>Festejado/a</th>
-              <th>Niños</th>
+              <th>Observaciones/a</th>
+              <th>Cantidad de personas</th>
               <th>Total</th>
               <th>Estado</th>
             </tr>
@@ -710,8 +710,8 @@ select option { background: var(--surface2); }
               <th>Fecha</th>
               <th>Horario</th>
               <th>Cliente</th>
-              <th>Festejado/a</th>
-              <th>Niños</th>
+              <th>Observaciones/a</th>
+              <th>Cantidad de personas</th>
               <th>Total</th>
               <th>Seña</th>
               <th>Comprobante</th>
@@ -744,7 +744,7 @@ select option { background: var(--surface2); }
     <div id="page-juegos" class="page">
       <div class="topbar">
         <div>
-          <div class="page-title">Juegos y adicionales 🎪</div>
+          <div class="page-title">Adicionales 🎪</div>
           <div class="page-subtitle">Entretenimiento y servicios extra</div>
         </div>
         <button class="btn btn-accent" onclick="openModalJuego()">+ Agregar juego</button>
@@ -926,11 +926,11 @@ select option { background: var(--surface2); }
             <input type="number" id="cfg-capacidad" min="1">
           </div>
           <div class="form-group">
-            <label>Cantidad base de niños</label>
+            <label>Cantidad base de personas</label>
             <input type="number" id="cfg-ninos-base" min="1" placeholder="20">
           </div>
           <div class="form-group full">
-            <label>Precio base del salón (para la cantidad base de niños)</label>
+            <label>Precio base del salón (para la cantidad base de personas)</label>
             <input type="number" id="cfg-precio-salon" min="0" step="100">
           </div>
         </div>
@@ -1027,7 +1027,7 @@ select option { background: var(--surface2); }
         <textarea id="mi-descripcion" placeholder="Descripción breve"></textarea>
       </div>
       <div class="form-group">
-        <label>Precio base (para cantidad base de niños)</label>
+        <label>Precio base (para cantidad base de personas)</label>
         <input type="number" id="mi-precio-base" min="0" step="100" placeholder="0">
       </div>
       <div class="form-group">
@@ -1200,12 +1200,12 @@ select option { background: var(--surface2); }
         <input type="time" id="r-fin" value="20:00">
       </div>
       <div class="form-group">
-        <label>Cantidad de niños</label>
+        <label>Cantidad de personas</label>
         <input type="number" id="r-ninos" min="1" value="20">
       </div>
       <div class="form-group full">
-        <label>Nombre del festejado/a</label>
-        <input type="text" id="r-festejado" placeholder="Nombre del niño/a">
+        <label>Nombre del observaciones/a</label>
+        <input type="text" id="r-observaciones" placeholder="Nombre del niño/a">
       </div>
       <div class="form-group">
         <label>Nombre del cliente</label>
@@ -1371,14 +1371,6 @@ window.onload = () => {
 
   if (TOKEN && SLUG) {
     showApp();
-  } else {
-    // Pre-rellenar slug desde URL: ?slug=salonfeliz o ?tenant=salonfeliz
-    const urlParams = new URLSearchParams(window.location.search);
-    const slugParam = urlParams.get('slug') || urlParams.get('tenant');
-    if (slugParam) {
-      document.getElementById('login-slug').value = slugParam;
-      document.getElementById('login-password').focus();
-    }
   }
 };
 
@@ -1506,7 +1498,7 @@ async function cargarDashboard() {
       <td>${formatFecha(r.fecha)}</td>
       <td>${r.hora_inicio?.slice(0,5)} - ${r.hora_fin?.slice(0,5)}</td>
       <td>${r.cliente_nombre}</td>
-      <td>${r.nombre_festejado || '—'}</td>
+      <td>${r.nombre_observaciones || '—'}</td>
       <td>${r.cantidad_ninos}</td>
       <td>${formatPrecio(r.precio_total)}</td>
       <td><span class="badge badge-${r.estado}">${r.estado}</span></td>
@@ -1539,7 +1531,7 @@ async function cargarReservas() {
         <div>${r.cliente_nombre}</div>
         <div style="font-size:12px;color:var(--text2)">${r.cliente_email}</div>
       </td>
-      <td>${r.nombre_festejado || '—'}</td>
+      <td>${r.nombre_observaciones || '—'}</td>
       <td>${r.cantidad_ninos}</td>
       <td>${formatPrecio(r.precio_total)}</td>
       <td>
@@ -1587,8 +1579,8 @@ async function verDetalleReserva(id) {
       <div><strong>Cliente:</strong> ${r.cliente_nombre}</div>
       <div><strong>Email:</strong> ${r.cliente_email}</div>
       <div><strong>Teléfono:</strong> ${r.cliente_telefono || '—'}</div>
-      <div><strong>Festejado/a:</strong> ${r.nombre_festejado || '—'}</div>
-      <div><strong>Niños:</strong> ${r.cantidad_ninos}</div>
+      <div><strong>Observaciones/a:</strong> ${r.nombre_observaciones || '—'}</div>
+      <div><strong>Cantidad de personas:</strong> ${r.cantidad_ninos}</div>
       <div><strong>Estado:</strong> <span class="badge badge-${r.estado}">${r.estado}</span></div>
       <div><strong>Precio salón:</strong> ${formatPrecio(r.precio_salon)}</div>
       <div><strong>Precio menú:</strong> ${formatPrecio(r.precio_menu)}</div>
@@ -1644,7 +1636,7 @@ async function guardarReservaManual() {
     hora_inicio: document.getElementById('r-inicio').value,
     hora_fin: document.getElementById('r-fin').value,
     cantidad_ninos: parseInt(document.getElementById('r-ninos').value),
-    nombre_festejado: document.getElementById('r-festejado').value,
+    nombre_observaciones: document.getElementById('r-observaciones').value,
     cliente_nombre: document.getElementById('r-cliente-nombre').value,
     cliente_email: document.getElementById('r-cliente-email').value,
     cliente_telefono: document.getElementById('r-cliente-tel').value,
