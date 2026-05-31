@@ -1218,7 +1218,7 @@ footer {
           <label class="form-label">Nombre de tu salón o empresa *</label>
           <input type="text" class="form-input" id="reg-nombre" ="Ej: Salón Feliz"
                  oninput="actualizarSlug(this.value)">
-          <div class="form-slug-preview">Tu URL: quefiestaapp.gestionateia.com?salon=<span id="slug-preview">tu-salon</span></div>
+          <div class="form-slug-preview">Tu URL: quefiestaapp.gestionateia.com/<span id="slug-preview">miorganizacion</span></div>
         </div>
 
         <div class="form-group">
@@ -1286,13 +1286,12 @@ const API = 'https://reserva-aulas.onrender.com/quefiestaapp';
 function slugify(text) {
   return text.toLowerCase()
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+    .replace(/[^a-z0-9]/g, '')
     .slice(0, 40);
 }
 
 function actualizarSlug(valor) {
-  const slug = slugify(valor) || 'tu-salon';
+  const slug = slugify(valor) || 'miorganizacion';
   document.getElementById('slug-preview').textContent = slug;
 }
 
