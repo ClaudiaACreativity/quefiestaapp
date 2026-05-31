@@ -1024,17 +1024,16 @@ const API = 'https://reserva-aulas.onrender.com/quefiestaapp';
 // o desde el subdominio si aplica
 function getSlug() {
   const params = new URLSearchParams(window.location.search);
-  if (params.get('salon')) return params.get('salon');
-  // Intentar desde subdominio: prueba.quefiestaapp.gestionateia.com
-  const host = window.location.hostname;
-  const parts = host.split('.');
-  if (parts.length >= 3 && parts[0] !== 'www' && parts[0] !== 'quefiestaapp') return parts[0];
-  return 'prueba'; // fallback
+  if (params.get('slug')) return params.get('slug');
+  if (params.get('salon')) return params.get('salon'); // compatibilidad
+  // Sin slug → redirigir a la landing
+  window.location.replace('/');
+  return null;
 }
 
 const SLUG = getSlug();
 // Limpiar URL — reemplazar /empresas.html?salon=slug por /slug
-if (SLUG && window.location.pathname.includes('empresas.html')) {
+if (SLUG && window.location.search.includes('slug=')) {
     window.history.replaceState({}, '', '/' + SLUG);
 }
 

@@ -6,24 +6,34 @@
   <script>
     (function() {
       var path = window.location.pathname;
+      var clean = path.replace(/^\//, '').replace(/\/$/, '');
 
-      // Si es la raíz o solo tiene barras → mostrar landing
-      if (!path || path === '/' || path === '/index.html' || path.replace(/\//g, '') === '') {
+      // Raíz → landing
+      if (!clean) {
         window.location.replace('/index.html');
         return;
       }
 
-      var segments = path.replace(/^\//, '').replace(/\/$/, '').split('/');
+      var segments = clean.split('/');
+      var archivos = ['index.html','empresas.html','admin.html','superadmin.html',
+                      'faq-usuarios.html','faq-tenants.html','404.html','CNAME'];
 
-      if (segments[0] === 'admin' && segments[1]) {
-        window.location.replace('/admin.html?tenant=' + segments[1] + window.location.hash);
-      } else if (segments[0] && segments[0] !== '404' && segments[0] !== 'index.html' 
-                 && segments[0] !== 'empresas.html' && segments[0] !== 'admin.html'
-                 && segments[0] !== 'superadmin.html') {
-        window.location.replace('/empresas.html?salon=' + segments[0] + window.location.hash);
-      } else {
-        window.location.replace('/index.html');
+      // /admin/slug → panel admin
+      if (segments[0] === 'admin' && segments[1] && archivos.indexOf(segments[1]) === -1) {
+        window.location.replace('/admin.html?slug=' + segments[1]);
+        return;
       }
+
+      // /slug → página pública
+      if (segments.length === 1 && archivos.indexOf(segments[0]) === -1) {
+        window.location.replace('/empresas.html?slug=' + segments[0]);
+        return;
+      }
+
+      // Cualquier otra cosa → 404 visible
+      document.open();
+      document.write('<div style="font-family:Arial;text-align:center;padding:80px 20px"><div style="font-size:72px;font-weight:900;color:#1a1a2e">404</div><div style="font-size:20px;color:#1a1a2e;margin:16px 0">Página no encontrada</div><div style="font-size:14px;color:#888;margin-bottom:32px">La dirección que ingresaste no existe.</div><a href="/" style="background:#ff6b6b;color:white;padding:12px 28px;border-radius:50px;text-decoration:none;font-weight:700">Ir al inicio →</a></div>');
+      document.close();
     })();
   </script>
 </head>

@@ -1372,11 +1372,11 @@ window.onload = () => {
   if (TOKEN && SLUG) {
     showApp();
   } else {
-    // Leer slug desde ?tenant= (seteado por el 404.html)
-    const params = new URLSearchParams(window.location.search);
-    const tenantParam = params.get('tenant');
-    if (tenantParam) {
-      document.getElementById('login-slug').value = tenantParam;
+    // Pre-rellenar slug desde URL: ?slug=salonfeliz o ?tenant=salonfeliz
+    const urlParams = new URLSearchParams(window.location.search);
+    const slugParam = urlParams.get('slug') || urlParams.get('tenant');
+    if (slugParam) {
+      document.getElementById('login-slug').value = slugParam;
       document.getElementById('login-password').focus();
     }
   }
