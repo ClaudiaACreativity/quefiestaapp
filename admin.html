@@ -651,7 +651,7 @@ select option { background: var(--surface2); }
           <div class="stat-value" id="stat-pendientes">—</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">Reservas confirmadas</div>
+          <div class="stat-label">Confirmadas este mes</div>
           <div class="stat-value" id="stat-confirmadas">—</div>
         </div>
         <div class="stat-card">
@@ -670,7 +670,7 @@ select option { background: var(--surface2); }
               <th>Fecha</th>
               <th>Horario</th>
               <th>Cliente</th>
-              <th>Referencia del evento</th>
+              <th>Observaciones/a</th>
               <th>Cantidad de personas</th>
               <th>Total</th>
               <th>Estado</th>
@@ -710,7 +710,7 @@ select option { background: var(--surface2); }
               <th>Fecha</th>
               <th>Horario</th>
               <th>Cliente</th>
-              <th>Referencia del evento</th>
+              <th>Observaciones/a</th>
               <th>Cantidad de personas</th>
               <th>Total</th>
               <th>Seña</th>
@@ -819,7 +819,7 @@ select option { background: var(--surface2); }
       </div>
 
       <div style="background:rgba(255,217,61,0.1);border:1px solid rgba(255,217,61,0.3);border-radius:var(--radius);padding:14px 18px;margin-bottom:20px;font-size:13px;color:var(--text2);">
-        💡 Los usuarios adicionales tienen acceso completo al panel. Usá el slug de la organización como identificador al iniciar sesión.
+        💡 Los usuarios adicionales tienen acceso completo al panel. Usá el slug del salón como identificador al iniciar sesión.
       </div>
 
       <div class="table-container">
@@ -926,11 +926,11 @@ select option { background: var(--surface2); }
             <input type="number" id="cfg-capacidad" min="1">
           </div>
           <div class="form-group">
-            <label>Cantidad base de personas <span style="color:var(--text2);font-size:12px;">(opcional)</span></label>
-            <input type="number" id="cfg-ninos-base" min="1" placeholder="Dejar vacío si no aplica">
+            <label>Cantidad base de personas</label>
+            <input type="number" id="cfg-ninos-base" min="1" placeholder="20">
           </div>
           <div class="form-group full">
-            <label>Precio base del servicio <span style="color:var(--text2);font-size:12px;">(opcional — para la cantidad base de personas)</span></label>
+            <label>Precio base del salón (para la cantidad base de personas)</label>
             <input type="number" id="cfg-precio-salon" min="0" step="100">
           </div>
         </div>
@@ -985,38 +985,6 @@ select option { background: var(--surface2); }
       </div>
 
       <div class="config-section">
-        <div class="config-section-title">Modalidad de entrega</div>
-        <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">
-          Activá las opciones que ofrecés. Si no aplica (ej: solo salón de fiestas), dejá todo desactivado.
-        </div>
-        <div class="form-grid">
-          <div class="form-group">
-            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-              <div class="toggle-wrap">
-                <button class="toggle" id="cfg-ofrece-retiro" onclick="toggleBtn(this)"></button>
-              </div>
-              <span>Retiro en el local</span>
-            </label>
-            <div style="font-size:12px;color:var(--text2);margin-top:4px;">
-              Usará la dirección configurada en "Identidad de la organización"
-            </div>
-          </div>
-          <div class="form-group">
-            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
-              <div class="toggle-wrap">
-                <button class="toggle" id="cfg-ofrece-envio" onclick="toggleBtn(this);toggleCostoEnvio()"></button>
-              </div>
-              <span>Envío a domicilio</span>
-            </label>
-          </div>
-          <div class="form-group" id="cfg-costo-envio-group" style="display:none;">
-            <label>Costo de envío</label>
-            <input type="number" id="cfg-costo-envio" min="0" step="100" placeholder="0">
-          </div>
-        </div>
-      </div>
-
-      <div class="config-section">
         <div class="config-section-title">Mi cuenta</div>
         <div class="form-grid">
           <div class="form-group">
@@ -1063,7 +1031,7 @@ select option { background: var(--surface2); }
         <input type="number" id="mi-precio-base" min="0" step="100" placeholder="0">
       </div>
       <div class="form-group">
-        <label>Precio por persona extra</label>
+        <label>Precio por niño extra</label>
         <input type="number" id="mi-precio-extra" min="0" step="100" placeholder="0">
       </div>
       <div class="form-group full">
@@ -1101,7 +1069,7 @@ select option { background: var(--surface2); }
 <!-- Modal Juego -->
 <div class="modal-overlay" id="modal-juego">
   <div class="modal">
-    <div class="modal-title" id="modal-juego-title">Nuevo adicional</div>
+    <div class="modal-title" id="modal-juego-title">Nuevo juego / adicional</div>
     <input type="hidden" id="juego-id">
     <div class="form-grid">
       <div class="form-group full">
@@ -1117,7 +1085,7 @@ select option { background: var(--surface2); }
         <input type="number" id="j-precio-fijo" min="0" step="100" placeholder="0">
       </div>
       <div class="form-group">
-        <label>Precio por persona</label>
+        <label>Precio por niño</label>
         <input type="number" id="j-precio-nino" min="0" step="100" placeholder="0">
       </div>
       <div class="form-group">
@@ -1236,8 +1204,8 @@ select option { background: var(--surface2); }
         <input type="number" id="r-ninos" min="1" value="20">
       </div>
       <div class="form-group full">
-        <label>Referencia del evento (opcional)</label>
-        <input type="text" id="r-referencia-evento" placeholder="Ej: Cumple de Sofía, Reunión de empresa...">
+        <label>Nombre del observaciones/a</label>
+        <input type="text" id="r-observaciones" placeholder="Nombre del niño/a">
       </div>
       <div class="form-group">
         <label>Nombre del cliente</label>
@@ -1252,7 +1220,7 @@ select option { background: var(--surface2); }
         <input type="text" id="r-cliente-tel">
       </div>
       <div class="form-group">
-        <label>Precio del servicio</label>
+        <label>Precio salón</label>
         <input type="number" id="r-precio-salon" min="0" step="100" value="0">
       </div>
       <div class="form-group">
@@ -1260,7 +1228,7 @@ select option { background: var(--surface2); }
         <input type="number" id="r-precio-menu" min="0" step="100" value="0">
       </div>
       <div class="form-group">
-        <label>Precio adicionales</label>
+        <label>Precio juegos</label>
         <input type="number" id="r-precio-juegos" min="0" step="100" value="0">
       </div>
       <div class="form-group">
@@ -1269,7 +1237,7 @@ select option { background: var(--surface2); }
       </div>
       <div class="form-group full">
         <label>Observaciones</label>
-        <textarea id="r-observaciones-texto"></textarea>
+        <textarea id="r-observaciones"></textarea>
       </div>
     </div>
     <div class="modal-actions">
@@ -1363,7 +1331,7 @@ select option { background: var(--surface2); }
       </div>
     </div>
     <div style="margin-top:12px;font-size:13px;color:var(--text2);background:var(--surface2);border-radius:var(--radius);padding:12px 16px;">
-      💡 Para iniciar sesión, este usuario usará el slug de la organización (<strong>${SLUG}</strong>) como identificador y su email como contraseña complementaria.
+      💡 Para iniciar sesión, este usuario usará el slug del salón (<strong>${SLUG}</strong>) como identificador y su email como contraseña complementaria.
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('modal-usuario')">Cancelar</button>
@@ -1380,9 +1348,9 @@ select option { background: var(--surface2); }
 // CONFIG
 // ============================================================
 const API = 'https://reserva-aulas.onrender.com/quefiestaapp';
-let TOKEN = localStorage.getItem('qfa_token') || '';
-let SLUG  = localStorage.getItem('qfa_slug') || '';
-let SALON_NOMBRE = localStorage.getItem('qfa_nombre') || '';
+let TOKEN = sessionStorage.getItem('qfa_token') || '';
+let SLUG  = sessionStorage.getItem('qfa_slug') || '';
+let SALON_NOMBRE = sessionStorage.getItem('qfa_nombre') || '';
 
 const DIAS = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 
@@ -1426,9 +1394,9 @@ async function doLogin() {
     TOKEN = data.token;
     SLUG  = data.slug;
     SALON_NOMBRE = data.nombre;
-    localStorage.setItem('qfa_token', TOKEN);
-    localStorage.setItem('qfa_slug', SLUG);
-    localStorage.setItem('qfa_nombre', SALON_NOMBRE);
+    sessionStorage.setItem('qfa_token', TOKEN);
+    sessionStorage.setItem('qfa_slug', SLUG);
+    sessionStorage.setItem('qfa_nombre', SALON_NOMBRE);
 
     showApp();
   } catch(e) {
@@ -1451,9 +1419,9 @@ function showApp() {
 
 function logout() {
   TOKEN = ''; SLUG = ''; SALON_NOMBRE = '';
-  localStorage.removeItem('qfa_token');
-  localStorage.removeItem('qfa_slug');
-  localStorage.removeItem('qfa_nombre');
+  sessionStorage.removeItem('qfa_token');
+  sessionStorage.removeItem('qfa_slug');
+  sessionStorage.removeItem('qfa_nombre');
   document.getElementById('login-screen').style.display = 'flex';
   document.getElementById('app').style.display = 'none';
 }
@@ -1611,21 +1579,18 @@ async function verDetalleReserva(id) {
       <div><strong>Cliente:</strong> ${r.cliente_nombre}</div>
       <div><strong>Email:</strong> ${r.cliente_email}</div>
       <div><strong>Teléfono:</strong> ${r.cliente_telefono || '—'}</div>
-      <div><strong>Referencia del evento:</strong> ${r.nombre_observaciones || '—'}</div>
+      <div><strong>Observaciones/a:</strong> ${r.nombre_observaciones || '—'}</div>
       <div><strong>Cantidad de personas:</strong> ${r.cantidad_ninos}</div>
       <div><strong>Estado:</strong> <span class="badge badge-${r.estado}">${r.estado}</span></div>
-      <div><strong>Precio del servicio:</strong> ${formatPrecio(r.precio_salon)}</div>
+      <div><strong>Precio salón:</strong> ${formatPrecio(r.precio_salon)}</div>
       <div><strong>Precio menú:</strong> ${formatPrecio(r.precio_menu)}</div>
-      <div><strong>Precio adicionales:</strong> ${formatPrecio(r.precio_juegos)}</div>
-      ${r.precio_envio > 0 ? `<div><strong>Precio envío:</strong> ${formatPrecio(r.precio_envio)}</div>` : ''}
-      ${r.modalidad_entrega ? `<div><strong>Modalidad de entrega:</strong> ${r.modalidad_entrega === 'envio' ? '🚚 Envío a domicilio' : '🏪 Retiro en el local'}</div>` : ''}
-      ${r.direccion_envio ? `<div><strong>Dirección de envío:</strong> ${r.direccion_envio}</div>` : ''}
+      <div><strong>Precio juegos:</strong> ${formatPrecio(r.precio_juegos)}</div>
       <div><strong>Total:</strong> ${formatPrecio(r.precio_total)}</div>
       <div><strong>Seña:</strong> ${formatPrecio(r.monto_seña)} ${r.seña_pagada ? '✓' : '⏳'}</div>
       <div><strong>Modalidad:</strong> ${r.modalidad_cobro || '—'}</div>
     </div>
     ${menu.length ? `<div style="margin-top:16px;"><strong>Menú:</strong> ${menu.map(m=>m.nombre).join(', ')}</div>` : ''}
-    ${juegos.length ? `<div style="margin-top:8px;"><strong>Adicionales:</strong> ${juegos.map(j=>j.nombre).join(', ')}</div>` : ''}
+    ${juegos.length ? `<div style="margin-top:8px;"><strong>Juegos:</strong> ${juegos.map(j=>j.nombre).join(', ')}</div>` : ''}
     ${r.observaciones ? `<div style="margin-top:8px;"><strong>Observaciones:</strong> ${r.observaciones}</div>` : ''}
     ${r.comprobante_url ? `
       <div style="margin-top:16px;">
@@ -1671,7 +1636,7 @@ async function guardarReservaManual() {
     hora_inicio: document.getElementById('r-inicio').value,
     hora_fin: document.getElementById('r-fin').value,
     cantidad_ninos: parseInt(document.getElementById('r-ninos').value),
-    nombre_observaciones: document.getElementById('r-referencia-evento').value,
+    nombre_observaciones: document.getElementById('r-observaciones').value,
     cliente_nombre: document.getElementById('r-cliente-nombre').value,
     cliente_email: document.getElementById('r-cliente-email').value,
     cliente_telefono: document.getElementById('r-cliente-tel').value,
@@ -1679,7 +1644,7 @@ async function guardarReservaManual() {
     precio_menu: parseFloat(document.getElementById('r-precio-menu').value) || 0,
     precio_juegos: parseFloat(document.getElementById('r-precio-juegos').value) || 0,
     precio_total: parseFloat(document.getElementById('r-precio-total').value) || 0,
-    observaciones: document.getElementById('r-observaciones-texto').value,
+    observaciones: document.getElementById('r-observaciones').value,
     menu_seleccionado: [],
     juegos_seleccionados: []
   };
@@ -1720,7 +1685,7 @@ async function cargarMenu() {
         <div class="item-card-name">${item.nombre}</div>
         ${item.descripcion ? `<div class="item-card-desc">${item.descripcion}</div>` : ''}
         <div class="item-card-price">
-          Base: ${formatPrecio(item.precio_base)} · Extra/persona: ${formatPrecio(item.precio_por_nino_extra)}
+          Base: ${formatPrecio(item.precio_base)} · Extra/niño: ${formatPrecio(item.precio_por_nino_extra)}
         </div>
         <div style="margin-top:6px;">
           <span class="badge ${item.activo ? 'badge-confirmada' : 'badge-cancelada'}">${item.activo ? 'Activo' : 'Inactivo'}</span>
@@ -1795,7 +1760,7 @@ async function cargarJuegos() {
   const grid = document.getElementById('juegos-grid');
 
   if (!juegos.length) {
-    grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🎪</div><div class="empty-state-text">No hay adicionales. ¡Agregá el primero!</div></div>`;
+    grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🎪</div><div class="empty-state-text">No hay juegos. ¡Agregá el primero!</div></div>`;
     return;
   }
 
@@ -2000,14 +1965,6 @@ async function cargarConfiguracion() {
   document.getElementById('cfg-alias').value = cfg.alias_transferencia || '';
   document.getElementById('cfg-mensaje-pago').value = cfg.mensaje_pago || '';
   document.getElementById('cfg-politica-cancelacion').value = cfg.politica_cancelacion || '';
-
-  // Entrega
-  const btnRetiro = document.getElementById('cfg-ofrece-retiro');
-  const btnEnvio = document.getElementById('cfg-ofrece-envio');
-  if (cfg.ofrece_retiro) btnRetiro.classList.add('on'); else btnRetiro.classList.remove('on');
-  if (cfg.ofrece_envio) btnEnvio.classList.add('on'); else btnEnvio.classList.remove('on');
-  document.getElementById('cfg-costo-envio').value = cfg.costo_envio || 0;
-  toggleCostoEnvio();
   toggleSeñaGroup();
 }
 
@@ -2015,11 +1972,6 @@ function toggleSeñaGroup() {
   const modalidad = document.getElementById('cfg-modalidad-cobro').value;
   const group = document.getElementById('cfg-seña-group');
   group.style.display = modalidad.includes('seña') ? 'flex' : 'none';
-}
-
-function toggleCostoEnvio() {
-  const activo = document.getElementById('cfg-ofrece-envio').classList.contains('on');
-  document.getElementById('cfg-costo-envio-group').style.display = activo ? 'block' : 'none';
 }
 
 async function guardarConfiguracion() {
@@ -2040,9 +1992,6 @@ async function guardarConfiguracion() {
     alias_transferencia: document.getElementById('cfg-alias').value || null,
     mensaje_pago: document.getElementById('cfg-mensaje-pago').value || null,
     politica_cancelacion: document.getElementById('cfg-politica-cancelacion').value || null,
-    ofrece_retiro: document.getElementById('cfg-ofrece-retiro').classList.contains('on'),
-    ofrece_envio: document.getElementById('cfg-ofrece-envio').classList.contains('on'),
-    costo_envio: parseFloat(document.getElementById('cfg-costo-envio').value) || 0,
   };
 
   const res = await api('PATCH', `/admin/${SLUG}/configuracion`, body);
@@ -2050,7 +1999,7 @@ async function guardarConfiguracion() {
     toast('Configuración guardada', 'success');
     SALON_NOMBRE = body.nombre_visible || SALON_NOMBRE;
     document.getElementById('sidebar-salon-name').textContent = SALON_NOMBRE;
-    localStorage.setItem('qfa_nombre', SALON_NOMBRE);
+    sessionStorage.setItem('qfa_nombre', SALON_NOMBRE);
   } else toast('Error al guardar', 'error');
 }
 
