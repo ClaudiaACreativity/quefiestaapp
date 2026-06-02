@@ -614,6 +614,7 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 28px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.10);
 }
 
 .form-grid {
@@ -808,19 +809,19 @@ footer strong { color: white; }
 
       <!-- CANTIDAD DE NI├æOS -->
       <div class="presup-panel">
-        <div class="presup-panel-title">👦 Cantidad de niños</div>
+        <div class="presup-panel-title">👦 Cantidad de personas</div>
         <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
           <div class="ninos-control">
             <button class="ninos-btn" onclick="cambiarNinos(-1)">−</button>
             <div>
               <div class="ninos-value" id="ninos-value">20</div>
-              <div class="ninos-label">niños</div>
+              <div class="ninos-label">personas</div>
             </div>
             <button class="ninos-btn" onclick="cambiarNinos(1)">+</button>
           </div>
           <div style="font-size:13px;color:var(--text2);line-height:1.5;">
-            El precio base incluye hasta <strong id="ninos-base-label">20</strong> niños.<br>
-            Cada niño extra tiene un costo adicional por ítem.
+            El precio base incluye hasta <strong id="ninos-base-label">20</strong> personas.<br>
+            Cada persona extra tiene un costo adicional por ítem.
           </div>
         </div>
       </div>
@@ -835,7 +836,7 @@ footer strong { color: white; }
 
       <!-- JUEGOS -->
       <div class="presup-panel">
-        <div class="presup-panel-title">🎮 Juegos y adicionales</div>
+        <div class="presup-panel-title">🎮 Adicionales</div>
         <div class="items-list" id="juegos-list">
           <div style="color:var(--text2);font-size:14px;">Cargando...</div>
         </div>
@@ -898,8 +899,8 @@ footer strong { color: white; }
             <input type="tel" class="form-input" id="f-tel" placeholder="Ej: 3492123456">
           </div>
           <div class="form-group">
-            <label class="form-label">Nombre del festejado/a</label>
-            <input type="text" class="form-input" id="f-festejado" placeholder="¿Quién cumple?">
+            <label class="form-label">Referencia del evento <span style="font-weight:400;text-transform:none;letter-spacing:0;">(opcional)</span></label>
+            <input type="text" class="form-input" id="f-festejado" placeholder="Ej: Cumple de Sofía, reunión de empresa...">
           </div>
           <div class="form-group full">
             <label class="form-label">Observaciones</label>
@@ -929,6 +930,39 @@ footer strong { color: white; }
           </div>
         </div>
 
+        <!-- MODALIDAD DE ENTREGA (se muestra solo si la org la tiene activada) -->
+        <div id="entrega-section" style="display:none;margin-top:8px;">
+          <div class="form-group full" style="grid-column:1/-1;">
+            <label class="form-label">¿Cómo recibís tu pedido? *</label>
+            <div style="display:flex;gap:12px;margin-top:4px;flex-wrap:wrap;">
+              <button type="button" id="btn-retiro" onclick="seleccionarEntrega('retiro')"
+                style="flex:1;min-width:140px;padding:14px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg);cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;color:var(--text);transition:all 0.2s;">
+                🏪 Retiro en el local
+              </button>
+              <button type="button" id="btn-envio" onclick="seleccionarEntrega('envio')"
+                style="flex:1;min-width:140px;padding:14px;border-radius:var(--radius);border:2px solid var(--border);background:var(--bg);cursor:pointer;font-family:inherit;font-size:14px;font-weight:600;color:var(--text);transition:all 0.2s;">
+                🚚 Envío a domicilio
+              </button>
+            </div>
+          </div>
+
+          <!-- Info retiro -->
+          <div id="info-retiro" style="display:none;grid-column:1/-1;background:rgba(0,0,0,0.03);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;font-size:14px;color:var(--text2);line-height:1.6;">
+            📍 <strong>Dirección de retiro:</strong> <span id="direccion-retiro-texto">—</span>
+          </div>
+
+          <!-- Campos envío -->
+          <div id="campos-envio" style="display:none;grid-column:1/-1;">
+            <div class="form-group full" style="margin-top:4px;">
+              <label class="form-label">Dirección de envío *</label>
+              <input type="text" class="form-input" id="f-direccion-envio" placeholder="Calle, número, piso, ciudad...">
+            </div>
+            <div id="costo-envio-info" style="margin-top:10px;background:rgba(0,0,0,0.03);border:1px solid var(--border);border-radius:var(--radius);padding:12px 16px;font-size:14px;color:var(--text2);">
+              🚚 Costo de envío: <strong id="costo-envio-texto">—</strong>
+            </div>
+          </div>
+        </div>
+
         <div class="pago-info" id="pago-info" style="display:none;"></div>
 
         <button class="btn-reservar" id="btn-reservar" onclick="enviarReserva()">
@@ -953,7 +987,7 @@ footer strong { color: white; }
         <div class="resumen-title">Tu presupuesto 🎊</div>
 
         <div class="resumen-linea">
-          <span class="resumen-linea-label">Salón (<span id="res-ninos">20</span> niños)</span>
+          <span class="resumen-linea-label">Salón (<span id="res-ninos">20</span> personas)</span>
           <span class="resumen-linea-valor" id="res-salon">$0</span>
         </div>
         <div class="resumen-linea" id="res-menu-linea" style="display:none;">
@@ -961,8 +995,12 @@ footer strong { color: white; }
           <span class="resumen-linea-valor" id="res-menu">$0</span>
         </div>
         <div class="resumen-linea" id="res-juegos-linea" style="display:none;">
-          <span class="resumen-linea-label">Juegos y adicionales</span>
+          <span class="resumen-linea-label">Adicionales</span>
           <span class="resumen-linea-valor" id="res-juegos">$0</span>
+        </div>
+        <div class="resumen-linea" id="res-envio-linea" style="display:none;">
+          <span class="resumen-linea-label">🚚 Envío a domicilio</span>
+          <span class="resumen-linea-valor" id="res-envio">$0</span>
         </div>
         <div class="resumen-linea" id="res-fecha-linea" style="display:none;">
           <span class="resumen-linea-label">Fecha</span>
@@ -1049,6 +1087,7 @@ let fechaSeleccionada = null;
 let horarioSeleccionado = null;
 let disponibilidad = [];
 let calMes, calAnio;
+let modalidadEntrega = null; // 'retiro' | 'envio' | null
 
 const hoy = new Date();
 calMes = hoy.getMonth() + 1;
@@ -1060,6 +1099,7 @@ calAnio = hoy.getFullYear();
 window.onload = async () => {
   try {
     await cargarSalon();
+    mostrarSeccionEntrega();
     await Promise.all([cargarMenu(), cargarJuegos(), cargarCombos()]);
     await cargarDisponibilidad();
     renderCalendario();
@@ -1103,7 +1143,7 @@ async function cargarSalon() {
     logo.style.display = 'block';
   }
 
-  // niños base
+  // personas base
   ninosBase = salon.ninos_base || 20;
   cantNinos = ninosBase;
   document.getElementById('ninos-value').textContent = cantNinos;
@@ -1384,10 +1424,64 @@ function seleccionarHorario(el, inicio, fin) {
 }
 
 // ============================================================
-// RESUMEN Y C├üLCULO
+// MODALIDAD DE ENTREGA (retiro / envío)
+// ============================================================
+function seleccionarEntrega(tipo) {
+  modalidadEntrega = tipo;
+  const btnRetiro = document.getElementById('btn-retiro');
+  const btnEnvio = document.getElementById('btn-envio');
+  const color = getComputedStyle(document.documentElement).getPropertyValue('--color1').trim();
+
+  // Reset estilos
+  [btnRetiro, btnEnvio].forEach(b => {
+    b.style.borderColor = 'var(--border)';
+    b.style.background = 'var(--bg)';
+    b.style.color = 'var(--text)';
+  });
+
+  if (tipo === 'retiro') {
+    btnRetiro.style.borderColor = color;
+    btnRetiro.style.background = color + '18';
+    document.getElementById('info-retiro').style.display = 'block';
+    document.getElementById('campos-envio').style.display = 'none';
+  } else {
+    btnEnvio.style.borderColor = color;
+    btnEnvio.style.background = color + '18';
+    document.getElementById('info-retiro').style.display = 'none';
+    document.getElementById('campos-envio').style.display = 'block';
+  }
+  actualizarResumen();
+}
+
+function mostrarSeccionEntrega() {
+  if (!salon) return;
+  const ofreceBoth = salon.ofrece_retiro && salon.ofrece_envio;
+  const soloRetiro = salon.ofrece_retiro && !salon.ofrece_envio;
+  const soloEnvio = !salon.ofrece_retiro && salon.ofrece_envio;
+
+  if (!salon.ofrece_retiro && !salon.ofrece_envio) return;
+
+  document.getElementById('entrega-section').style.display = 'block';
+  document.getElementById('direccion-retiro-texto').textContent = salon.direccion || '—';
+
+  const costoEnvio = parseFloat(salon.costo_envio) || 0;
+  document.getElementById('costo-envio-texto').textContent = costoEnvio > 0 ? formatPrecio(costoEnvio) : 'A coordinar';
+
+  if (soloRetiro) {
+    // Seleccionar automáticamente retiro
+    document.getElementById('btn-envio').style.display = 'none';
+    seleccionarEntrega('retiro');
+  } else if (soloEnvio) {
+    document.getElementById('btn-retiro').style.display = 'none';
+    seleccionarEntrega('envio');
+  }
+}
+
+// ============================================================
+// RESUMEN Y CÁLCULO
 // ============================================================
 function calcularTotal() {
-  if (!salon) return { salon: 0, menu: 0, juegos: 0, total: 0 };
+  if (!salon) return { salon: 0, menu: 0, juegos: 0, envio: 0, total: 0 };
 
   const ninosExtra = Math.max(0, cantNinos - ninosBase);
 
@@ -1408,16 +1502,20 @@ function calcularTotal() {
     precioJuegos += (parseFloat(j.precio_por_nino) || 0) * cantNinos;
   });
 
+  // Envío
+  const costoEnvio = (modalidadEntrega === 'envio') ? (parseFloat(salon.costo_envio) || 0) : 0;
+
   return {
     salon: precioSalon,
     menu: precioMenu,
     juegos: precioJuegos,
-    total: precioSalon + precioMenu + precioJuegos
+    envio: costoEnvio,
+    total: precioSalon + precioMenu + precioJuegos + costoEnvio
   };
 }
 
 function actualizarResumen() {
-  const { salon: ps, menu: pm, juegos: pj, total } = calcularTotal();
+  const { salon: ps, menu: pm, juegos: pj, envio: pe, total } = calcularTotal();
 
   document.getElementById('res-salon').textContent = formatPrecio(ps);
 
@@ -1435,6 +1533,13 @@ function actualizarResumen() {
     document.getElementById('res-juegos-linea').style.display = 'flex';
   } else {
     document.getElementById('res-juegos-linea').style.display = 'none';
+  }
+
+  if (pe > 0) {
+    document.getElementById('res-envio').textContent = formatPrecio(pe);
+    document.getElementById('res-envio-linea').style.display = 'flex';
+  } else {
+    document.getElementById('res-envio-linea').style.display = 'none';
   }
 
   document.getElementById('res-total').textContent = formatPrecio(total);
@@ -1462,6 +1567,15 @@ async function enviarReserva() {
   if (!fechaSeleccionada) { toast('Elegí una fecha del calendario', 'error'); return; }
   if (!horarioSeleccionado) { toast('Elegí un horario', 'error'); return; }
 
+  // Validar modalidad de entrega si aplica
+  const tieneEntrega = salon?.ofrece_retiro || salon?.ofrece_envio;
+  if (tieneEntrega && !modalidadEntrega) {
+    toast('Indicá cómo querés recibir tu pedido', 'error'); return;
+  }
+  if (modalidadEntrega === 'envio' && !document.getElementById('f-direccion-envio').value.trim()) {
+    toast('Ingresá la dirección de envío', 'error'); return;
+  }
+
   // Validar comprobante si es modalidad transferencia
   const modalidad = salon?.modalidad_cobro || '';
   const requiereComprobante = modalidad.includes('transferencia') || modalidad === 'total_transferencia';
@@ -1469,7 +1583,7 @@ async function enviarReserva() {
     toast('Adjuntá el comprobante de transferencia', 'error'); return;
   }
 
-  const { salon: ps, menu: pm, juegos: pj, total } = calcularTotal();
+  const { salon: ps, menu: pm, juegos: pj, envio: pe, total } = calcularTotal();
 
   const btn = document.getElementById('btn-reservar');
   btn.disabled = true;
@@ -1489,7 +1603,10 @@ async function enviarReserva() {
     precio_salon: ps,
     precio_menu: pm,
     precio_juegos: pj,
+    precio_envio: pe,
     precio_total: total,
+    modalidad_entrega: modalidadEntrega,
+    direccion_envio: modalidadEntrega === 'envio' ? document.getElementById('f-direccion-envio').value.trim() : null,
     observaciones: document.getElementById('f-obs').value
   };
 
