@@ -1069,7 +1069,7 @@ select option { background: var(--surface2); }
 <!-- Modal Juego -->
 <div class="modal-overlay" id="modal-juego">
   <div class="modal">
-    <div class="modal-title" id="modal-juego-title">Nuevo juego / adicional</div>
+    <div class="modal-title" id="modal-juego-title">Nuevo adicional</div>
     <input type="hidden" id="juego-id">
     <div class="form-grid">
       <div class="form-group full">
@@ -1788,7 +1788,7 @@ async function cargarJuegos() {
 }
 
 function openModalJuego(juego) {
-  document.getElementById('modal-juego-title').textContent = juego ? 'Editar juego' : 'Nuevo juego / adicional';
+  document.getElementById('modal-juego-title').textContent = juego ? 'Editar adicional' : 'Nuevo adicional';
   document.getElementById('juego-id').value = juego?.id || '';
   document.getElementById('j-nombre').value = juego?.nombre || '';
   document.getElementById('j-descripcion').value = juego?.descripcion || '';
@@ -1823,14 +1823,14 @@ async function guardarJuego() {
     : await api('POST', `/admin/${SLUG}/juegos`, body);
 
   if (res?.ok) {
-    toast(id ? 'Juego actualizado' : 'Juego creado', 'success');
+    toast(id ? 'Adicional actualizado' : 'Adicional creado', 'success');
     closeModal('modal-juego');
     cargarJuegos();
   } else toast('Error al guardar', 'error');
 }
 
 async function eliminarJuego(id) {
-  if (!confirm('¿Eliminar este juego?')) return;
+  if (!confirm('¿Eliminar este adicional?')) return;
   const res = await api('DELETE', `/admin/${SLUG}/juegos/${id}`);
   if (res?.ok) { toast('Juego eliminado', 'success'); cargarJuegos(); }
   else toast('Error al eliminar', 'error');
