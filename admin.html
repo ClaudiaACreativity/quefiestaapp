@@ -773,12 +773,37 @@ select option { background: var(--surface2); }
       <div class="topbar">
         <div>
           <div class="page-title">Horarios 🕐</div>
-          <div class="page-subtitle">Días y horarios disponibles para reservar</div>
+          <div class="page-subtitle">Configurá cómo los clientes eligen fecha y hora</div>
         </div>
-        <button class="btn btn-accent" onclick="openModalHorario()">+ Agregar horario</button>
+        <button class="btn btn-accent" id="btn-agregar-horario" onclick="openModalHorario()">+ Agregar turno</button>
       </div>
-      <div class="horarios-list" id="horarios-list">
-        <div class="loading">Cargando...</div>
+
+      <!-- Selector de modo -->
+      <div style="background:var(--surface);border:2px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;">
+        <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:12px;">Modo de disponibilidad</div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <button id="modo-fijo-btn" class="btn btn-accent" onclick="cambiarModoHorario('fijo')" style="flex:1;min-width:180px;">
+            🎪 Turnos fijos
+          </button>
+          <button id="modo-libre-btn" class="btn btn-ghost" onclick="cambiarModoHorario('libre')" style="flex:1;min-width:180px;">
+            🕐 Horario libre
+          </button>
+        </div>
+        <div id="modo-desc" style="margin-top:12px;font-size:13px;color:var(--text2);line-height:1.6;"></div>
+      </div>
+
+      <!-- Lista turnos fijos -->
+      <div id="horarios-fijos-section">
+        <div class="horarios-list" id="horarios-list">
+          <div class="loading">Cargando...</div>
+        </div>
+      </div>
+
+      <!-- Lista horario libre -->
+      <div id="horarios-libres-section" style="display:none;">
+        <div class="horarios-list" id="horarios-libre-list">
+          <div class="loading">Cargando...</div>
+        </div>
       </div>
     </div>
 
@@ -1155,7 +1180,7 @@ select option { background: var(--surface2); }
 <!-- Modal Horario -->
 <div class="modal-overlay" id="modal-horario">
   <div class="modal">
-    <div class="modal-title">Nuevo horario disponible</div>
+    <div class="modal-title" id="modal-horario-title">Nuevo turno fijo</div>
     <div class="form-grid">
       <div class="form-group full">
         <label>Día de la semana</label>
@@ -1169,13 +1194,28 @@ select option { background: var(--surface2); }
           <option value="6">Sábado</option>
         </select>
       </div>
-      <div class="form-group">
+      <!-- Campos modo fijo -->
+      <div class="form-group" id="h-inicio-group">
         <label>Hora de inicio</label>
         <input type="time" id="h-inicio" value="15:00">
       </div>
-      <div class="form-group">
+      <div class="form-group" id="h-fin-group">
         <label>Hora de fin</label>
         <input type="time" id="h-fin" value="20:00">
+      </div>
+      <!-- Campos modo libre -->
+      <div class="form-group" id="h-apertura-group" style="display:none;">
+        <label>Apertura</label>
+        <input type="time" id="h-apertura" value="09:00">
+      </div>
+      <div class="form-group" id="h-cierre-group" style="display:none;">
+        <label>Cierre</label>
+        <input type="time" id="h-cierre" value="18:00">
+      </div>
+      <!-- Común -->
+      <div class="form-group full">
+        <label>Máximo de reservas simultáneas <span style="font-weight:400;font-size:12px;color:var(--text2);">(opcional — dejá vacío para sin límite)</span></label>
+        <input type="number" id="h-max-simultaneos" min="1" placeholder="Sin límite">
       </div>
     </div>
     <div class="modal-actions">
@@ -1474,7 +1514,16 @@ function showPage(name) {
     juegos: cargarJuegos,
     combos: cargarCombos,
     usuarios: cargarUsuarios,
-    horarios: cargarHorarios,
+    horarios: async () => {
+      // Cargar modo desde config antes de mostrar horarios
+      const resCfg = await api('GET', `/admin/${SLUG}/configuracion`);
+      if (resCfg) {
+        const cfg = await resCfg.json();
+        cambiarModoHorario(cfg.modo_horario || 'fijo');
+      } else {
+        cambiarModoHorario('fijo');
+      }
+    },
     bloqueadas: cargarBloqueadas,
     configuracion: cargarConfiguracion
   };
@@ -1871,6 +1920,40 @@ async function eliminarJuego(id) {
 // ============================================================
 // HORARIOS
 // ============================================================
+// Estado del modo de horario
+let modoHorario = 'fijo';
+
+function cambiarModoHorario(modo) {
+  modoHorario = modo;
+  const btnFijo = document.getElementById('modo-fijo-btn');
+  const btnLibre = document.getElementById('modo-libre-btn');
+  const secFijos = document.getElementById('horarios-fijos-section');
+  const secLibres = document.getElementById('horarios-libres-section');
+  const desc = document.getElementById('modo-desc');
+  const btnAgregar = document.getElementById('btn-agregar-horario');
+
+  if (modo === 'fijo') {
+    btnFijo.className = 'btn btn-accent';
+    btnLibre.className = 'btn btn-ghost';
+    secFijos.style.display = 'block';
+    secLibres.style.display = 'none';
+    btnAgregar.textContent = '+ Agregar turno';
+    desc.textContent = 'Los clientes eligen entre los turnos que configurás (ej: Sábados 15:00-20:00 y 21:00-02:00). Podés indicar cuántos eventos simultáneos admite cada turno.';
+    cargarHorarios();
+  } else {
+    btnFijo.className = 'btn btn-ghost';
+    btnLibre.className = 'btn btn-accent';
+    secFijos.style.display = 'none';
+    secLibres.style.display = 'block';
+    btnAgregar.textContent = '+ Agregar franja';
+    desc.textContent = 'Los clientes eligen libremente fecha y hora de retiro o entrega dentro de la franja que configurás (ej: Lunes a Viernes de 9:00 a 18:00).';
+    cargarHorariosLibres();
+  }
+
+  // Guardar modo en configuración
+  api('PATCH', `/admin/${SLUG}/configuracion`, { modo_horario: modo });
+}
+
 async function cargarHorarios() {
   const res = await api('GET', `/admin/${SLUG}/horarios`);
   if (!res) return;
@@ -1878,7 +1961,7 @@ async function cargarHorarios() {
   const list = document.getElementById('horarios-list');
 
   if (!horarios.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🕐</div><div class="empty-state-text">No hay horarios configurados. ¡Agregá el primero!</div></div>`;
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🕐</div><div class="empty-state-text">No hay turnos configurados. ¡Agregá el primero!</div></div>`;
     return;
   }
 
@@ -1887,6 +1970,7 @@ async function cargarHorarios() {
       <div>
         <strong>${DIAS[h.dia_semana]}</strong>
         <span style="margin-left:12px;color:var(--text2)">${h.hora_inicio?.slice(0,5)} — ${h.hora_fin?.slice(0,5)}</span>
+        ${h.max_simultaneos ? `<span style="margin-left:8px;font-size:12px;color:var(--text2);">· máx. ${h.max_simultaneos} simult.</span>` : ''}
       </div>
       <div style="display:flex;align-items:center;gap:10px;">
         <span class="badge ${h.activo ? 'badge-confirmada' : 'badge-cancelada'}">${h.activo ? 'Activo' : 'Inactivo'}</span>
@@ -1896,28 +1980,89 @@ async function cargarHorarios() {
   `).join('');
 }
 
-function openModalHorario() { openModal('modal-horario'); }
+async function cargarHorariosLibres() {
+  const res = await api('GET', `/admin/${SLUG}/horario-libre`);
+  if (!res) return;
+  const franjas = await res.json();
+  const list = document.getElementById('horarios-libre-list');
+
+  if (!franjas.length) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🕐</div><div class="empty-state-text">No hay franjas configuradas. ¡Agregá la primera!</div></div>`;
+    return;
+  }
+
+  list.innerHTML = franjas.map(f => `
+    <div class="horario-item">
+      <div>
+        <strong>${DIAS[f.dia_semana]}</strong>
+        <span style="margin-left:12px;color:var(--text2)">${f.hora_apertura?.slice(0,5)} — ${f.hora_cierre?.slice(0,5)}</span>
+        ${f.max_simultaneos ? `<span style="margin-left:8px;font-size:12px;color:var(--text2);">· máx. ${f.max_simultaneos} simult.</span>` : ''}
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="badge ${f.activo ? 'badge-confirmada' : 'badge-cancelada'}">${f.activo ? 'Activo' : 'Inactivo'}</span>
+        <button class="btn btn-danger btn-sm" onclick="eliminarHorarioLibre('${f.id}')">🗑</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openModalHorario() {
+  // Ajustar campos según modo
+  const esFijo = modoHorario === 'fijo';
+  document.getElementById('modal-horario-title').textContent = esFijo ? 'Nuevo turno fijo' : 'Nueva franja horaria';
+  document.getElementById('h-inicio-group').style.display = esFijo ? 'block' : 'none';
+  document.getElementById('h-fin-group').style.display = esFijo ? 'block' : 'none';
+  document.getElementById('h-apertura-group').style.display = esFijo ? 'none' : 'block';
+  document.getElementById('h-cierre-group').style.display = esFijo ? 'none' : 'block';
+  document.getElementById('h-max-simultaneos').value = '';
+  openModal('modal-horario');
+}
 
 async function guardarHorario() {
-  const body = {
-    dia_semana: parseInt(document.getElementById('h-dia').value),
-    hora_inicio: document.getElementById('h-inicio').value,
-    hora_fin: document.getElementById('h-fin').value,
-    activo: true
-  };
+  const maxSim = parseInt(document.getElementById('h-max-simultaneos').value) || null;
 
-  const res = await api('POST', `/admin/${SLUG}/horarios`, body);
-  if (res?.ok) {
-    toast('Horario agregado', 'success');
-    closeModal('modal-horario');
-    cargarHorarios();
-  } else toast('Error al guardar', 'error');
+  if (modoHorario === 'fijo') {
+    const body = {
+      dia_semana: parseInt(document.getElementById('h-dia').value),
+      hora_inicio: document.getElementById('h-inicio').value,
+      hora_fin: document.getElementById('h-fin').value,
+      activo: true,
+      max_simultaneos: maxSim
+    };
+    const res = await api('POST', `/admin/${SLUG}/horarios`, body);
+    if (res?.ok) {
+      toast('Turno agregado', 'success');
+      closeModal('modal-horario');
+      cargarHorarios();
+    } else toast('Error al guardar', 'error');
+  } else {
+    const body = {
+      dia_semana: parseInt(document.getElementById('h-dia').value),
+      hora_apertura: document.getElementById('h-apertura').value,
+      hora_cierre: document.getElementById('h-cierre').value,
+      activo: true,
+      max_simultaneos: maxSim
+    };
+    const res = await api('POST', `/admin/${SLUG}/horario-libre`, body);
+    if (res?.ok) {
+      toast('Franja agregada', 'success');
+      closeModal('modal-horario');
+      cargarHorariosLibres();
+    } else toast('Error al guardar', 'error');
+  }
 }
 
 async function eliminarHorario(id) {
-  if (!confirm('¿Eliminar este horario?')) return;
+  if (!confirm('¿Eliminar este turno?')) return;
   const res = await api('DELETE', `/admin/${SLUG}/horarios/${id}`);
-  if (res?.ok) { toast('Horario eliminado', 'success'); cargarHorarios(); }
+  if (res?.ok) { toast('Turno eliminado', 'success'); cargarHorarios(); }
+  else toast('Error al eliminar', 'error');
+}
+
+async function eliminarHorarioLibre(id) {
+  if (!confirm('¿Eliminar esta franja?')) return;
+  const res = await api('DELETE', `/admin/${SLUG}/horario-libre/${id}`);
+  if (res?.ok) { toast('Franja eliminada', 'success'); cargarHorariosLibres(); }
   else toast('Error al eliminar', 'error');
 }
 
@@ -2005,6 +2150,11 @@ async function cargarConfiguracion() {
   document.getElementById('cfg-costo-envio').value = cfg.costo_envio || 0;
   toggleCostoEnvio();
   toggleSeñaGroup();
+
+  // Modo horario — sincronizar la página de horarios si ya se cargó
+  if (cfg.modo_horario && cfg.modo_horario !== modoHorario) {
+    modoHorario = cfg.modo_horario;
+  }
 }
 
 function toggleSeñaGroup() {

@@ -872,8 +872,17 @@ footer strong { color: white; }
         </div>
 
         <div id="horarios-container" style="display:none;margin-top:8px;">
-          <div style="font-size:14px;font-weight:600;margin-bottom:8px;">Horarios disponibles:</div>
+          <div style="font-size:14px;font-weight:600;margin-bottom:10px;" id="horarios-label">Horarios disponibles:</div>
+          <!-- Modo fijo: chips -->
           <div class="horarios-chips" id="horarios-chips"></div>
+          <!-- Modo libre: selector de hora -->
+          <div id="horario-libre-container" style="display:none;">
+            <div style="font-size:13px;color:var(--text2);margin-bottom:10px;" id="horario-libre-desc"></div>
+            <input type="time" id="horario-libre-input" class="form-input"
+              style="max-width:160px;font-size:16px;font-weight:600;"
+              onchange="seleccionarHoraLibre(this.value)">
+            <div id="horario-libre-aviso" style="display:none;margin-top:8px;font-size:13px;color:#E74C3C;"></div>
+          </div>
         </div>
       </div>
 
@@ -1245,6 +1254,7 @@ async function cargarDisponibilidad() {
   if (!res.ok) return;
   const data = await res.json();
   disponibilidad = data.dias;
+  salon._modo_horario = data.modo || 'fijo';
 }
 
 // ============================================================
@@ -1376,7 +1386,7 @@ function renderCalendario() {
     if (fecha === fechaSeleccionada) el.classList.add('seleccionado');
 
     if (estado === 'disponible') {
-      el.onclick = () => seleccionarFecha(fecha, diaData?.horarios || []);
+      el.onclick = () => seleccionarFecha(fecha, diaData?.horarios || [], diaData?.franjas || [], diaData?.reservas_hora || {});
     }
 
     grid.appendChild(el);
@@ -1391,29 +1401,59 @@ async function cambiarMes(delta) {
   renderCalendario();
 }
 
-function seleccionarFecha(fecha, horarios) {
+// Franjas del día seleccionado (modo libre)
+let franjasDelDia = [];
+let reservasHoraDelDia = {};
+
+function seleccionarFecha(fecha, horarios, franjas, reservasHora) {
   fechaSeleccionada = fecha;
   horarioSeleccionado = null;
+  franjasDelDia = franjas || [];
+  reservasHoraDelDia = reservasHora || {};
 
   renderCalendario();
 
-  // Mostrar horarios
+  const modo = salon?._modo_horario || 'fijo';
   const container = document.getElementById('horarios-container');
   const chips = document.getElementById('horarios-chips');
+  const libreContainer = document.getElementById('horario-libre-container');
   container.style.display = 'block';
 
-  chips.innerHTML = horarios.map(h => `
-    <div class="horario-chip" onclick="seleccionarHorario(this, '${h.hora_inicio}', '${h.hora_fin}')">
-      ${h.hora_inicio.slice(0,5)} - ${h.hora_fin.slice(0,5)}
-    </div>
-  `).join('');
-
-  // Actualizar resumen
   const [y,m,d] = fecha.split('-');
   document.getElementById('res-fecha').textContent = `${d}/${m}/${y}`;
   document.getElementById('res-fecha-linea').style.display = 'flex';
   document.getElementById('res-horario-linea').style.display = 'none';
   document.getElementById('res-horario').textContent = '—';
+
+  if (modo === 'fijo') {
+    chips.style.display = 'flex';
+    libreContainer.style.display = 'none';
+    document.getElementById('horarios-label').textContent = 'Elegí un horario:';
+    chips.innerHTML = horarios.map(h => `
+      <div class="horario-chip" onclick="seleccionarHorario(this, '${h.hora_inicio}', '${h.hora_fin}')">
+        ${h.hora_inicio.slice(0,5)} - ${h.hora_fin.slice(0,5)}
+      </div>
+    `).join('');
+    if (!horarios.length) {
+      chips.innerHTML = '<div style="font-size:13px;color:var(--text2);">No hay turnos disponibles para este día.</div>';
+    }
+  } else {
+    chips.style.display = 'none';
+    libreContainer.style.display = 'block';
+    document.getElementById('horarios-label').textContent = 'Elegí el horario de retiro o entrega:';
+    const input = document.getElementById('horario-libre-input');
+    input.value = '';
+
+    if (franjasDelDia.length) {
+      const franja = franjasDelDia[0];
+      input.min = franja.hora_apertura.slice(0,5);
+      input.max = franja.hora_cierre.slice(0,5);
+      document.getElementById('horario-libre-desc').textContent =
+        `Horario disponible: ${franja.hora_apertura.slice(0,5)} a ${franja.hora_cierre.slice(0,5)}`;
+    }
+    document.getElementById('horario-libre-aviso').style.display = 'none';
+  }
+
   actualizarResumen();
 }
 
@@ -1422,6 +1462,39 @@ function seleccionarHorario(el, inicio, fin) {
   el.classList.add('selected');
   horarioSeleccionado = { inicio, fin };
   document.getElementById('res-horario').textContent = `${inicio.slice(0,5)} - ${fin.slice(0,5)}`;
+  document.getElementById('res-horario-linea').style.display = 'flex';
+  actualizarResumen();
+}
+
+function seleccionarHoraLibre(hora) {
+  if (!hora) return;
+  const avisoEl = document.getElementById('horario-libre-aviso');
+
+  // Verificar que esté dentro de la franja
+  if (franjasDelDia.length) {
+    const franja = franjasDelDia[0];
+    if (hora < franja.hora_apertura.slice(0,5) || hora > franja.hora_cierre.slice(0,5)) {
+      avisoEl.textContent = `Horario fuera de rango. Disponible: ${franja.hora_apertura.slice(0,5)} a ${franja.hora_cierre.slice(0,5)}`;
+      avisoEl.style.display = 'block';
+      horarioSeleccionado = null;
+      return;
+    }
+    // Verificar límite de simultáneos si aplica
+    const maxSim = franja.max_simultaneos;
+    if (maxSim !== null && maxSim !== undefined) {
+      const ocupados = reservasHoraDelDia[hora + ':00'] || reservasHoraDelDia[hora] || 0;
+      if (ocupados >= maxSim) {
+        avisoEl.textContent = `Este horario ya está completo. Elegí otro.`;
+        avisoEl.style.display = 'block';
+        horarioSeleccionado = null;
+        return;
+      }
+    }
+  }
+
+  avisoEl.style.display = 'none';
+  horarioSeleccionado = { inicio: hora, fin: hora };
+  document.getElementById('res-horario').textContent = hora.slice(0,5);
   document.getElementById('res-horario-linea').style.display = 'flex';
   actualizarResumen();
 }
@@ -1568,7 +1641,13 @@ async function enviarReserva() {
 
   if (!nombre || !email) { toast('Completá nombre y email', 'error'); return; }
   if (!fechaSeleccionada) { toast('Elegí una fecha del calendario', 'error'); return; }
-  if (!horarioSeleccionado) { toast('Elegí un horario', 'error'); return; }
+  const modo = salon?._modo_horario || 'fijo';
+  if (modo === 'libre' && !horarioSeleccionado) { toast('Elegí el horario de retiro o entrega', 'error'); return; }
+  if (modo === 'fijo' && !horarioSeleccionado) { toast('Elegí un horario', 'error'); return; }
+  // En modo libre hora_fin = hora_inicio (no hay duración)
+  if (modo === 'libre' && horarioSeleccionado) {
+    horarioSeleccionado.fin = horarioSeleccionado.inicio;
+  }
 
   // Validar modalidad de entrega si aplica
   const tieneEntrega = salon?.ofrece_retiro || salon?.ofrece_envio;
