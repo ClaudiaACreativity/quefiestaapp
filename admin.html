@@ -985,6 +985,38 @@ select option { background: var(--surface2); }
       </div>
 
       <div class="config-section">
+        <div class="config-section-title">Modalidad de entrega</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">
+          Activá las opciones que ofrecés. Si no aplica (ej: solo salón de eventos), dejá todo desactivado.
+        </div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+              <div class="toggle-wrap">
+                <button class="toggle" id="cfg-ofrece-retiro" onclick="toggleBtn(this)"></button>
+              </div>
+              <span>Retiro en el local</span>
+            </label>
+            <div style="font-size:12px;color:var(--text2);margin-top:4px;">
+              Usará la dirección configurada en "Identidad de la organización"
+            </div>
+          </div>
+          <div class="form-group">
+            <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+              <div class="toggle-wrap">
+                <button class="toggle" id="cfg-ofrece-envio" onclick="toggleBtn(this);toggleCostoEnvio()"></button>
+              </div>
+              <span>Envío a domicilio</span>
+            </label>
+          </div>
+          <div class="form-group" id="cfg-costo-envio-group" style="display:none;">
+            <label>Costo de envío</label>
+            <input type="number" id="cfg-costo-envio" min="0" step="100" placeholder="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="config-section">
         <div class="config-section-title">Mi cuenta</div>
         <div class="form-grid">
           <div class="form-group">
@@ -1965,6 +1997,13 @@ async function cargarConfiguracion() {
   document.getElementById('cfg-alias').value = cfg.alias_transferencia || '';
   document.getElementById('cfg-mensaje-pago').value = cfg.mensaje_pago || '';
   document.getElementById('cfg-politica-cancelacion').value = cfg.politica_cancelacion || '';
+  // Entrega
+  const btnRetiro = document.getElementById('cfg-ofrece-retiro');
+  const btnEnvio = document.getElementById('cfg-ofrece-envio');
+  if (cfg.ofrece_retiro) btnRetiro.classList.add('on'); else btnRetiro.classList.remove('on');
+  if (cfg.ofrece_envio) btnEnvio.classList.add('on'); else btnEnvio.classList.remove('on');
+  document.getElementById('cfg-costo-envio').value = cfg.costo_envio || 0;
+  toggleCostoEnvio();
   toggleSeñaGroup();
 }
 
@@ -1972,6 +2011,11 @@ function toggleSeñaGroup() {
   const modalidad = document.getElementById('cfg-modalidad-cobro').value;
   const group = document.getElementById('cfg-seña-group');
   group.style.display = modalidad.includes('seña') ? 'flex' : 'none';
+}
+
+function toggleCostoEnvio() {
+  const activo = document.getElementById('cfg-ofrece-envio').classList.contains('on');
+  document.getElementById('cfg-costo-envio-group').style.display = activo ? 'block' : 'none';
 }
 
 async function guardarConfiguracion() {
@@ -1992,6 +2036,9 @@ async function guardarConfiguracion() {
     alias_transferencia: document.getElementById('cfg-alias').value || null,
     mensaje_pago: document.getElementById('cfg-mensaje-pago').value || null,
     politica_cancelacion: document.getElementById('cfg-politica-cancelacion').value || null,
+    ofrece_retiro: document.getElementById('cfg-ofrece-retiro').classList.contains('on'),
+    ofrece_envio: document.getElementById('cfg-ofrece-envio').classList.contains('on'),
+    costo_envio: parseFloat(document.getElementById('cfg-costo-envio').value) || 0,
   };
 
   const res = await api('PATCH', `/admin/${SLUG}/configuracion`, body);
