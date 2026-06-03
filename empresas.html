@@ -493,7 +493,7 @@ body {
 .cal-dia.pasado { color: #bbb; }
 .cal-dia.no-disponible { color: #ccc; }
 .cal-dia.bloqueado { color: #ccc; text-decoration: line-through; background: #f5f5f5; }
-.cal-dia.completo { background: #fee; color: #e05; font-weight: 700; }
+.cal-dia.completo { background: #fecaca; color: #dc2626; font-weight: 700; border: 2px solid #fca5a5; }
 
 .cal-dia.disponible {
   background: #22c55e;
@@ -630,7 +630,10 @@ body {
   gap: 16px;
 }
 
-@media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+@media (max-width: 600px) {
+  .form-grid { grid-template-columns: 1fr; }
+  #cal-horarios-grid { grid-template-columns: 1fr !important; }
+}
 
 .form-group { display: flex; flex-direction: column; gap: 6px; }
 .form-group.full { grid-column: 1 / -1; }
@@ -858,10 +861,11 @@ footer strong { color: white; }
           <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.8);margin-bottom:8px;">🕐 Horarios de atención</div>
           <div id="banner-horarios-content" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
         </div>
-        <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
+        <!-- Dos tarjetas lado a lado -->
+        <div id="cal-horarios-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:stretch;">
 
-          <!-- Calendario compacto -->
-          <div class="calendario" style="flex:0 0 auto;width:min(100%,280px);margin-bottom:0;">
+          <!-- Tarjeta calendario -->
+          <div class="calendario" style="margin-bottom:0;">
             <div class="cal-header">
               <button class="cal-nav" onclick="cambiarMes(-1)">‹</button>
               <div class="cal-mes" id="cal-mes-label"></div>
@@ -879,26 +883,33 @@ footer strong { color: white; }
             <div class="cal-grid" id="cal-grid"></div>
             <div class="cal-leyenda">
               <div class="cal-leyenda-item"><div class="cal-leyenda-dot" style="background:#22c55e;"></div>Disponible</div>
-              <div class="cal-leyenda-item"><div class="cal-leyenda-dot" style="background:#fee;border:1px solid #f99;"></div>Completo</div>
+              <div class="cal-leyenda-item"><div class="cal-leyenda-dot" style="background:#fecaca;border:1px solid #fca5a5;"></div>Completo</div>
             </div>
           </div>
 
-          <!-- Panel horarios al costado -->
-          <div id="horarios-container" style="display:none;flex:1;min-width:160px;background:var(--surface);border:2px solid var(--color1);border-radius:var(--radius-lg);padding:16px;box-shadow:0 4px 16px color-mix(in srgb,var(--color1) 12%,transparent);">
-            <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--color1);margin-bottom:8px;" id="horarios-label">Horarios</div>
-            <div id="horarios-fecha-sel" style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px;"></div>
-            <div class="horarios-chips" id="horarios-chips" style="flex-direction:column;gap:8px;"></div>
+          <!-- Tarjeta horarios -->
+          <div id="horarios-container" style="background:var(--surface);border:2px solid var(--color1);border-radius:var(--radius-lg);padding:16px;box-shadow:0 4px 16px color-mix(in srgb,var(--color1) 12%,transparent);display:flex;flex-direction:column;justify-content:flex-start;">
+            <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--color1);margin-bottom:6px;" id="horarios-label">Horarios</div>
+            <div id="horarios-fecha-sel" style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;"></div>
+            <!-- Estado inicial -->
+            <div id="horario-placeholder" style="font-size:13px;color:var(--text2);margin-top:auto;text-align:center;padding:24px 0;">← Elegí un día del calendario</div>
+            <!-- Chips turnos fijos -->
+            <div class="horarios-chips" id="horarios-chips" style="flex-direction:column;gap:8px;display:none;"></div>
+            <!-- Selector libre -->
             <div id="horario-libre-container" style="display:none;">
               <div style="font-size:13px;color:var(--text2);margin-bottom:10px;" id="horario-libre-desc"></div>
+              <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px;">Elegí tu horario</div>
               <input type="time" id="horario-libre-input" class="form-input"
-                style="max-width:140px;font-size:18px;font-weight:700;"
+                style="max-width:160px;font-size:18px;font-weight:700;"
                 onchange="seleccionarHoraLibre(this.value)">
               <div id="horario-libre-aviso" style="display:none;margin-top:8px;font-size:12px;color:#E74C3C;"></div>
             </div>
-            <div id="horario-placeholder" style="font-size:13px;color:var(--text2);">← Elegí un día</div>
           </div>
 
         </div>
+
+        <!-- Mobile: apilar -->
+        <style>@media(max-width:600px){#horarios-container,#horarios-container+div,.calendario{width:100%!important;} .presup-cal-grid{grid-template-columns:1fr!important;}}</style>
       </div>
 
       <!-- POLÍTICA DE CANCELACIÓN -->
@@ -1474,7 +1485,7 @@ function seleccionarFecha(fecha, horarios, franjas, reservasHora) {
   const container = document.getElementById('horarios-container');
   const chips = document.getElementById('horarios-chips');
   const libreContainer = document.getElementById('horario-libre-container');
-  container.style.display = 'block';
+  // tarjeta siempre visible, solo ocultar placeholder
 
   const [y,m,d] = fecha.split('-');
   const fechaLinda = new Date(fecha + 'T00:00:00').toLocaleDateString('es-AR', {weekday:'long', day:'numeric', month:'long'});
