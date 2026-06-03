@@ -456,10 +456,16 @@ select option { background: var(--surface2); }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--surface2);
-  border: 1px solid var(--border);
+  background: var(--surface);
+  border: 2px solid var(--border);
   border-radius: var(--radius);
-  padding: 12px 16px;
+  padding: 14px 18px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.horario-item:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 /* ITEMS GRID (menú y juegos) */
@@ -780,16 +786,21 @@ select option { background: var(--surface2); }
 
       <!-- Selector de modo -->
       <div style="background:var(--surface);border:2px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;">
-        <div style="font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:12px;">Modo de disponibilidad</div>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;">
-          <button id="modo-fijo-btn" class="btn btn-accent" onclick="cambiarModoHorario('fijo')" style="flex:1;min-width:180px;">
-            🎪 Turnos fijos
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin-bottom:14px;">Modo de disponibilidad</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <button id="modo-fijo-btn" onclick="cambiarModoHorario('fijo')"
+            style="padding:16px;border-radius:var(--radius-lg);border:2px solid var(--accent);background:var(--accent);color:white;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;transition:all 0.2s;text-align:left;">
+            <div style="font-size:22px;margin-bottom:6px;">🎪</div>
+            <div>Turnos fijos</div>
+            <div style="font-size:11px;font-weight:400;opacity:0.85;margin-top:3px;">El cliente elige entre los turnos que cargás</div>
           </button>
-          <button id="modo-libre-btn" class="btn btn-ghost" onclick="cambiarModoHorario('libre')" style="flex:1;min-width:180px;">
-            🕐 Horario libre
+          <button id="modo-libre-btn" onclick="cambiarModoHorario('libre')"
+            style="padding:16px;border-radius:var(--radius-lg);border:2px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;transition:all 0.2s;text-align:left;">
+            <div style="font-size:22px;margin-bottom:6px;">🕐</div>
+            <div>Horario libre</div>
+            <div style="font-size:11px;font-weight:400;color:var(--text2);margin-top:3px;">El cliente elige fecha y hora dentro de tu franja</div>
           </button>
         </div>
-        <div id="modo-desc" style="margin-top:12px;font-size:13px;color:var(--text2);line-height:1.6;"></div>
       </div>
 
       <!-- Lista turnos fijos -->
@@ -1929,24 +1940,22 @@ function cambiarModoHorario(modo) {
   const btnLibre = document.getElementById('modo-libre-btn');
   const secFijos = document.getElementById('horarios-fijos-section');
   const secLibres = document.getElementById('horarios-libres-section');
-  const desc = document.getElementById('modo-desc');
   const btnAgregar = document.getElementById('btn-agregar-horario');
+  const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#6C3FC5';
 
   if (modo === 'fijo') {
-    btnFijo.className = 'btn btn-accent';
-    btnLibre.className = 'btn btn-ghost';
+    btnFijo.style.cssText = `padding:16px;border-radius:var(--radius-lg);border:2px solid ${accentColor};background:${accentColor};color:white;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;transition:all 0.2s;text-align:left;`;
+    btnLibre.style.cssText = 'padding:16px;border-radius:var(--radius-lg);border:2px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;transition:all 0.2s;text-align:left;';
     secFijos.style.display = 'block';
     secLibres.style.display = 'none';
     btnAgregar.textContent = '+ Agregar turno';
-    desc.textContent = 'Los clientes eligen entre los turnos que configurás (ej: Sábados 15:00-20:00 y 21:00-02:00). Podés indicar cuántos eventos simultáneos admite cada turno.';
     cargarHorarios();
   } else {
-    btnFijo.className = 'btn btn-ghost';
-    btnLibre.className = 'btn btn-accent';
+    btnFijo.style.cssText = 'padding:16px;border-radius:var(--radius-lg);border:2px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;transition:all 0.2s;text-align:left;';
+    btnLibre.style.cssText = `padding:16px;border-radius:var(--radius-lg);border:2px solid ${accentColor};background:${accentColor};color:white;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700;transition:all 0.2s;text-align:left;`;
     secFijos.style.display = 'none';
     secLibres.style.display = 'block';
     btnAgregar.textContent = '+ Agregar franja';
-    desc.textContent = 'Los clientes eligen libremente fecha y hora de retiro o entrega dentro de la franja que configurás (ej: Lunes a Viernes de 9:00 a 18:00).';
     cargarHorariosLibres();
   }
 
