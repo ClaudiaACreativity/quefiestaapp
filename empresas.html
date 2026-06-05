@@ -415,127 +415,162 @@ body {
 .item-check-desc { font-size: 12px; color: var(--text2); margin-top: 2px; }
 .item-check-price { font-weight: 700; font-size: 14px; color: var(--color1); white-space: nowrap; }
 
-/* CALENDARIO */
+/* CALENDARIO estilo almanaque */
 .calendario {
   background: var(--surface);
-  border: 2px solid var(--color1);
+  border: 2px solid var(--cal-header-bg, var(--color1));
   border-radius: var(--radius-lg);
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 24px color-mix(in srgb, var(--color1) 12%, transparent);
+  overflow: hidden;
+  box-shadow: 0 4px 24px color-mix(in srgb, var(--cal-header-bg, var(--color1)) 15%, transparent);
 }
 
 .cal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  padding: 14px 16px;
+  background: var(--surface);
 }
 
 .cal-mes {
   font-family: 'Fraunces', serif;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
+  color: var(--text);
 }
 
 .cal-nav {
-  background: none;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  width: 32px; height: 32px;
+  background: var(--cal-header-bg, var(--color1));
+  color: var(--cal-header-txt, white);
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 16px;
   cursor: pointer;
-  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text);
-  transition: all 0.15s;
+  transition: opacity 0.15s;
 }
 
-.cal-nav:hover { border-color: var(--color1); color: var(--color1); }
+.cal-nav:hover { opacity: 0.8; }
 
 .cal-dias-semana {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
-  margin-bottom: 4px;
+  gap: 1px;
+  background: var(--cal-header-bg, var(--color1));
 }
 
 .cal-dia-label {
   text-align: center;
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--text2);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--cal-header-txt, white);
+  background: var(--cal-header-bg, var(--color1));
+  padding: 7px 2px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  padding: 4px 0;
 }
 
 .cal-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 3px;
+  gap: 1px;
+  background: var(--cal-header-bg, var(--color1));
 }
 
 .cal-dia {
-  aspect-ratio: 1;
+  min-height: 56px;
+  padding: 5px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: white;
+  cursor: default;
+  transition: background 0.12s;
+}
+
+.cal-dia-num {
+  font-size: 12px;
+  font-weight: 700;
+  color: #2C3E50;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.cal-dia-turno {
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 4px;
+  padding: 2px 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cal-dia.vacio { background: var(--cal-cerrado-bg, #f8f9fa); }
+.cal-dia.vacio .cal-dia-num { color: var(--cal-cerrado-txt, #ccc); opacity: 0.4; }
+.cal-dia.pasado { background: #fafafa; }
+.cal-dia.pasado .cal-dia-num { color: #ccc; }
+.cal-dia.no-disponible { background: var(--cal-cerrado-bg, white); }
+.cal-dia.no-disponible .cal-dia-num { color: var(--cal-cerrado-txt, #bbb); }
+.cal-dia.bloqueado { background: #fff5f5; }
+.cal-dia.bloqueado .cal-dia-num { color: #fca5a5; text-decoration: line-through; }
+.cal-dia-turno.libre { background: var(--cal-disponible-bg, #1abc9c); color: var(--cal-disponible-txt, white); }
+.cal-dia-turno.completo { background: var(--cal-completo-bg, #e74c3c); color: var(--cal-completo-txt, white); opacity: 0.85; }
+.cal-dia-turno.libre-hora { background: var(--cal-disponible-bg, #22c55e); color: var(--cal-disponible-txt, white); }
+
+.cal-dia.disponible { cursor: pointer; }
+.cal-dia.disponible:hover { filter: brightness(0.96); }
+
+.cal-dia.seleccionado { background: color-mix(in srgb, var(--cal-seleccionado-bg, #2C3E50) 12%, white) !important; }
+.cal-dia.seleccionado .cal-dia-num {
+  background: var(--cal-seleccionado-bg, #2C3E50);
+  color: var(--cal-seleccionado-txt, white);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: default;
-  transition: all 0.15s;
+  font-size: 11px;
 }
 
-.cal-dia.vacio { background: transparent; }
-.cal-dia.pasado { color: #bbb; }
-.cal-dia.no-disponible { color: #ccc; }
-.cal-dia.bloqueado { color: #ccc; text-decoration: line-through; background: #f5f5f5; }
-.cal-dia.completo { background: #fecaca; color: #dc2626; font-weight: 700; border: 2px solid #fca5a5; }
-
-.cal-dia.disponible {
-  background: #22c55e;
+.cal-dia.es-hoy .cal-dia-num {
+  background: #27ae60;
   color: white;
-  cursor: pointer;
-  font-weight: 800;
-  box-shadow: 0 2px 6px rgba(34,197,94,0.35);
-}
-
-.cal-dia.disponible:hover {
-  background: #16a34a;
-  color: white;
-  transform: scale(1.12);
-  box-shadow: 0 4px 12px rgba(34,197,94,0.45);
-}
-
-.cal-dia.seleccionado {
-  background: var(--color1) !important;
-  color: white !important;
-  transform: scale(1.12);
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--color1) 40%, transparent);
-  font-weight: 800;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
 }
 
 .cal-leyenda {
   display: flex;
-  gap: 12px;
-  margin-top: 12px;
+  gap: 14px;
+  padding: 10px 14px;
+  font-size: 11px;
+  color: var(--text2);
   flex-wrap: wrap;
+  border-top: 1px solid var(--border);
 }
 
 .cal-leyenda-item {
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 10px;
-  color: var(--text2);
 }
 
 .cal-leyenda-dot {
-  width: 10px; height: 10px;
+  width: 10px;
+  height: 10px;
   border-radius: 3px;
+  flex-shrink: 0;
 }
 
 /* HORARIOS */
@@ -882,14 +917,14 @@ footer strong { color: white; }
             </div>
             <div class="cal-grid" id="cal-grid"></div>
             <div class="cal-leyenda">
-              <div class="cal-leyenda-item"><div class="cal-leyenda-dot" style="background:#22c55e;"></div>Disponible</div>
-              <div class="cal-leyenda-item"><div class="cal-leyenda-dot" style="background:#fecaca;border:1px solid #fca5a5;"></div>Completo</div>
+              <div class="cal-leyenda-item"><div class="cal-leyenda-dot" style="background:var(--cal-disponible-bg,#1abc9c);"></div>Disponible</div>
+              <div class="cal-leyenda-item"><div class="cal-leyenda-dot" style="background:var(--cal-completo-bg,#e74c3c);opacity:0.85;"></div>Completo</div>
             </div>
           </div>
 
           <!-- Tarjeta horarios -->
-          <div id="horarios-container" style="background:var(--surface);border:2px solid var(--color1);border-radius:var(--radius-lg);padding:16px;box-shadow:0 4px 16px color-mix(in srgb,var(--color1) 12%,transparent);display:flex;flex-direction:column;justify-content:flex-start;">
-            <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--color1);margin-bottom:6px;" id="horarios-label">Horarios</div>
+          <div id="horarios-container" style="background:var(--surface);border:2px solid var(--cal-header-bg,var(--color1));border-radius:var(--radius-lg);padding:16px;box-shadow:0 4px 16px color-mix(in srgb,var(--cal-header-bg,var(--color1)) 12%,transparent);display:flex;flex-direction:column;justify-content:flex-start;">
+            <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--cal-header-bg,var(--color1));margin-bottom:6px;" id="horarios-label">Horarios</div>
             <div id="horarios-fecha-sel" style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;"></div>
             <!-- Estado inicial -->
             <div id="horario-placeholder" style="font-size:13px;color:var(--text2);margin-top:auto;text-align:center;padding:24px 0;">← Elegí un día del calendario</div>
@@ -897,19 +932,26 @@ footer strong { color: white; }
             <div class="horarios-chips" id="horarios-chips" style="flex-direction:column;gap:8px;display:none;"></div>
             <!-- Selector libre -->
             <div id="horario-libre-container" style="display:none;">
-              <div style="font-size:13px;color:var(--text2);margin-bottom:10px;" id="horario-libre-desc"></div>
-              <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px;">Elegí tu horario</div>
+              <div style="font-size:12px;color:var(--text2);margin-bottom:10px;" id="horario-libre-desc"></div>
+              <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;">Elegí tu horario</div>
+              <div id="horario-libre-botones" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;"></div>
+              <div style="font-size:11px;color:var(--text2);margin-bottom:6px;">O ingresá la hora exacta:</div>
               <input type="time" id="horario-libre-input" class="form-input"
-                style="max-width:160px;font-size:18px;font-weight:700;"
+                style="max-width:130px;font-size:16px;font-weight:700;"
                 onchange="seleccionarHoraLibre(this.value)">
               <div id="horario-libre-aviso" style="display:none;margin-top:8px;font-size:12px;color:#E74C3C;"></div>
+            </div>
+            <!-- Mensaje WhatsApp -->
+            <div id="horario-whatsapp-msg" style="display:none;margin-top:12px;padding:10px 12px;background:color-mix(in srgb,var(--color1) 8%,white);border-radius:var(--radius);border:1px solid color-mix(in srgb,var(--color1) 20%,transparent);font-size:12px;color:var(--text2);">
+              📅 ¿Necesitás un día u horario especial?
+              <a id="horario-whatsapp-link" href="#" target="_blank" style="color:var(--color1);font-weight:700;text-decoration:none;display:block;margin-top:4px;">💬 Escribinos por WhatsApp →</a>
             </div>
           </div>
 
         </div>
 
         <!-- Mobile: apilar -->
-        <style>@media(max-width:600px){#horarios-container,#horarios-container+div,.calendario{width:100%!important;} .presup-cal-grid{grid-template-columns:1fr!important;}}</style>
+        <style>@media(max-width:600px){#cal-horarios-grid{grid-template-columns:1fr!important;}}</style>
       </div>
 
       <!-- POLÍTICA DE CANCELACIÓN -->
@@ -1138,6 +1180,7 @@ window.onload = async () => {
   try {
     await cargarSalon();
     mostrarSeccionEntrega();
+    aplicarColoresCalendario(salon?.config_calendario);
     await Promise.all([cargarMenu(), cargarJuegos(), cargarCombos()]);
     await cargarDisponibilidad();
     renderCalendario();
@@ -1273,6 +1316,29 @@ async function cargarJuegos() {
   if (!res.ok) return;
   juegosItems = await res.json();
   renderJuegosList();
+}
+
+// Colores configurables del calendario
+function aplicarColoresCalendario(cfg) {
+  const d = {
+    header_bg:'#1abc9c', header_txt:'#ffffff',
+    disponible_bg:'#1abc9c', disponible_txt:'#ffffff',
+    completo_bg:'#e74c3c', completo_txt:'#ffffff',
+    cerrado_bg:'#f8f9fa', cerrado_txt:'#cccccc',
+    seleccionado_bg:'#2C3E50', seleccionado_txt:'#ffffff',
+  };
+  const c = Object.assign({}, d, cfg || {});
+  const r = document.documentElement;
+  r.style.setProperty('--cal-header-bg',        c.header_bg);
+  r.style.setProperty('--cal-header-txt',       c.header_txt);
+  r.style.setProperty('--cal-disponible-bg',    c.disponible_bg);
+  r.style.setProperty('--cal-disponible-txt',   c.disponible_txt);
+  r.style.setProperty('--cal-completo-bg',      c.completo_bg);
+  r.style.setProperty('--cal-completo-txt',     c.completo_txt);
+  r.style.setProperty('--cal-cerrado-bg',       c.cerrado_bg);
+  r.style.setProperty('--cal-cerrado-txt',      c.cerrado_txt);
+  r.style.setProperty('--cal-seleccionado-bg',  c.seleccionado_bg);
+  r.style.setProperty('--cal-seleccionado-txt', c.seleccionado_txt);
 }
 
 async function cargarDisponibilidad() {
@@ -1433,10 +1499,17 @@ function renderCalendario() {
   // Primer día del mes
   const primerDia = new Date(calAnio, calMes - 1, 1).getDay();
 
+  const hoy = new Date();
+  const hoyStr = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
+  const modo = salon?._modo_horario || 'fijo';
+
   // Días vacíos al inicio
   for (let i = 0; i < primerDia; i++) {
     const vacio = document.createElement('div');
     vacio.className = 'cal-dia vacio';
+    const numV = document.createElement('div');
+    numV.className = 'cal-dia-num';
+    vacio.appendChild(numV);
     grid.appendChild(vacio);
   }
 
@@ -1449,9 +1522,44 @@ function renderCalendario() {
 
     const el = document.createElement('div');
     el.className = `cal-dia ${estado}`;
-    el.textContent = d;
-
+    if (fecha === hoyStr) el.classList.add('es-hoy');
     if (fecha === fechaSeleccionada) el.classList.add('seleccionado');
+
+    // Número del día
+    const num = document.createElement('div');
+    num.className = 'cal-dia-num';
+    num.textContent = d;
+    el.appendChild(num);
+
+    // Turnos/franjas dentro de la celda
+    if (estado === 'disponible' || estado === 'completo') {
+      if (modo === 'fijo' && diaData?.horarios?.length) {
+        diaData.horarios.slice(0,2).forEach(h => {
+          const chip = document.createElement('div');
+          chip.className = `cal-dia-turno ${estado === 'disponible' ? 'libre' : 'completo'}`;
+          chip.textContent = `${h.hora_inicio.slice(0,5)}–${h.hora_fin.slice(0,5)}`;
+          el.appendChild(chip);
+        });
+        if (diaData.horarios.length > 2) {
+          const mas = document.createElement('div');
+          mas.className = 'cal-dia-turno libre';
+          mas.style.opacity = '0.7';
+          mas.textContent = `+${diaData.horarios.length - 2} más`;
+          el.appendChild(mas);
+        }
+      } else if (modo === 'libre' && diaData?.franjas?.length) {
+        const f = diaData.franjas[0];
+        const chip = document.createElement('div');
+        chip.className = 'cal-dia-turno libre-hora';
+        chip.textContent = `${f.hora_apertura.slice(0,5)}-${f.hora_cierre.slice(0,5)}`;
+        el.appendChild(chip);
+        // Indicación de clic
+        const hint = document.createElement('div');
+        hint.style.cssText = 'font-size:9px;color:#888;margin-top:2px;';
+        hint.textContent = '↗ elegí horario';
+        el.appendChild(hint);
+      }
+    }
 
     if (estado === 'disponible') {
       el.onclick = () => seleccionarFecha(fecha, diaData?.horarios || [], diaData?.franjas || [], diaData?.reservas_hora || {});
@@ -1513,18 +1621,56 @@ function seleccionarFecha(fecha, horarios, franjas, reservasHora) {
   } else {
     chips.style.display = 'none';
     libreContainer.style.display = 'block';
-    document.getElementById('horarios-label').textContent = 'Elegí el horario de retiro o entrega:';
+    document.getElementById('horarios-label').textContent = 'Horario de retiro o entrega';
     const input = document.getElementById('horario-libre-input');
     input.value = '';
 
     if (franjasDelDia.length) {
       const franja = franjasDelDia[0];
-      input.min = franja.hora_apertura.slice(0,5);
-      input.max = franja.hora_cierre.slice(0,5);
-      document.getElementById('horario-libre-desc').textContent =
-        `Horario disponible: ${franja.hora_apertura.slice(0,5)} a ${franja.hora_cierre.slice(0,5)}`;
+      const apertura = franja.hora_apertura.slice(0,5);
+      const cierre = franja.hora_cierre.slice(0,5);
+      input.min = apertura;
+      input.max = cierre;
+      document.getElementById('horario-libre-desc').textContent = `Disponible de ${apertura} a ${cierre}`;
+
+      // Botones cada 60 min
+      const botonesEl = document.getElementById('horario-libre-botones');
+      if (botonesEl) {
+        botonesEl.innerHTML = '';
+        const hAp = parseInt(apertura.slice(0,2));
+        const hCi = parseInt(cierre.slice(0,2));
+        for (let h = hAp; h < hCi; h++) {
+          const hora = h.toString().padStart(2,'0') + ':00';
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.textContent = hora;
+          btn.style.cssText = 'padding:6px 12px;border-radius:20px;border:2px solid var(--border);background:var(--bg);cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;color:var(--text);transition:all 0.15s;';
+          btn.onclick = () => {
+            botonesEl.querySelectorAll('button').forEach(b => {
+              b.style.background='var(--bg)'; b.style.borderColor='var(--border)'; b.style.color='var(--text)';
+            });
+            btn.style.background = getComputedStyle(document.documentElement).getPropertyValue('--cal-header-bg').trim() || 'var(--color1)';
+            btn.style.borderColor = btn.style.background;
+            btn.style.color = getComputedStyle(document.documentElement).getPropertyValue('--cal-header-txt').trim() || 'white';
+            input.value = hora;
+            seleccionarHoraLibre(hora);
+          };
+          botonesEl.appendChild(btn);
+        }
+      }
     }
     document.getElementById('horario-libre-aviso').style.display = 'none';
+
+    // Mensaje WhatsApp
+    const wpMsg = document.getElementById('horario-whatsapp-msg');
+    const wpLink = document.getElementById('horario-whatsapp-link');
+    if (wpMsg && salon?.whatsapp) {
+      const wpNum = salon.whatsapp.replace(/\D/g, '');
+      wpLink.href = `https://wa.me/${wpNum}?text=Hola!%20Quiero%20consultar%20sobre%20un%20horario%20especial`;
+      wpMsg.style.display = 'block';
+    } else if (wpMsg) {
+      wpMsg.style.display = 'none';
+    }
   }
 
   actualizarResumen();

@@ -1021,6 +1021,96 @@ select option { background: var(--surface2); }
       </div>
 
       <div class="config-section">
+        <div class="config-section-title">Colores del calendario</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">
+          Personalizá los colores que ven tus clientes al elegir fecha. Son independientes de los colores de tu marca.
+        </div>
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label>Encabezado — fondo</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="color" id="cal-color-header-bg" value="#1abc9c" style="width:44px;height:36px;border:1px solid var(--border);border-radius:8px;cursor:pointer;padding:2px;">
+              <input type="text" id="cal-color-header-bg-text" class="form-input" placeholder="#1abc9c" style="flex:1;" oninput="syncColor('cal-color-header-bg','cal-color-header-bg-text')">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Encabezado — texto</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="color" id="cal-color-header-txt" value="#ffffff" style="width:44px;height:36px;border:1px solid var(--border);border-radius:8px;cursor:pointer;padding:2px;">
+              <input type="text" id="cal-color-header-txt-text" class="form-input" placeholder="#ffffff" style="flex:1;" oninput="syncColor('cal-color-header-txt','cal-color-header-txt-text')">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Día disponible — fondo</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="color" id="cal-color-disponible-bg" value="#1abc9c" style="width:44px;height:36px;border:1px solid var(--border);border-radius:8px;cursor:pointer;padding:2px;">
+              <input type="text" id="cal-color-disponible-bg-text" class="form-input" placeholder="#1abc9c" style="flex:1;" oninput="syncColor('cal-color-disponible-bg','cal-color-disponible-bg-text')">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Día disponible — texto</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="color" id="cal-color-disponible-txt" value="#ffffff" style="width:44px;height:36px;border:1px solid var(--border);border-radius:8px;cursor:pointer;padding:2px;">
+              <input type="text" id="cal-color-disponible-txt-text" class="form-input" placeholder="#ffffff" style="flex:1;" oninput="syncColor('cal-color-disponible-txt','cal-color-disponible-txt-text')">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Día completo/ocupado — fondo</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="color" id="cal-color-completo-bg" value="#e74c3c" style="width:44px;height:36px;border:1px solid var(--border);border-radius:8px;cursor:pointer;padding:2px;">
+              <input type="text" id="cal-color-completo-bg-text" class="form-input" placeholder="#e74c3c" style="flex:1;" oninput="syncColor('cal-color-completo-bg','cal-color-completo-bg-text')">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Día completo/ocupado — texto</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="color" id="cal-color-completo-txt" value="#ffffff" style="width:44px;height:36px;border:1px solid var(--border);border-radius:8px;cursor:pointer;padding:2px;">
+              <input type="text" id="cal-color-completo-txt-text" class="form-input" placeholder="#ffffff" style="flex:1;" oninput="syncColor('cal-color-completo-txt','cal-color-completo-txt-text')">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Día no disponible/cerrado — fondo</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="color" id="cal-color-cerrado-bg" value="#f8f9fa" style="width:44px;height:36px;border:1px solid var(--border);border-radius:8px;cursor:pointer;padding:2px;">
+              <input type="text" id="cal-color-cerrado-bg-text" class="form-input" placeholder="#f8f9fa" style="flex:1;" oninput="syncColor('cal-color-cerrado-bg','cal-color-cerrado-bg-text')">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Día no disponible/cerrado — texto</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="color" id="cal-color-cerrado-txt" value="#cccccc" style="width:44px;height:36px;border:1px solid var(--border);border-radius:8px;cursor:pointer;padding:2px;">
+              <input type="text" id="cal-color-cerrado-txt-text" class="form-input" placeholder="#cccccc" style="flex:1;" oninput="syncColor('cal-color-cerrado-txt','cal-color-cerrado-txt-text')">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Día seleccionado — fondo</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="color" id="cal-color-seleccionado-bg" value="#2C3E50" style="width:44px;height:36px;border:1px solid var(--border);border-radius:8px;cursor:pointer;padding:2px;">
+              <input type="text" id="cal-color-seleccionado-bg-text" class="form-input" placeholder="#2C3E50" style="flex:1;" oninput="syncColor('cal-color-seleccionado-bg','cal-color-seleccionado-bg-text')">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Día seleccionado — texto</label>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <input type="color" id="cal-color-seleccionado-txt" value="#ffffff" style="width:44px;height:36px;border:1px solid var(--border);border-radius:8px;cursor:pointer;padding:2px;">
+              <input type="text" id="cal-color-seleccionado-txt-text" class="form-input" placeholder="#ffffff" style="flex:1;" oninput="syncColor('cal-color-seleccionado-txt','cal-color-seleccionado-txt-text')">
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="config-section">
         <div class="config-section-title">Modalidad de entrega</div>
         <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">
           Activá las opciones que ofrecés. Si no aplica (ej: solo salón de eventos), dejá todo desactivado.
@@ -2160,6 +2250,9 @@ async function cargarConfiguracion() {
   toggleCostoEnvio();
   toggleSeñaGroup();
 
+  // Colores del calendario
+  cargarColoresCalendario(cfg.config_calendario);
+
   // Modo horario — sincronizar la página de horarios si ya se cargó
   if (cfg.modo_horario && cfg.modo_horario !== modoHorario) {
     modoHorario = cfg.modo_horario;
@@ -2175,6 +2268,72 @@ function toggleSeñaGroup() {
 function toggleCostoEnvio() {
   const activo = document.getElementById('cfg-ofrece-envio').classList.contains('on');
   document.getElementById('cfg-costo-envio-group').style.display = activo ? 'block' : 'none';
+}
+
+// Sincroniza color picker <-> input de texto
+function syncColor(pickerId, textId) {
+  const picker = document.getElementById(pickerId);
+  const text = document.getElementById(textId);
+  if (!picker || !text) return;
+  // Llamado desde el input de texto
+  if (document.activeElement === text) {
+    const val = text.value.trim();
+    if (/^#[0-9a-fA-F]{6}$/.test(val)) picker.value = val;
+  } else {
+    text.value = picker.value;
+  }
+}
+
+// Mapeo de campos de color del calendario
+const CAL_COLOR_FIELDS = [
+  ['cal-color-header-bg',       'header_bg'],
+  ['cal-color-header-txt',      'header_txt'],
+  ['cal-color-disponible-bg',   'disponible_bg'],
+  ['cal-color-disponible-txt',  'disponible_txt'],
+  ['cal-color-completo-bg',     'completo_bg'],
+  ['cal-color-completo-txt',    'completo_txt'],
+  ['cal-color-cerrado-bg',      'cerrado_bg'],
+  ['cal-color-cerrado-txt',     'cerrado_txt'],
+  ['cal-color-seleccionado-bg', 'seleccionado_bg'],
+  ['cal-color-seleccionado-txt','seleccionado_txt'],
+];
+
+// Registrar eventos change en los color pickers
+document.addEventListener('DOMContentLoaded', () => {
+  CAL_COLOR_FIELDS.forEach(([id]) => {
+    const picker = document.getElementById(id);
+    const textEl = document.getElementById(id + '-text');
+    if (picker && textEl) {
+      picker.addEventListener('input', () => { textEl.value = picker.value; });
+    }
+  });
+});
+
+function cargarColoresCalendario(cfg) {
+  const defaults = {
+    header_bg: '#1abc9c', header_txt: '#ffffff',
+    disponible_bg: '#1abc9c', disponible_txt: '#ffffff',
+    completo_bg: '#e74c3c', completo_txt: '#ffffff',
+    cerrado_bg: '#f8f9fa', cerrado_txt: '#cccccc',
+    seleccionado_bg: '#2C3E50', seleccionado_txt: '#ffffff',
+  };
+  const colores = Object.assign({}, defaults, cfg || {});
+  CAL_COLOR_FIELDS.forEach(([id, key]) => {
+    const picker = document.getElementById(id);
+    const textEl = document.getElementById(id + '-text');
+    const val = colores[key] || defaults[key] || '#000000';
+    if (picker) picker.value = val;
+    if (textEl) textEl.value = val;
+  });
+}
+
+function leerColoresCalendario() {
+  const colores = {};
+  CAL_COLOR_FIELDS.forEach(([id, key]) => {
+    const picker = document.getElementById(id);
+    if (picker) colores[key] = picker.value;
+  });
+  return colores;
 }
 
 async function guardarConfiguracion() {
@@ -2198,6 +2357,7 @@ async function guardarConfiguracion() {
     ofrece_retiro: document.getElementById('cfg-ofrece-retiro').classList.contains('on'),
     ofrece_envio: document.getElementById('cfg-ofrece-envio').classList.contains('on'),
     costo_envio: parseFloat(document.getElementById('cfg-costo-envio').value) || 0,
+    config_calendario: leerColoresCalendario(),
   };
 
   const res = await api('PATCH', `/admin/${SLUG}/configuracion`, body);
