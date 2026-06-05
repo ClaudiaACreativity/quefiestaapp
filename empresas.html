@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Reservá tu fiesta</title>
+<title>Reservá tu evento</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Montserrat:wght@800&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -292,14 +292,12 @@ body {
 
 /* PRESUPUESTADOR */
 .presup-container {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 32px;
-  align-items: start;
+  max-width: 680px;
+  margin: 0 auto;
 }
 
-@media (max-width: 900px) {
-  .presup-container { grid-template-columns: 1fr; }
+@media (max-width: 1100px) {
+  .resumen { display: none; }
 }
 
 .presup-panel {
@@ -601,8 +599,11 @@ body {
   border: 2px solid var(--color1);
   border-radius: var(--radius-lg);
   padding: 24px;
-  position: sticky;
+  position: fixed;
   top: 24px;
+  right: 24px;
+  width: 300px;
+  z-index: 100;
   box-shadow: 0 4px 24px color-mix(in srgb, var(--color1) 12%, transparent);
 }
 
@@ -667,7 +668,9 @@ body {
 
 @media (max-width: 600px) {
   .form-grid { grid-template-columns: 1fr; }
-  #cal-horarios-grid { grid-template-columns: 1fr !important; }
+}
+@media (max-width: 900px) {
+  .resumen { position: static !important; width: 100% !important; right: auto !important; display: block !important; }
 }
 
 .form-group { display: flex; flex-direction: column; gap: 6px; }
@@ -819,11 +822,11 @@ footer strong { color: white; }
   <div class="hero-content">
     <img id="hero-logo" class="hero-logo" src="" alt="">
     <div class="hero-badge" id="hero-badge">🎉 Reservas online</div>
-    <h1 class="hero-title" id="hero-title">Tu fiesta, <span>perfecta</span></h1>
-    <p class="hero-subtitle" id="hero-subtitle">Armá el festejo ideal para ese día especial. Elegí menú, juegos y fecha desde acá.</p>
+    <h1 class="hero-title" id="hero-title">Tu evento, <span>perfecto</span></h1>
+    <p class="hero-subtitle" id="hero-subtitle">Armá el evento ideal para ese día especial. Elegí menú, adicionales y fecha desde acá.</p>
     <div class="hero-actions">
       <a href="#presupuestador" class="btn-hero btn-hero-primary">🎊 Armar mi presupuesto</a>
-      <a href="#combos" class="btn-hero btn-hero-secondary">Ver combos</a>
+      <a href="#combos" class="btn-hero btn-hero-secondary">Ver ofertas</a>
     </div>
   </div>
 </header>
@@ -845,7 +848,7 @@ footer strong { color: white; }
 <!-- PRESUPUESTADOR -->
 <section class="section" id="presupuestador">
   <div class="section-label">Presupuestador</div>
-  <div class="section-title">Armá tu fiesta a medida</div>
+  <div class="section-title">Armá tu evento a medida</div>
   <div class="section-subtitle">Elegí lo que querés incluir y el precio se actualiza en tiempo real</div>
 
   <div class="presup-container">
@@ -898,6 +901,7 @@ footer strong { color: white; }
         </div>
 
         <!-- Calendario ancho completo, semana empieza lunes -->
+        <div style="position:relative;">
         <div class="calendario">
           <div class="cal-header">
             <button class="cal-nav" onclick="cambiarMes(-1)">‹</button>
@@ -918,10 +922,10 @@ footer strong { color: white; }
             <div class="cal-leyenda-item"><div class="cal-leyenda-dot" style="background:var(--cal-disponible-bg,#1abc9c);"></div>Disponible</div>
             <div class="cal-leyenda-item"><div class="cal-leyenda-dot" style="background:var(--cal-completo-bg,#e74c3c);opacity:0.85;"></div>Completo</div>
           </div>
-        </div>
+        </div><!-- fin calendario -->
 
-        <!-- Popup horarios (aparece debajo del calendario al hacer clic en un día) -->
-        <div id="horarios-popup" style="display:none;margin-top:12px;background:var(--surface);border:2px solid var(--cal-header-bg,var(--color1));border-radius:var(--radius-lg);padding:16px 20px;box-shadow:0 4px 24px color-mix(in srgb,var(--cal-header-bg,var(--color1)) 15%,transparent);">
+        <!-- Popup horarios flotante sobre el calendario -->
+        <div id="horarios-popup" style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:280px;background:var(--surface);border:2px solid var(--cal-header-bg,var(--color1));border-radius:var(--radius-lg);padding:16px 20px;box-shadow:0 8px 40px rgba(0,0,0,0.18);z-index:200;">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;">
             <div>
               <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--cal-header-bg,var(--color1));" id="horarios-label">Elegí un horario</div>
@@ -947,7 +951,8 @@ footer strong { color: white; }
             📅 ¿Necesitás un día u horario especial?
             <a id="horario-whatsapp-link" href="#" target="_blank" style="color:var(--color1);font-weight:700;text-decoration:none;display:block;margin-top:4px;">💬 Escribinos por WhatsApp →</a>
           </div>
-        </div>
+        </div><!-- fin popup -->
+        </div><!-- fin position:relative -->
 
       </div>
 
@@ -1058,7 +1063,7 @@ footer strong { color: white; }
 
     </div>
 
-    <!-- COLUMNA DERECHA — RESUMEN -->
+    <!-- RESUMEN (fixed via CSS) -->
     <div>
       <div class="resumen">
         <div class="resumen-title">Tu presupuesto 🎊</div>
@@ -1095,7 +1100,7 @@ footer strong { color: white; }
         <div class="resumen-seña" id="res-seña" style="display:none;"></div>
 
         <div style="margin-top:16px;font-size:12px;color:var(--text2);line-height:1.5;text-align:center;">
-          * El presupuesto es orientativo y será confirmado por el salón.
+          * El presupuesto es orientativo y será confirmado por la organización.
         </div>
       </div>
     </div>
@@ -1412,7 +1417,7 @@ function renderMenuList() {
         </div>
         <div class="item-check-info">
           <div class="item-check-name">${item.nombre}</div>
-          <div class="item-check-desc">Base ${formatPrecio(item.precio_base)} · Extra: ${formatPrecio(item.precio_por_nino_extra)}/niño</div>
+          <div class="item-check-desc">Base ${formatPrecio(item.precio_base)} · Extra: ${formatPrecio(item.precio_por_nino_extra)}/persona</div>
         </div>
       </div>
     `;
@@ -1422,16 +1427,16 @@ function renderMenuList() {
 function renderJuegosList() {
   const list = document.getElementById('juegos-list');
   if (!juegosItems.length) {
-    list.innerHTML = '<div style="color:var(--text2);font-size:14px;">No hay juegos configurados.</div>';
+    list.innerHTML = '<div style="color:var(--text2);font-size:14px;">No hay adicionales configurados.</div>';
     return;
   }
 
   list.innerHTML = juegosItems.map(j => {
     const checked = juegosSeleccionados.some(s => s.id === j.id);
     let precioLabel = '';
-    if (j.precio_fijo > 0 && j.precio_por_nino > 0) precioLabel = `${formatPrecio(j.precio_fijo)} + ${formatPrecio(j.precio_por_nino)}/niño`;
+    if (j.precio_fijo > 0 && j.precio_por_nino > 0) precioLabel = `${formatPrecio(j.precio_fijo)} + ${formatPrecio(j.precio_por_nino)}/persona`;
     else if (j.precio_fijo > 0) precioLabel = formatPrecio(j.precio_fijo);
-    else if (j.precio_por_nino > 0) precioLabel = `${formatPrecio(j.precio_por_nino)}/niño`;
+    else if (j.precio_por_nino > 0) precioLabel = `${formatPrecio(j.precio_por_nino)}/persona`;
 
     return `
       <div class="item-check ${checked ? 'checked' : ''}" onclick="toggleJuego('${j.id}')">
