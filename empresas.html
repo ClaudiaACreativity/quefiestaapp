@@ -1327,7 +1327,10 @@ function aplicarColoresCalendario(cfg) {
     cerrado_bg:'#f8f9fa', cerrado_txt:'#cccccc',
     seleccionado_bg:'#2C3E50', seleccionado_txt:'#ffffff',
   };
-  const c = Object.assign({}, d, cfg || {});
+  // asyncpg puede devolver el JSONB como string — parsearlo si es necesario
+  let parsed = cfg;
+  if (typeof cfg === 'string') { try { parsed = JSON.parse(cfg); } catch(e) { parsed = {}; } }
+  const c = Object.assign({}, d, parsed || {});
   const r = document.documentElement;
   r.style.setProperty('--cal-header-bg',        c.header_bg);
   r.style.setProperty('--cal-header-txt',       c.header_txt);
