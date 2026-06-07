@@ -1194,12 +1194,20 @@ select option { background: var(--surface2); }
         <textarea id="mi-descripcion" placeholder="Descripción breve"></textarea>
       </div>
       <div class="form-group">
-        <label>Precio base <span style="font-size:11px;font-weight:400;color:var(--text2);">(modo base: precio para X personas · modo unidades: precio por unidad · modo personas: precio de referencia)</span></label>
+        <label>Precio base <span style="font-size:11px;font-weight:400;color:var(--text2);">(modo base: precio para la cantidad base)</span></label>
         <input type="number" id="mi-precio-base" min="0" step="100" placeholder="0">
       </div>
       <div class="form-group">
-        <label>Precio por niño extra</label>
+        <label>Extra por persona <span style="font-size:11px;font-weight:400;color:var(--text2);">(modo base)</span></label>
         <input type="number" id="mi-precio-extra" min="0" step="100" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>Precio por unidad <span style="font-size:11px;font-weight:400;color:var(--text2);">(modo unidades — vacío = igual al base)</span></label>
+        <input type="number" id="mi-precio-unidad" min="0" step="100" placeholder="">
+      </div>
+      <div class="form-group">
+        <label>Precio ref. por persona <span style="font-size:11px;font-weight:400;color:var(--text2);">(modo personas — vacío = igual al base)</span></label>
+        <input type="number" id="mi-precio-ref" min="0" step="100" placeholder="">
       </div>
       <div class="form-group full">
         <label>Imagen (opcional)</label>
@@ -1902,6 +1910,8 @@ function openModalMenuItem(item) {
   document.getElementById('mi-nombre').value = item?.nombre || '';
   document.getElementById('mi-descripcion').value = item?.descripcion || '';
   document.getElementById('mi-precio-base').value = item?.precio_base || 0;
+  document.getElementById('mi-precio-unidad').value = item?.precio_unidad || '';
+  document.getElementById('mi-precio-ref').value = item?.precio_ref_persona || '';
   document.getElementById('mi-precio-extra').value = item?.precio_por_nino_extra || 0;
   document.getElementById('mi-imagen').value = item?.imagen_url || '';
   document.getElementById('mi-orden').value = item?.orden ?? 0;
@@ -1919,6 +1929,8 @@ async function guardarMenuItem() {
     nombre: document.getElementById('mi-nombre').value,
     descripcion: document.getElementById('mi-descripcion').value,
     precio_base: parseFloat(document.getElementById('mi-precio-base').value) || 0,
+    precio_unidad: parseFloat(document.getElementById('mi-precio-unidad').value) || null,
+    precio_ref_persona: parseFloat(document.getElementById('mi-precio-ref').value) || null,
     precio_por_nino_extra: parseFloat(document.getElementById('mi-precio-extra').value) || 0,
     imagen_url: document.getElementById('mi-imagen').value || null,
     orden: parseInt(document.getElementById('mi-orden').value) || 0,

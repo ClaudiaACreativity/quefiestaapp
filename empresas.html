@@ -985,6 +985,13 @@ footer strong { color: white; }
     <!-- RESUMEN STICKY -->
     <div class="resumen">
       <div class="resumen-title">Tu presupuesto 🎊</div>
+      <!-- Combo seleccionado -->
+      <div class="resumen-linea" id="res-combo-linea" style="display:none;">
+        <span class="resumen-linea-label">🎁 <span id="res-combo-nombre"></span></span>
+        <span class="resumen-linea-valor" id="res-combo-valor">$0</span>
+      </div>
+      <!-- Detalle ítems -->
+      <div id="res-detalle-items"></div>
       <div class="resumen-linea" id="res-salon-linea" style="display:none;">
         <span class="resumen-linea-label">Servicio (<span id="res-ninos">20</span> personas)</span>
         <span class="resumen-linea-valor" id="res-salon">$0</span>
@@ -1293,7 +1300,7 @@ window.onload = async () => {
     mostrarSeccionEntrega();
     aplicarColoresCalendario(salon?.config_calendario);
     // Opacidad de imagen de portada
-    const opacidad = salon?.portada_opacidad ?? 0.9;
+    const opacidad = parseFloat(salon?.portada_opacidad ?? 0.9) || 0.9;
     document.documentElement.style.setProperty('--hero-img-opacity', opacidad);
     inicializarModos();
     await Promise.all([cargarMenu(), cargarJuegos(), cargarCombos()]);
@@ -1528,24 +1535,37 @@ function renderMenuList() {
       ? `<img src="${item.imagen_url}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;" onerror="this.style.display='none'">`
       : '🍽';
 
-    if (modo === 'unidades' || modo === 'personas') {
+    if (modo === 'unidades') {
       const key = 'menu_' + item.id;
       const cant = cantidadesItems[key] || 0;
-      const precioLabel = modo === 'unidades'
-        ? formatPrecio(item.precio_base) + ' c/u'
-        : formatPrecio(item.precio_base) + '/persona';
+      const precioU = parseFloat(item.precio_unidad) || parseFloat(item.precio_base) || 0;
       return `
         <div class="item-check ${cant > 0 ? 'checked' : ''}">
           <div class="item-check-box">${cant > 0 ? '✓' : ''}</div>
           <div class="item-check-img">${imgHtml}</div>
           <div class="item-check-info" style="flex:1;">
             <div class="item-check-name">${item.nombre}</div>
-            <div class="item-check-desc">${precioLabel}</div>
+            <div class="item-check-desc">${formatPrecio(precioU)} c/u</div>
           </div>
           <div class="cantidad-item-control">
             <button class="cantidad-item-btn" onclick="cambiarCantidadItem('${item.id}', -1, 'menu')">−</button>
             <span class="cantidad-item-val" id="cant-val-menu_${item.id}">${cant}</span>
             <button class="cantidad-item-btn" onclick="cambiarCantidadItem('${item.id}', 1, 'menu')">+</button>
+          </div>
+        </div>
+      `;
+    }
+
+    if (modo === 'personas') {
+      const sel = menuSeleccionado.some(m => m.id === item.id);
+      const precioRef = parseFloat(item.precio_ref_persona) || parseFloat(item.precio_base) || 0;
+      return `
+        <div class="item-check ${sel ? 'checked' : ''}" onclick="toggleMenu('${item.id}')">
+          <div class="item-check-box">${sel ? '✓' : ''}</div>
+          <div class="item-check-img">${imgHtml}</div>
+          <div class="item-check-info">
+            <div class="item-check-name">${item.nombre}</div>
+            <div class="item-check-desc" style="color:var(--color1);font-weight:600;">${formatPrecio(precioRef)}/persona <span style="font-weight:400;color:var(--text2);">(ref.)</span></div>
           </div>
         </div>
       `;
@@ -1584,21 +1604,37 @@ function renderJuegosList() {
       ? `<img src="${j.imagen_url}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;" onerror="this.style.display='none'">`
       : '🎮';
 
-    if (modo === 'unidades' || modo === 'personas') {
+    if (modo === 'unidades') {
       const key = 'jue_' + j.id;
       const cant = cantidadesItems[key] || 0;
+      const precioU = parseFloat(j.precio_unidad) || parseFloat(j.precio_fijo) || 0;
       return `
         <div class="item-check ${cant > 0 ? 'checked' : ''}">
           <div class="item-check-box">${cant > 0 ? '✓' : ''}</div>
           <div class="item-check-img">${imgHtml}</div>
           <div class="item-check-info" style="flex:1;">
             <div class="item-check-name">${j.nombre}</div>
-            ${j.descripcion ? `<div class="item-check-desc">${j.descripcion}</div>` : ''}
+            <div class="item-check-desc">${formatPrecio(precioU)} c/u</div>
           </div>
           <div class="cantidad-item-control">
             <button class="cantidad-item-btn" onclick="cambiarCantidadItem('${j.id}', -1, 'jue')">−</button>
             <span class="cantidad-item-val" id="cant-val-jue_${j.id}">${cant}</span>
             <button class="cantidad-item-btn" onclick="cambiarCantidadItem('${j.id}', 1, 'jue')">+</button>
+          </div>
+        </div>
+      `;
+    }
+
+    if (modo === 'personas') {
+      const sel = juegosSeleccionados.some(s => s.id === j.id);
+      const precioRef = parseFloat(j.precio_ref_persona) || parseFloat(j.precio_fijo) || 0;
+      return `
+        <div class="item-check ${sel ? 'checked' : ''}" onclick="toggleJuego('${j.id}')">
+          <div class="item-check-box">${sel ? '✓' : ''}</div>
+          <div class="item-check-img">${imgHtml}</div>
+          <div class="item-check-info">
+            <div class="item-check-name">${j.nombre}</div>
+            <div class="item-check-desc" style="color:var(--color1);font-weight:600;">${formatPrecio(precioRef)}/persona <span style="font-weight:400;color:var(--text2);">(ref.)</span></div>
           </div>
         </div>
       `;
@@ -1650,9 +1686,18 @@ function toggleJuego(id) {
   actualizarResumen();
 }
 
+let comboSeleccionado = null;
+
 function seleccionarCombo(el, combo) {
+  const yaSeleccionado = el.classList.contains('selected');
   document.querySelectorAll('.combo-card').forEach(c => c.classList.remove('selected'));
-  el.classList.toggle('selected');
+  if (yaSeleccionado) {
+    comboSeleccionado = null;
+  } else {
+    el.classList.add('selected');
+    comboSeleccionado = combo;
+  }
+  actualizarResumen();
 }
 
 // ============================================================
@@ -1756,6 +1801,11 @@ let reservasHoraDelDia = {};
 // ============================================================
 function inicializarModos() {
   if (!salon) return;
+  // Resetear estado al inicializar
+  comboSeleccionado = null;
+  menuSeleccionado = [];
+  juegosSeleccionados = [];
+  Object.keys(cantidadesItems).forEach(k => delete cantidadesItems[k]);
   const modoBase = salon.modo_presupuesto_base !== false; // default true
   const modoUnid = !!salon.modo_presupuesto_unidades;
   const modoPers = !!salon.modo_presupuesto_personas;
@@ -2053,6 +2103,13 @@ function calcularTotal() {
   const modo = modoPrespuesto || 'base';
   const costoEnvio = (modalidadEntrega === 'envio') ? (parseFloat(salon.costo_envio) || 0) : 0;
 
+  // Si hay combo seleccionado, el total es el precio cerrado del combo
+  if (comboSeleccionado) {
+    const costoEnvioC = (modalidadEntrega === 'envio') ? (parseFloat(salon.costo_envio) || 0) : 0;
+    const totalCombo = (parseFloat(comboSeleccionado.precio_cerrado) || 0) + costoEnvioC;
+    return { salon: 0, menu: 0, juegos: 0, envio: costoEnvioC, total: totalCombo, aPedido: false };
+  }
+
   if (modo === 'base') {
     const ninosExtra = Math.max(0, cantNinos - ninosBase);
     const precioSalon = parseFloat(salon.precio_base_salon) || 0;
@@ -2073,24 +2130,28 @@ function calcularTotal() {
   if (modo === 'unidades') {
     let precioMenu = 0;
     menuSeleccionado.forEach(item => {
-      precioMenu += (parseFloat(item.precio_base) || 0) * (item.cantidad || 1);
+      const pu = parseFloat(item.precio_unidad) || parseFloat(item.precio_base) || 0;
+      precioMenu += pu * (item.cantidad || 1);
     });
     let precioJuegos = 0;
     juegosSeleccionados.forEach(j => {
-      precioJuegos += (parseFloat(j.precio_fijo) || 0) * (j.cantidad || 1);
+      const pu = parseFloat(j.precio_unidad) || parseFloat(j.precio_fijo) || 0;
+      precioJuegos += pu * (j.cantidad || 1);
     });
     return { salon: 0, menu: precioMenu, juegos: precioJuegos, envio: costoEnvio,
              total: precioMenu + precioJuegos + costoEnvio, aPedido: false };
   }
 
   if (modo === 'personas') {
-    // Precio a confirmar — solo mostrar referencia
+    // Precio a confirmar — mostrar referencia usando precio_ref_persona
     let precioRef = 0;
     menuSeleccionado.forEach(item => {
-      precioRef += (parseFloat(item.precio_base) || 0) * (item.cantidad || 1);
+      const pr = parseFloat(item.precio_ref_persona) || parseFloat(item.precio_base) || 0;
+      precioRef += pr * (personasLibres || 1);
     });
     juegosSeleccionados.forEach(j => {
-      precioRef += (parseFloat(j.precio_fijo) || 0) * (j.cantidad || 1);
+      const pr = parseFloat(j.precio_ref_persona) || parseFloat(j.precio_fijo) || 0;
+      precioRef += pr * (personasLibres || 1);
     });
     return { salon: 0, menu: precioRef, juegos: 0, envio: costoEnvio,
              total: precioRef + costoEnvio, aPedido: true };
@@ -2101,6 +2162,18 @@ function calcularTotal() {
 
 function actualizarResumen() {
   const { salon: ps, menu: pm, juegos: pj, envio: pe, total, aPedido } = calcularTotal();
+
+  // Línea del combo seleccionado
+  const resComboLinea = document.getElementById('res-combo-linea');
+  const resComboNombre = document.getElementById('res-combo-nombre');
+  const resComboValor = document.getElementById('res-combo-valor');
+  if (resComboLinea && comboSeleccionado) {
+    resComboNombre.textContent = comboSeleccionado.nombre;
+    resComboValor.textContent = formatPrecio(comboSeleccionado.precio_cerrado);
+    resComboLinea.style.display = 'flex';
+  } else if (resComboLinea) {
+    resComboLinea.style.display = 'none';
+  }
 
   // Línea del servicio/salón
   if (ps > 0) {
