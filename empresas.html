@@ -291,13 +291,44 @@ body {
 }
 
 /* PRESUPUESTADOR */
-.presup-container {
-  max-width: 680px;
-  margin: 0 auto;
+/* Sección presupuesto: cantidad + resumen lado a lado */
+.seccion-presup {
+  max-width: 860px;
+  margin: 0 auto 0;
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 24px;
+  align-items: start;
 }
 
-@media (max-width: 1100px) {
-  .resumen { display: none; }
+/* Secciones individuales centradas */
+.seccion-full {
+  max-width: 860px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Grids de items */
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.adicionales-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 800px) {
+  .seccion-presup { grid-template-columns: 1fr; }
+  .menu-grid { grid-template-columns: 1fr; }
+  .adicionales-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 500px) {
+  .adicionales-grid { grid-template-columns: 1fr; }
 }
 
 .presup-panel {
@@ -358,6 +389,9 @@ body {
 
 /* ITEMS CHECKLIST */
 .items-list { display: flex; flex-direction: column; gap: 10px; }
+/* Los grids de menú y adicionales usan sus propias clases */
+.menu-grid .item-check,
+.adicionales-grid .item-check { width: 100%; }
 
 .item-check {
   display: flex;
@@ -599,11 +633,8 @@ body {
   border: 2px solid var(--color1);
   border-radius: var(--radius-lg);
   padding: 24px;
-  position: fixed;
+  position: sticky;
   top: 24px;
-  right: 24px;
-  width: 300px;
-  z-index: 100;
   box-shadow: 0 4px 24px color-mix(in srgb, var(--color1) 12%, transparent);
 }
 
@@ -669,9 +700,7 @@ body {
 @media (max-width: 600px) {
   .form-grid { grid-template-columns: 1fr; }
 }
-@media (max-width: 900px) {
-  .resumen { position: static !important; width: 100% !important; right: auto !important; display: block !important; }
-}
+
 
 .form-group { display: flex; flex-direction: column; gap: 6px; }
 .form-group.full { grid-column: 1 / -1; }
@@ -851,57 +880,97 @@ footer strong { color: white; }
   <div class="section-title">Armá tu evento a medida</div>
   <div class="section-subtitle">Elegí lo que querés incluir y el precio se actualiza en tiempo real</div>
 
-  <div class="presup-container">
-    <!-- COLUMNA IZQUIERDA -->
-    <div>
-
-      <!-- CANTIDAD DE NI├æOS -->
-      <div class="presup-panel">
-        <div class="presup-panel-title">👦 Cantidad de personas</div>
-        <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
-          <div class="ninos-control">
-            <button class="ninos-btn" onclick="cambiarNinos(-1)">−</button>
-            <div>
-              <div class="ninos-value" id="ninos-value">20</div>
-              <div class="ninos-label">personas</div>
-            </div>
-            <button class="ninos-btn" onclick="cambiarNinos(1)">+</button>
+  <!-- SECCIÓN 1: CANTIDAD DE PERSONAS + RESUMEN -->
+  <div class="seccion-presup">
+    <div class="presup-panel">
+      <div class="presup-panel-title">👦 Cantidad de personas</div>
+      <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+        <div class="ninos-control">
+          <button class="ninos-btn" onclick="cambiarNinos(-1)">−</button>
+          <div>
+            <div class="ninos-value" id="ninos-value">20</div>
+            <div class="ninos-label">personas</div>
           </div>
-          <div style="font-size:13px;color:var(--text2);line-height:1.5;">
-            El precio base incluye hasta <strong id="ninos-base-label">20</strong> personas.<br>
-            Cada persona extra tiene un costo adicional por ítem.
-          </div>
+          <button class="ninos-btn" onclick="cambiarNinos(1)">+</button>
+        </div>
+        <div style="font-size:13px;color:var(--text2);line-height:1.5;">
+          El precio base incluye hasta <strong id="ninos-base-label">20</strong> personas.<br>
+          Cada persona extra tiene un costo adicional por ítem.
         </div>
       </div>
+    </div>
 
-      <!-- MENÚ -->
-      <div class="presup-panel">
-        <div class="presup-panel-title">🍽 Menú</div>
-        <div class="items-list" id="menu-list">
-          <div style="color:var(--text2);font-size:14px;">Cargando...</div>
-        </div>
+    <!-- RESUMEN STICKY -->
+    <div class="resumen">
+      <div class="resumen-title">Tu presupuesto 🎊</div>
+      <div class="resumen-linea" id="res-salon-linea" style="display:none;">
+        <span class="resumen-linea-label">Servicio (<span id="res-ninos">20</span> personas)</span>
+        <span class="resumen-linea-valor" id="res-salon">$0</span>
+      </div>
+      <div class="resumen-linea" id="res-menu-linea" style="display:none;">
+        <span class="resumen-linea-label" id="res-menu-label">Menú</span>
+        <span class="resumen-linea-valor" id="res-menu">$0</span>
+      </div>
+      <div class="resumen-linea" id="res-juegos-linea" style="display:none;">
+        <span class="resumen-linea-label">Adicionales</span>
+        <span class="resumen-linea-valor" id="res-juegos">$0</span>
+      </div>
+      <div class="resumen-linea" id="res-envio-linea" style="display:none;">
+        <span class="resumen-linea-label">🚚 Envío a domicilio</span>
+        <span class="resumen-linea-valor" id="res-envio">$0</span>
+      </div>
+      <div class="resumen-linea" id="res-fecha-linea" style="display:none;">
+        <span class="resumen-linea-label">📅 Fecha</span>
+        <span class="resumen-linea-valor" id="res-fecha">—</span>
+      </div>
+      <div class="resumen-linea" id="res-horario-linea" style="display:none;">
+        <span class="resumen-linea-label">🕐 Horario</span>
+        <span class="resumen-linea-valor" id="res-horario">—</span>
+      </div>
+      <div class="resumen-total">
+        <div class="resumen-total-label">Total estimado</div>
+        <div class="resumen-total-valor" id="res-total">$0</div>
+      </div>
+      <div class="resumen-seña" id="res-seña" style="display:none;"></div>
+      <div style="margin-top:16px;font-size:12px;color:var(--text2);line-height:1.5;text-align:center;">
+        * El presupuesto es orientativo y será confirmado por la organización.
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 2: MENÚ -->
+  <div class="seccion-full">
+    <div class="presup-panel">
+      <div class="presup-panel-title">🍽 Menú</div>
+      <div class="menu-grid" id="menu-list">
+        <div style="color:var(--text2);font-size:14px;">Cargando...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 3: ADICIONALES -->
+  <div class="seccion-full">
+    <div class="presup-panel">
+      <div class="presup-panel-title">🎮 Adicionales</div>
+      <div class="adicionales-grid" id="juegos-list">
+        <div style="color:var(--text2);font-size:14px;">Cargando...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 4: CALENDARIO -->
+  <div class="seccion-full">
+    <div class="presup-panel">
+      <div class="presup-panel-title">📅 Elegí la fecha</div>
+
+      <!-- Banner horarios de atención -->
+      <div id="banner-horarios" style="display:none;background:linear-gradient(135deg,var(--color1),var(--color2));border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.8);margin-bottom:8px;">🕐 Horarios de atención</div>
+        <div id="banner-horarios-content" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
       </div>
 
-      <!-- JUEGOS -->
-      <div class="presup-panel">
-        <div class="presup-panel-title">🎮 Adicionales</div>
-        <div class="items-list" id="juegos-list">
-          <div style="color:var(--text2);font-size:14px;">Cargando...</div>
-        </div>
-      </div>
-
-      <!-- CALENDARIO -->
-      <div class="presup-panel">
-        <div class="presup-panel-title">📅 Elegí la fecha</div>
-
-        <!-- Banner horarios de atención -->
-        <div id="banner-horarios" style="display:none;background:linear-gradient(135deg,var(--color1),var(--color2));border-radius:var(--radius);padding:12px 16px;margin-bottom:16px;">
-          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.8);margin-bottom:8px;">🕐 Horarios de atención</div>
-          <div id="banner-horarios-content" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
-        </div>
-
-        <!-- Calendario ancho completo, semana empieza lunes -->
-        <div style="position:relative;">
+      <!-- Calendario, semana empieza lunes -->
+      <div style="position:relative;">
         <div class="calendario">
           <div class="cal-header">
             <button class="cal-nav" onclick="cambiarMes(-1)">‹</button>
@@ -922,50 +991,46 @@ footer strong { color: white; }
             <div class="cal-leyenda-item"><div class="cal-leyenda-dot" style="background:var(--cal-disponible-bg,#1abc9c);"></div>Disponible</div>
             <div class="cal-leyenda-item"><div class="cal-leyenda-dot" style="background:var(--cal-completo-bg,#e74c3c);opacity:0.85;"></div>Completo</div>
           </div>
-        </div><!-- fin calendario -->
+        </div>
 
-        <!-- Popup horarios flotante sobre el calendario -->
-        <div id="horarios-popup" style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:280px;background:var(--surface);border:2px solid var(--cal-header-bg,var(--color1));border-radius:var(--radius-lg);padding:16px 20px;box-shadow:0 8px 40px rgba(0,0,0,0.18);z-index:200;">
+        <!-- Popup horarios flotante -->
+        <div id="horarios-popup" style="display:none;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:260px;background:var(--surface);border:2px solid var(--cal-header-bg,var(--color1));border-radius:var(--radius-lg);padding:16px 20px;box-shadow:0 8px 40px rgba(0,0,0,0.18);z-index:200;">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;">
             <div>
-              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--cal-header-bg,var(--color1));" id="horarios-label">Elegí un horario</div>
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--cal-header-bg,var(--color1));" id="horarios-label">Elegí un horario</div>
               <div id="horarios-fecha-sel" style="font-size:15px;font-weight:700;color:var(--text);margin-top:3px;"></div>
             </div>
             <button onclick="cerrarPopupHorarios()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--text2);line-height:1;padding:0 4px;">✕</button>
           </div>
-          <!-- Chips turnos fijos -->
           <div class="horarios-chips" id="horarios-chips" style="display:none;flex-wrap:wrap;gap:8px;"></div>
-          <!-- Selector libre -->
           <div id="horario-libre-container" style="display:none;">
             <div style="font-size:12px;color:var(--text2);margin-bottom:10px;" id="horario-libre-desc"></div>
             <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px;">Elegí tu horario</div>
             <div id="horario-libre-botones" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;"></div>
             <div style="font-size:11px;color:var(--text2);margin-bottom:6px;">O ingresá la hora exacta:</div>
-            <input type="time" id="horario-libre-input" class="form-input"
-              style="max-width:130px;font-size:16px;font-weight:700;"
-              onchange="seleccionarHoraLibre(this.value)">
+            <input type="time" id="horario-libre-input" class="form-input" style="max-width:130px;font-size:16px;font-weight:700;" onchange="seleccionarHoraLibre(this.value)">
             <div id="horario-libre-aviso" style="display:none;margin-top:8px;font-size:12px;color:#E74C3C;"></div>
           </div>
-          <!-- Mensaje WhatsApp -->
           <div id="horario-whatsapp-msg" style="display:none;margin-top:12px;padding:10px 12px;background:color-mix(in srgb,var(--color1) 8%,white);border-radius:var(--radius);border:1px solid color-mix(in srgb,var(--color1) 20%,transparent);font-size:12px;color:var(--text2);">
             📅 ¿Necesitás un día u horario especial?
             <a id="horario-whatsapp-link" href="#" target="_blank" style="color:var(--color1);font-weight:700;text-decoration:none;display:block;margin-top:4px;">💬 Escribinos por WhatsApp →</a>
           </div>
-        </div><!-- fin popup -->
-        </div><!-- fin position:relative -->
-
-      </div>
-
-      <!-- POLÍTICA DE CANCELACIÓN -->
-      <div style="display:none;" id="politica-wrap">
-        <div class="presup-panel" style="border-left:3px solid var(--color1);">
-          <div class="presup-panel-title" style="font-size:16px;">📋 Política de cancelación</div>
-          <p id="politica-cancelacion" style="font-size:14px;color:var(--text2);line-height:1.7;"></p>
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- FORMULARIO -->
-      <div class="form-reserva" id="formulario">
+  <!-- POLÍTICA DE CANCELACIÓN -->
+  <div class="seccion-full" style="display:none;" id="politica-wrap">
+    <div class="presup-panel" style="border-left:3px solid var(--color1);">
+      <div class="presup-panel-title" style="font-size:16px;">📋 Política de cancelación</div>
+      <p id="politica-cancelacion" style="font-size:14px;color:var(--text2);line-height:1.7;"></p>
+    </div>
+  </div>
+
+  <!-- SECCIÓN 5: FORMULARIO -->
+  <div class="seccion-full">
+    <div class="form-reserva" id="formulario">
         <div class="presup-panel-title" style="margin-bottom:20px;">📨 Tus datos</div>
         <div class="form-grid">
           <div class="form-group">
@@ -1103,6 +1168,8 @@ footer strong { color: white; }
           * El presupuesto es orientativo y será confirmado por la organización.
         </div>
       </div>
+    </div>
+  </div>
     </div>
   </div>
 </section>
