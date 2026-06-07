@@ -1142,6 +1142,52 @@ select option { background: var(--surface2); }
       </div>
 
       <div class="config-section">
+        <div class="config-section-title">Modos de presupuesto</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">
+          Activá los modos que querés ofrecer a tus clientes. Podés habilitar uno o varios.
+        </div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
+            <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;">
+              <div class="toggle-wrap" style="margin-top:2px;">
+                <button class="toggle" id="cfg-modo-base" onclick="toggleBtn(this)"></button>
+              </div>
+              <div>
+                <div style="font-weight:700;font-size:14px;">🎂 Menú con base de personas</div>
+                <div style="font-size:12px;color:var(--text2);margin-top:3px;">El cliente parte de una cantidad base que vos configurás y puede agregar extras. Típico para salones de fiestas.</div>
+              </div>
+            </label>
+          </div>
+
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
+            <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;">
+              <div class="toggle-wrap" style="margin-top:2px;">
+                <button class="toggle" id="cfg-modo-unidades" onclick="toggleBtn(this)"></button>
+              </div>
+              <div>
+                <div style="font-weight:700;font-size:14px;">🍕 Por unidades</div>
+                <div style="font-size:12px;color:var(--text2);margin-top:3px;">El cliente elige cuántas unidades de cada ítem quiere. Ej: 2 pizzas, 1 picada.</div>
+              </div>
+            </label>
+          </div>
+
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
+            <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;">
+              <div class="toggle-wrap" style="margin-top:2px;">
+                <button class="toggle" id="cfg-modo-personas" onclick="toggleBtn(this)"></button>
+              </div>
+              <div>
+                <div style="font-weight:700;font-size:14px;">👥 Para X personas</div>
+                <div style="font-size:12px;color:var(--text2);margin-top:3px;">El cliente indica para cuántas personas y elige los ítems. El precio final te lo confirmás vos por WhatsApp o email.</div>
+              </div>
+            </label>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="config-section">
         <div class="config-section-title">Modalidad de entrega</div>
         <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">
           Activá las opciones que ofrecés. Si no aplica (ej: solo salón de eventos), dejá todo desactivado.
@@ -2364,6 +2410,14 @@ async function cargarConfiguracion() {
   toggleCostoEnvio();
   toggleSeñaGroup();
 
+  // Modos de presupuesto
+  const modoBase = document.getElementById('cfg-modo-base');
+  const modoUnid = document.getElementById('cfg-modo-unidades');
+  const modoPers = document.getElementById('cfg-modo-personas');
+  if (cfg.modo_presupuesto_base !== false) modoBase.classList.add('on'); else modoBase.classList.remove('on');
+  if (cfg.modo_presupuesto_unidades) modoUnid.classList.add('on'); else modoUnid.classList.remove('on');
+  if (cfg.modo_presupuesto_personas) modoPers.classList.add('on'); else modoPers.classList.remove('on');
+
   // Colores del calendario
   cargarColoresCalendario(cfg.config_calendario);
 
@@ -2472,6 +2526,9 @@ async function guardarConfiguracion() {
     ofrece_envio: document.getElementById('cfg-ofrece-envio').classList.contains('on'),
     costo_envio: parseFloat(document.getElementById('cfg-costo-envio').value) || 0,
     config_calendario: leerColoresCalendario(),
+    modo_presupuesto_base: document.getElementById('cfg-modo-base').classList.contains('on'),
+    modo_presupuesto_unidades: document.getElementById('cfg-modo-unidades').classList.contains('on'),
+    modo_presupuesto_personas: document.getElementById('cfg-modo-personas').classList.contains('on'),
   };
 
   const res = await api('PATCH', `/admin/${SLUG}/configuracion`, body);

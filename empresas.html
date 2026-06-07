@@ -350,6 +350,51 @@ body {
 }
 
 /* CANTIDAD NI├æOS */
+/* MODOS DE PRESUPUESTO */
+.modo-presup-btn {
+  flex: 1;
+  min-width: 160px;
+  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  border: 2px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  text-align: left;
+  transition: all 0.2s;
+}
+.modo-presup-btn.activo {
+  border-color: var(--color1);
+  background: color-mix(in srgb, var(--color1) 8%, var(--surface));
+}
+.modo-presup-btn .modo-icon { font-size: 20px; display: block; margin-bottom: 4px; }
+.modo-presup-btn .modo-desc { font-size: 11px; color: var(--text2); margin-top: 2px; font-weight: 400; }
+
+/* CONTROL DE CANTIDAD (unidades/personas modo libre) */
+.cantidad-item-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+.cantidad-item-btn {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  color: var(--text);
+  flex-shrink: 0;
+}
+.cantidad-item-btn:hover { border-color: var(--color1); color: var(--color1); }
+.cantidad-item-val { font-size: 15px; font-weight: 700; min-width: 24px; text-align: center; }
+
 .ninos-control {
   display: flex;
   align-items: center;
@@ -880,24 +925,61 @@ footer strong { color: white; }
   <div class="section-title">Armá tu evento a medida</div>
   <div class="section-subtitle">Elegí lo que querés incluir y el precio se actualiza en tiempo real</div>
 
-  <!-- SECCIÓN 1: CANTIDAD DE PERSONAS + RESUMEN -->
+  <!-- SECCIÓN 1: SELECTOR DE MODO + RESUMEN -->
   <div class="seccion-presup">
-    <div id="panel-cantidad-personas" class="presup-panel">
-      <div class="presup-panel-title">👦 Cantidad de personas</div>
-      <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
-        <div class="ninos-control">
-          <button class="ninos-btn" onclick="cambiarNinos(-1)">−</button>
-          <div>
-            <div class="ninos-value" id="ninos-value">20</div>
-            <div class="ninos-label">personas</div>
+    <div class="presup-panel" id="panel-modos">
+
+      <!-- Selector de modo (se muestra solo si hay más de uno habilitado) -->
+      <div id="selector-modo" style="display:none;margin-bottom:20px;">
+        <div class="presup-panel-title">¿Cómo querés presupuestar?</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;" id="botones-modo"></div>
+      </div>
+
+      <!-- Modo 1: Base de personas -->
+      <div id="panel-modo-base" style="display:none;">
+        <div class="presup-panel-title">👦 Cantidad de personas</div>
+        <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+          <div class="ninos-control">
+            <button class="ninos-btn" onclick="cambiarNinos(-1)">−</button>
+            <div>
+              <div class="ninos-value" id="ninos-value">20</div>
+              <div class="ninos-label">personas</div>
+            </div>
+            <button class="ninos-btn" onclick="cambiarNinos(1)">+</button>
           </div>
-          <button class="ninos-btn" onclick="cambiarNinos(1)">+</button>
-        </div>
-        <div style="font-size:13px;color:var(--text2);line-height:1.5;" id="ninos-desc">
-          El precio base incluye hasta <strong id="ninos-base-label">20</strong> personas.<br>
-          Cada persona extra tiene un costo adicional por ítem.
+          <div style="font-size:13px;color:var(--text2);line-height:1.5;" id="ninos-desc">
+            El precio base incluye hasta <strong id="ninos-base-label">20</strong> personas.<br>
+            Cada persona extra tiene un costo adicional por ítem.
+          </div>
         </div>
       </div>
+
+      <!-- Modo 3: Para X personas (el cliente pone la cantidad) -->
+      <div id="panel-modo-personas" style="display:none;">
+        <div class="presup-panel-title">👥 ¿Para cuántas personas?</div>
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:12px;">
+          <div class="ninos-control">
+            <button class="ninos-btn" onclick="cambiarPersonasLibres(-1)">−</button>
+            <div>
+              <div class="ninos-value" id="personas-libres-value">1</div>
+              <div class="ninos-label">personas</div>
+            </div>
+            <button class="ninos-btn" onclick="cambiarPersonasLibres(1)">+</button>
+          </div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.5;">
+            Seleccioná los ítems que querés y te confirmamos el precio final.
+          </div>
+        </div>
+      </div>
+
+      <!-- Modo 2: Por unidades — no necesita panel extra, la cantidad va en cada ítem -->
+      <div id="panel-modo-unidades" style="display:none;">
+        <div class="presup-panel-title">🍕 Pedido por unidades</div>
+        <div style="font-size:13px;color:var(--text2);margin-top:8px;line-height:1.6;">
+          Elegí los ítems que querés y la cantidad de cada uno.
+        </div>
+      </div>
+
     </div>
 
     <!-- RESUMEN STICKY -->
@@ -1237,6 +1319,10 @@ let horarioSeleccionado = null;
 let disponibilidad = [];
 let calMes, calAnio;
 let modalidadEntrega = null; // 'retiro' | 'envio' | null
+let modoPrespuesto = null; // 'base' | 'unidades' | 'personas'
+let personasLibres = 1; // Para modo 'personas'
+// Cantidades por ítem en modo 'unidades'
+const cantidadesItems = {}; // { item_id: cantidad }
 
 const hoy = new Date();
 calMes = hoy.getMonth() + 1;
@@ -1250,11 +1336,7 @@ window.onload = async () => {
     await cargarSalon();
     mostrarSeccionEntrega();
     aplicarColoresCalendario(salon?.config_calendario);
-    // Ocultar panel de cantidad de personas si el tenant no lo habilitó
-    if (!salon?.ninos_base && !salon?.precio_base_salon) {
-      const panel = document.getElementById('panel-cantidad-personas');
-      if (panel) panel.style.display = 'none';
-    }
+    inicializarModos();
     await Promise.all([cargarMenu(), cargarJuegos(), cargarCombos()]);
     await cargarDisponibilidad();
     renderCalendario();
@@ -1478,15 +1560,43 @@ function renderMenuList() {
     return;
   }
 
+  const modo = modoPrespuesto || 'base';
+
   list.innerHTML = menuItems.map(item => {
     const seleccionado = menuSeleccionado.find(s => s.id === item.id);
     const checked = !!seleccionado;
+    const imgHtml = item.imagen_url
+      ? `<img src="${item.imagen_url}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;" onerror="this.style.display='none'">`
+      : '🍽';
+
+    if (modo === 'unidades' || modo === 'personas') {
+      const key = 'menu_' + item.id;
+      const cant = cantidadesItems[key] || 0;
+      const precioLabel = modo === 'unidades'
+        ? formatPrecio(item.precio_base) + ' c/u'
+        : formatPrecio(item.precio_base) + '/persona';
+      return `
+        <div class="item-check ${cant > 0 ? 'checked' : ''}">
+          <div class="item-check-box">${cant > 0 ? '✓' : ''}</div>
+          <div class="item-check-img">${imgHtml}</div>
+          <div class="item-check-info" style="flex:1;">
+            <div class="item-check-name">${item.nombre}</div>
+            <div class="item-check-desc">${precioLabel}</div>
+          </div>
+          <div class="cantidad-item-control">
+            <button class="cantidad-item-btn" onclick="cambiarCantidadItem('${item.id}', -1, 'menu')">−</button>
+            <span class="cantidad-item-val" id="cant-val-menu_${item.id}">${cant}</span>
+            <button class="cantidad-item-btn" onclick="cambiarCantidadItem('${item.id}', 1, 'menu')">+</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // Modo base (default)
     return `
       <div class="item-check ${checked ? 'checked' : ''}" onclick="toggleMenu('${item.id}')">
         <div class="item-check-box">${checked ? '✓' : ''}</div>
-        <div class="item-check-img">
-          ${item.imagen_url ? `<img src="${item.imagen_url}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">` : '🍽'}
-        </div>
+        <div class="item-check-img">${imgHtml}</div>
         <div class="item-check-info">
           <div class="item-check-name">${item.nombre}</div>
           <div class="item-check-desc">Base ${formatPrecio(item.precio_base)} · Extra: ${formatPrecio(item.precio_por_nino_extra)}/persona</div>
@@ -1503,19 +1613,42 @@ function renderJuegosList() {
     return;
   }
 
+  const modo = modoPrespuesto || 'base';
+
   list.innerHTML = juegosItems.map(j => {
     const checked = juegosSeleccionados.some(s => s.id === j.id);
     let precioLabel = '';
     if (j.precio_fijo > 0 && j.precio_por_nino > 0) precioLabel = `${formatPrecio(j.precio_fijo)} + ${formatPrecio(j.precio_por_nino)}/persona`;
     else if (j.precio_fijo > 0) precioLabel = formatPrecio(j.precio_fijo);
     else if (j.precio_por_nino > 0) precioLabel = `${formatPrecio(j.precio_por_nino)}/persona`;
+    const imgHtml = j.imagen_url
+      ? `<img src="${j.imagen_url}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;" onerror="this.style.display='none'">`
+      : '🎮';
+
+    if (modo === 'unidades' || modo === 'personas') {
+      const key = 'jue_' + j.id;
+      const cant = cantidadesItems[key] || 0;
+      return `
+        <div class="item-check ${cant > 0 ? 'checked' : ''}">
+          <div class="item-check-box">${cant > 0 ? '✓' : ''}</div>
+          <div class="item-check-img">${imgHtml}</div>
+          <div class="item-check-info" style="flex:1;">
+            <div class="item-check-name">${j.nombre}</div>
+            ${j.descripcion ? `<div class="item-check-desc">${j.descripcion}</div>` : ''}
+          </div>
+          <div class="cantidad-item-control">
+            <button class="cantidad-item-btn" onclick="cambiarCantidadItem('${j.id}', -1, 'jue')">−</button>
+            <span class="cantidad-item-val" id="cant-val-jue_${j.id}">${cant}</span>
+            <button class="cantidad-item-btn" onclick="cambiarCantidadItem('${j.id}', 1, 'jue')">+</button>
+          </div>
+        </div>
+      `;
+    }
 
     return `
       <div class="item-check ${checked ? 'checked' : ''}" onclick="toggleJuego('${j.id}')">
         <div class="item-check-box">${checked ? '✓' : ''}</div>
-        <div class="item-check-img">
-          ${j.imagen_url ? `<img src="${j.imagen_url}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;">` : '🎮'}
-        </div>
+        <div class="item-check-img">${imgHtml}</div>
         <div class="item-check-info">
           <div class="item-check-name">${j.nombre}</div>
           ${j.descripcion ? `<div class="item-check-desc">${j.descripcion}</div>` : ''}
@@ -1658,6 +1791,99 @@ async function cambiarMes(delta) {
 // Franjas del día seleccionado (modo libre)
 let franjasDelDia = [];
 let reservasHoraDelDia = {};
+
+// ============================================================
+// MODOS DE PRESUPUESTO
+// ============================================================
+function inicializarModos() {
+  if (!salon) return;
+  const modoBase = salon.modo_presupuesto_base !== false; // default true
+  const modoUnid = !!salon.modo_presupuesto_unidades;
+  const modoPers = !!salon.modo_presupuesto_personas;
+  const modos = [];
+  if (modoBase) modos.push('base');
+  if (modoUnid) modos.push('unidades');
+  if (modoPers) modos.push('personas');
+
+  const selectorEl = document.getElementById('selector-modo');
+  const botonesEl = document.getElementById('botones-modo');
+
+  if (modos.length === 0) return;
+
+  // Si hay más de un modo, mostrar selector
+  if (modos.length > 1) {
+    selectorEl.style.display = 'block';
+    const labels = {
+      base: { icon: '🎂', title: 'Menú base', desc: 'Con cantidad base de personas' },
+      unidades: { icon: '🍕', title: 'Por unidades', desc: 'Elegí cuánto de cada ítem' },
+      personas: { icon: '👥', title: 'Para X personas', desc: 'Pedido para tu grupo' },
+    };
+    botonesEl.innerHTML = modos.map(m => `
+      <button class="modo-presup-btn" id="btn-modo-${m}" onclick="seleccionarModo('${m}')">
+        <span class="modo-icon">${labels[m].icon}</span>
+        <strong>${labels[m].title}</strong>
+        <span class="modo-desc">${labels[m].desc}</span>
+      </button>
+    `).join('');
+  }
+
+  // Activar primer modo por defecto
+  seleccionarModo(modos[0]);
+}
+
+function seleccionarModo(modo) {
+  modoPrespuesto = modo;
+
+  // Actualizar botones
+  ['base','unidades','personas'].forEach(m => {
+    const btn = document.getElementById(`btn-modo-${m}`);
+    if (btn) btn.classList.toggle('activo', m === modo);
+  });
+
+  // Mostrar/ocultar paneles
+  document.getElementById('panel-modo-base').style.display = modo === 'base' ? 'block' : 'none';
+  document.getElementById('panel-modo-unidades').style.display = modo === 'unidades' ? 'block' : 'none';
+  document.getElementById('panel-modo-personas').style.display = modo === 'personas' ? 'block' : 'none';
+
+  // Resetear selecciones y re-renderizar ítems
+  menuSeleccionado = [];
+  juegosSeleccionados = [];
+  Object.keys(cantidadesItems).forEach(k => delete cantidadesItems[k]);
+  renderMenuList();
+  renderJuegosList();
+  actualizarResumen();
+}
+
+function cambiarPersonasLibres(delta) {
+  personasLibres = Math.max(1, personasLibres + delta);
+  document.getElementById('personas-libres-value').textContent = personasLibres;
+  actualizarResumen();
+}
+
+function cambiarCantidadItem(id, delta, tipo) {
+  const key = tipo + '_' + id;
+  cantidadesItems[key] = Math.max(0, (cantidadesItems[key] || 0) + delta);
+  document.getElementById(`cant-val-${key}`).textContent = cantidadesItems[key];
+  // Actualizar selección
+  if (tipo === 'menu') {
+    const item = menuItems.find(m => m.id === id);
+    if (item) {
+      menuSeleccionado = menuSeleccionado.filter(m => m.id !== id);
+      if (cantidadesItems[key] > 0) {
+        menuSeleccionado.push({ ...item, cantidad: cantidadesItems[key] });
+      }
+    }
+  } else {
+    const item = juegosItems.find(j => j.id === id);
+    if (item) {
+      juegosSeleccionados = juegosSeleccionados.filter(j => j.id !== id);
+      if (cantidadesItems[key] > 0) {
+        juegosSeleccionados.push({ ...item, cantidad: cantidadesItems[key] });
+      }
+    }
+  }
+  actualizarResumen();
+}
 
 function cerrarPopupHorarios() {
   document.getElementById('horarios-popup').style.display = 'none';
@@ -1863,41 +2089,59 @@ function mostrarSeccionEntrega() {
 // RESUMEN Y CÁLCULO
 // ============================================================
 function calcularTotal() {
-  if (!salon) return { salon: 0, menu: 0, juegos: 0, envio: 0, total: 0 };
+  if (!salon) return { salon: 0, menu: 0, juegos: 0, envio: 0, total: 0, aPedido: false };
 
-  const ninosExtra = Math.max(0, cantNinos - ninosBase);
-
-  // Salón
-  const precioSalon = parseFloat(salon.precio_base_salon) || 0;
-
-  // Menú
-  let precioMenu = 0;
-  menuSeleccionado.forEach(item => {
-    precioMenu += parseFloat(item.precio_base) || 0;
-    precioMenu += (parseFloat(item.precio_por_nino_extra) || 0) * ninosExtra;
-  });
-
-  // Juegos
-  let precioJuegos = 0;
-  juegosSeleccionados.forEach(j => {
-    precioJuegos += parseFloat(j.precio_fijo) || 0;
-    precioJuegos += (parseFloat(j.precio_por_nino) || 0) * cantNinos;
-  });
-
-  // Envío
+  const modo = modoPrespuesto || 'base';
   const costoEnvio = (modalidadEntrega === 'envio') ? (parseFloat(salon.costo_envio) || 0) : 0;
 
-  return {
-    salon: precioSalon,
-    menu: precioMenu,
-    juegos: precioJuegos,
-    envio: costoEnvio,
-    total: precioSalon + precioMenu + precioJuegos + costoEnvio
-  };
+  if (modo === 'base') {
+    const ninosExtra = Math.max(0, cantNinos - ninosBase);
+    const precioSalon = parseFloat(salon.precio_base_salon) || 0;
+    let precioMenu = 0;
+    menuSeleccionado.forEach(item => {
+      precioMenu += parseFloat(item.precio_base) || 0;
+      precioMenu += (parseFloat(item.precio_por_nino_extra) || 0) * ninosExtra;
+    });
+    let precioJuegos = 0;
+    juegosSeleccionados.forEach(j => {
+      precioJuegos += parseFloat(j.precio_fijo) || 0;
+      precioJuegos += (parseFloat(j.precio_por_nino) || 0) * cantNinos;
+    });
+    return { salon: precioSalon, menu: precioMenu, juegos: precioJuegos, envio: costoEnvio,
+             total: precioSalon + precioMenu + precioJuegos + costoEnvio, aPedido: false };
+  }
+
+  if (modo === 'unidades') {
+    let precioMenu = 0;
+    menuSeleccionado.forEach(item => {
+      precioMenu += (parseFloat(item.precio_base) || 0) * (item.cantidad || 1);
+    });
+    let precioJuegos = 0;
+    juegosSeleccionados.forEach(j => {
+      precioJuegos += (parseFloat(j.precio_fijo) || 0) * (j.cantidad || 1);
+    });
+    return { salon: 0, menu: precioMenu, juegos: precioJuegos, envio: costoEnvio,
+             total: precioMenu + precioJuegos + costoEnvio, aPedido: false };
+  }
+
+  if (modo === 'personas') {
+    // Precio a confirmar — solo mostrar referencia
+    let precioRef = 0;
+    menuSeleccionado.forEach(item => {
+      precioRef += (parseFloat(item.precio_base) || 0) * (item.cantidad || 1);
+    });
+    juegosSeleccionados.forEach(j => {
+      precioRef += (parseFloat(j.precio_fijo) || 0) * (j.cantidad || 1);
+    });
+    return { salon: 0, menu: precioRef, juegos: 0, envio: costoEnvio,
+             total: precioRef + costoEnvio, aPedido: true };
+  }
+
+  return { salon: 0, menu: 0, juegos: 0, envio: 0, total: 0, aPedido: false };
 }
 
 function actualizarResumen() {
-  const { salon: ps, menu: pm, juegos: pj, envio: pe, total } = calcularTotal();
+  const { salon: ps, menu: pm, juegos: pj, envio: pe, total, aPedido } = calcularTotal();
 
   // Línea del servicio/salón
   if (ps > 0) {
@@ -1931,7 +2175,13 @@ function actualizarResumen() {
     document.getElementById('res-envio-linea').style.display = 'none';
   }
 
-  document.getElementById('res-total').textContent = formatPrecio(total);
+  if (aPedido) {
+    document.getElementById('res-total').textContent = 'A confirmar';
+    document.getElementById('res-total').style.fontSize = '20px';
+  } else {
+    document.getElementById('res-total').textContent = formatPrecio(total);
+    document.getElementById('res-total').style.fontSize = '';
+  }
 
   // Seña
   if (salon && total > 0) {
@@ -1978,7 +2228,7 @@ async function enviarReserva() {
     toast('Adjuntá el comprobante de transferencia', 'error'); return;
   }
 
-  const { salon: ps, menu: pm, juegos: pj, envio: pe, total } = calcularTotal();
+  const { salon: ps, menu: pm, juegos: pj, envio: pe, total, aPedido } = calcularTotal();
 
   const btn = document.getElementById('btn-reservar');
   btn.disabled = true;
@@ -1988,7 +2238,8 @@ async function enviarReserva() {
     fecha: fechaSeleccionada,
     hora_inicio: horarioSeleccionado.inicio,
     hora_fin: horarioSeleccionado.fin,
-    cantidad_ninos: cantNinos,
+    cantidad_ninos: modoPrespuesto === 'personas' ? personasLibres : cantNinos,
+    modo_presupuesto: modoPrespuesto || 'base',
     nombre_festejado: document.getElementById('f-festejado').value,
     cliente_nombre: nombre,
     cliente_email: email,
@@ -2024,7 +2275,9 @@ async function enviarReserva() {
       const success = document.getElementById('success-screen');
       success.style.display = 'block';
 
-      let texto = `Tu solicitud fue recibida, ${nombre}. Te contactaremos a ${email} para confirmar.`;
+      let texto = modoPrespuesto === 'personas'
+        ? `Tu solicitud fue recibida, ${nombre}. Te enviaremos el presupuesto a ${email} o por WhatsApp a la brevedad.`
+        : `Tu solicitud fue recibida, ${nombre}. Te contactaremos a ${email} para confirmar.`;
       if (data.monto_seña > 0) {
         texto += ` La seña es de ${formatPrecio(data.monto_seña)}.`;
       }
