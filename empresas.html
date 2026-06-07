@@ -294,7 +294,7 @@ body {
 /* Sección presupuesto: cantidad + resumen lado a lado */
 .seccion-presup {
   max-width: 1100px;
-  margin: 0 auto 0;
+  margin: 32px auto 0;
   display: grid;
   grid-template-columns: 1fr 280px;
   gap: 24px;
@@ -478,13 +478,21 @@ body {
 .item-check-img {
   width: 44px; height: 44px;
   border-radius: 10px;
-  object-fit: cover;
   background: linear-gradient(135deg, var(--color1), var(--color2));
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
+  overflow: hidden;
+  position: relative;
+}
+.item-check-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
 }
 
 .item-check-info { flex: 1; }
@@ -989,6 +997,9 @@ footer strong { color: white; }
         <span class="resumen-linea-label">Servicio (<span id="res-ninos">20</span> personas)</span>
         <span class="resumen-linea-valor" id="res-salon">$0</span>
       </div>
+      <!-- Detalle de ítems seleccionados -->
+      <div id="res-detalle-items" style="display:none;"></div>
+      <!-- Líneas genéricas (ocultas, se usan como fallback) -->
       <div class="resumen-linea" id="res-menu-linea" style="display:none;">
         <span class="resumen-linea-label" id="res-menu-label">Menú</span>
         <span class="resumen-linea-valor" id="res-menu">$0</span>
@@ -1337,6 +1348,7 @@ window.onload = async () => {
     mostrarSeccionEntrega();
     aplicarColoresCalendario(salon?.config_calendario);
     inicializarModos();
+    actualizarResumen();
     await Promise.all([cargarMenu(), cargarJuegos(), cargarCombos()]);
     await cargarDisponibilidad();
     renderCalendario();
@@ -1569,24 +1581,35 @@ function renderMenuList() {
       ? `<img src="${item.imagen_url}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;" onerror="this.style.display='none'">`
       : '🍽';
 
-    if (modo === 'unidades' || modo === 'personas') {
+    if (modo === 'unidades') {
       const key = 'menu_' + item.id;
       const cant = cantidadesItems[key] || 0;
-      const precioLabel = modo === 'unidades'
-        ? formatPrecio(item.precio_base) + ' c/u'
-        : formatPrecio(item.precio_base) + '/persona';
       return `
         <div class="item-check ${cant > 0 ? 'checked' : ''}">
           <div class="item-check-box">${cant > 0 ? '✓' : ''}</div>
           <div class="item-check-img">${imgHtml}</div>
           <div class="item-check-info" style="flex:1;">
             <div class="item-check-name">${item.nombre}</div>
-            <div class="item-check-desc">${precioLabel}</div>
+            <div class="item-check-desc">${formatPrecio(item.precio_base)} c/u</div>
           </div>
           <div class="cantidad-item-control">
             <button class="cantidad-item-btn" onclick="cambiarCantidadItem('${item.id}', -1, 'menu')">−</button>
             <span class="cantidad-item-val" id="cant-val-menu_${item.id}">${cant}</span>
             <button class="cantidad-item-btn" onclick="cambiarCantidadItem('${item.id}', 1, 'menu')">+</button>
+          </div>
+        </div>
+      `;
+    }
+
+    if (modo === 'personas') {
+      const sel = menuSeleccionado.some(m => m.id === item.id);
+      return `
+        <div class="item-check ${sel ? 'checked' : ''}" onclick="toggleMenu('${item.id}')">
+          <div class="item-check-box">${sel ? '✓' : ''}</div>
+          <div class="item-check-img">${imgHtml}</div>
+          <div class="item-check-info">
+            <div class="item-check-name">${item.nombre}</div>
+            <div class="item-check-desc" style="color:var(--color1);font-weight:600;">${formatPrecio(item.precio_base)}/persona <span style="font-weight:400;color:var(--text2);">(ref.)</span></div>
           </div>
         </div>
       `;
@@ -1625,7 +1648,7 @@ function renderJuegosList() {
       ? `<img src="${j.imagen_url}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;" onerror="this.style.display='none'">`
       : '🎮';
 
-    if (modo === 'unidades' || modo === 'personas') {
+    if (modo === 'unidades') {
       const key = 'jue_' + j.id;
       const cant = cantidadesItems[key] || 0;
       return `
@@ -1634,13 +1657,28 @@ function renderJuegosList() {
           <div class="item-check-img">${imgHtml}</div>
           <div class="item-check-info" style="flex:1;">
             <div class="item-check-name">${j.nombre}</div>
-            ${j.descripcion ? `<div class="item-check-desc">${j.descripcion}</div>` : ''}
+            <div class="item-check-desc">${precioLabel}</div>
           </div>
           <div class="cantidad-item-control">
             <button class="cantidad-item-btn" onclick="cambiarCantidadItem('${j.id}', -1, 'jue')">−</button>
             <span class="cantidad-item-val" id="cant-val-jue_${j.id}">${cant}</span>
             <button class="cantidad-item-btn" onclick="cambiarCantidadItem('${j.id}', 1, 'jue')">+</button>
           </div>
+        </div>
+      `;
+    }
+
+    if (modo === 'personas') {
+      const sel = juegosSeleccionados.some(s => s.id === j.id);
+      return `
+        <div class="item-check ${sel ? 'checked' : ''}" onclick="toggleJuego('${j.id}')">
+          <div class="item-check-box">${sel ? '✓' : ''}</div>
+          <div class="item-check-img">${imgHtml}</div>
+          <div class="item-check-info">
+            <div class="item-check-name">${j.nombre}</div>
+            <div class="item-check-desc">${j.descripcion || ''}</div>
+          </div>
+          <div class="item-check-price">${precioLabel}</div>
         </div>
       `;
     }
@@ -2152,19 +2190,35 @@ function actualizarResumen() {
     document.getElementById('res-salon-linea').style.display = 'none';
   }
 
-  if (pm > 0) {
-    const labels = menuSeleccionado.map(m => m.nombre).join(', ');
-    document.getElementById('res-menu-label').textContent = labels.length > 30 ? labels.slice(0,30)+'…' : labels;
-    document.getElementById('res-menu').textContent = formatPrecio(pm);
-    document.getElementById('res-menu-linea').style.display = 'flex';
-  } else {
-    document.getElementById('res-menu-linea').style.display = 'none';
+  // Detalle de ítems seleccionados
+  const modo = modoPrespuesto || 'base';
+  const resDetalle = document.getElementById('res-detalle-items');
+  if (resDetalle) {
+    let html = '';
+    menuSeleccionado.forEach(m => {
+      let precio = 0;
+      if (modo === 'unidades') precio = (parseFloat(m.precio_base)||0) * (m.cantidad||1);
+      else if (modo === 'personas') precio = parseFloat(m.precio_base)||0;
+      else precio = parseFloat(m.precio_base)||0;
+      const cantLabel = (modo === 'unidades' && m.cantidad > 1) ? ` ×${m.cantidad}` : '';
+      html += `<div class="resumen-linea" style="font-size:13px;"><span class="resumen-linea-label">${m.nombre}${cantLabel}</span><span class="resumen-linea-valor">${aPedido ? 'ref.' : formatPrecio(precio)}</span></div>`;
+    });
+    juegosSeleccionados.forEach(j => {
+      let precio = 0;
+      if (modo === 'unidades') precio = (parseFloat(j.precio_fijo)||0) * (j.cantidad||1);
+      else precio = parseFloat(j.precio_fijo)||0;
+      const cantLabel = (modo === 'unidades' && j.cantidad > 1) ? ` ×${j.cantidad}` : '';
+      html += `<div class="resumen-linea" style="font-size:13px;"><span class="resumen-linea-label">${j.nombre}${cantLabel}</span><span class="resumen-linea-valor">${aPedido ? 'ref.' : formatPrecio(precio)}</span></div>`;
+    });
+    resDetalle.innerHTML = html;
+    resDetalle.style.display = html ? 'block' : 'none';
   }
 
-  if (pj > 0) {
-    document.getElementById('res-juegos').textContent = formatPrecio(pj);
-    document.getElementById('res-juegos-linea').style.display = 'flex';
+  if (pm > 0 || juegosSeleccionados.length > 0) {
+    document.getElementById('res-menu-linea').style.display = 'none'; // ocultamos la línea genérica
+    document.getElementById('res-juegos-linea').style.display = 'none';
   } else {
+    document.getElementById('res-menu-linea').style.display = 'none';
     document.getElementById('res-juegos-linea').style.display = 'none';
   }
 
