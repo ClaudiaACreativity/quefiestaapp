@@ -827,51 +827,20 @@ select option { background: var(--surface2); }
         </div>
         <button class="btn btn-accent" onclick="openModalBloqueo()">+ Bloquear fecha</button>
       </div>
-
-      <!-- Fechas recurrentes -->
-      <div style="margin-bottom:24px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-          <div>
-            <div style="font-size:15px;font-weight:700;">📅 Días recurrentes bloqueados</div>
-            <div style="font-size:13px;color:var(--text2);margin-top:2px;">Días de la semana que siempre están cerrados (ej: lunes cerrado)</div>
-          </div>
-          <button class="btn btn-ghost btn-sm" onclick="openModalRecurrente()">+ Agregar día</button>
-        </div>
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Día</th>
-                <th>Horario</th>
-                <th>Motivo</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="recurrentes-tbody">
-              <tr><td colspan="4" class="loading">Cargando...</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Fechas puntuales -->
-      <div>
-        <div style="font-size:15px;font-weight:700;margin-bottom:12px;">📆 Fechas puntuales bloqueadas</div>
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Fecha</th>
-                <th>Horario</th>
-                <th>Motivo</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody id="bloqueadas-tbody">
-              <tr><td colspan="4" class="loading">Cargando...</td></tr>
-            </tbody>
-          </table>
-        </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Horario</th>
+              <th>Motivo</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="bloqueadas-tbody">
+            <tr><td colspan="4" class="loading">Cargando...</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
@@ -1142,52 +1111,6 @@ select option { background: var(--surface2); }
       </div>
 
       <div class="config-section">
-        <div class="config-section-title">Modos de presupuesto</div>
-        <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">
-          Activá los modos que querés ofrecer a tus clientes. Podés habilitar uno o varios.
-        </div>
-        <div style="display:flex;flex-direction:column;gap:16px;">
-
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
-            <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;">
-              <div class="toggle-wrap" style="margin-top:2px;">
-                <button class="toggle" id="cfg-modo-base" onclick="toggleBtn(this)"></button>
-              </div>
-              <div>
-                <div style="font-weight:700;font-size:14px;">🎂 Menú con base de personas</div>
-                <div style="font-size:12px;color:var(--text2);margin-top:3px;">El cliente parte de una cantidad base que vos configurás y puede agregar extras. Típico para salones de fiestas.</div>
-              </div>
-            </label>
-          </div>
-
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
-            <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;">
-              <div class="toggle-wrap" style="margin-top:2px;">
-                <button class="toggle" id="cfg-modo-unidades" onclick="toggleBtn(this)"></button>
-              </div>
-              <div>
-                <div style="font-weight:700;font-size:14px;">🍕 Por unidades</div>
-                <div style="font-size:12px;color:var(--text2);margin-top:3px;">El cliente elige cuántas unidades de cada ítem quiere. Ej: 2 pizzas, 1 picada.</div>
-              </div>
-            </label>
-          </div>
-
-          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:16px;">
-            <label style="display:flex;align-items:flex-start;gap:12px;cursor:pointer;">
-              <div class="toggle-wrap" style="margin-top:2px;">
-                <button class="toggle" id="cfg-modo-personas" onclick="toggleBtn(this)"></button>
-              </div>
-              <div>
-                <div style="font-weight:700;font-size:14px;">👥 Para X personas</div>
-                <div style="font-size:12px;color:var(--text2);margin-top:3px;">El cliente indica para cuántas personas y elige los ítems. El precio final te lo confirmás vos por WhatsApp o email.</div>
-              </div>
-            </label>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="config-section">
         <div class="config-section-title">Modalidad de entrega</div>
         <div style="font-size:13px;color:var(--text2);margin-bottom:16px;">
           Activá las opciones que ofrecés. Si no aplica (ej: solo salón de eventos), dejá todo desactivado.
@@ -1266,7 +1189,7 @@ select option { background: var(--surface2); }
         <input type="number" id="mi-precio-base" min="0" step="100" placeholder="0">
       </div>
       <div class="form-group">
-        <label>Precio por persona extra</label>
+        <label>Precio por niño extra</label>
         <input type="number" id="mi-precio-extra" min="0" step="100" placeholder="0">
       </div>
       <div class="form-group full">
@@ -1278,6 +1201,8 @@ select option { background: var(--surface2); }
             <input type="file" accept="image/*" style="display:none" onchange="subirImagen(this,'mi-imagen','mi-imagen-preview','mi-imagen-img')">
           </label>
         </div>
+
+        <div style="font-size:11px;color:var(--text2);margin-top:4px;">⚠️ Algunas URLs externas (Pixabay, etc.) pueden bloquear su uso. Si la imagen no aparece, subila con el botón 📁</div>
         <div id="mi-imagen-preview" style="margin-top:8px;display:none;">
           <img id="mi-imagen-img" style="max-height:80px;border-radius:8px;border:1px solid var(--border);">
         </div>
@@ -1320,7 +1245,7 @@ select option { background: var(--surface2); }
         <input type="number" id="j-precio-fijo" min="0" step="100" placeholder="0">
       </div>
       <div class="form-group">
-        <label>Precio por persona</label>
+        <label>Precio por niño</label>
         <input type="number" id="j-precio-nino" min="0" step="100" placeholder="0">
       </div>
       <div class="form-group">
@@ -1332,6 +1257,8 @@ select option { background: var(--surface2); }
             <input type="file" accept="image/*" style="display:none" onchange="subirImagen(this,'j-imagen','j-imagen-preview','j-imagen-img')">
           </label>
         </div>
+
+        <div style="font-size:11px;color:var(--text2);margin-top:4px;">⚠️ Algunas URLs externas (Pixabay, etc.) pueden bloquear su uso. Si la imagen no aparece, subila con el botón 📁</div>
         <div id="j-imagen-preview" style="margin-top:8px;display:none;">
           <img id="j-imagen-img" style="max-height:80px;border-radius:8px;border:1px solid var(--border);">
         </div>
@@ -1428,43 +1355,6 @@ select option { background: var(--surface2); }
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('modal-bloqueo')">Cancelar</button>
       <button class="btn btn-accent" onclick="guardarBloqueo()">Bloquear</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal Día Recurrente -->
-<div class="modal-overlay" id="modal-recurrente">
-  <div class="modal">
-    <div class="modal-title">Día recurrente bloqueado</div>
-    <div class="form-grid">
-      <div class="form-group full">
-        <label>Día de la semana</label>
-        <select id="r-dia-semana">
-          <option value="1">Lunes</option>
-          <option value="2">Martes</option>
-          <option value="3">Miércoles</option>
-          <option value="4">Jueves</option>
-          <option value="5">Viernes</option>
-          <option value="6">Sábado</option>
-          <option value="0">Domingo</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Hora inicio (opcional — vacío = todo el día)</label>
-        <input type="time" id="r-inicio-rec">
-      </div>
-      <div class="form-group">
-        <label>Hora fin (opcional)</label>
-        <input type="time" id="r-fin-rec">
-      </div>
-      <div class="form-group full">
-        <label>Motivo (opcional)</label>
-        <input type="text" id="r-motivo-rec" placeholder="Ej: Día de descanso, cerrado los lunes...">
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('modal-recurrente')">Cancelar</button>
-      <button class="btn btn-accent" onclick="guardarRecurrente()">Guardar</button>
     </div>
   </div>
 </div>
@@ -1576,6 +1466,8 @@ select option { background: var(--surface2); }
             <input type="file" accept="image/*" style="display:none" onchange="subirImagen(this,'c-imagen','c-imagen-preview','c-imagen-img')">
           </label>
         </div>
+
+        <div style="font-size:11px;color:var(--text2);margin-top:4px;">⚠️ Algunas URLs externas (Pixabay, etc.) pueden bloquear su uso. Si la imagen no aparece, subila con el botón 📁</div>
         <div id="c-imagen-preview" style="margin-top:8px;display:none;">
           <img id="c-imagen-img" style="max-height:80px;border-radius:8px;border:1px solid var(--border);">
         </div>
@@ -1739,7 +1631,7 @@ function showPage(name) {
         cambiarModoHorario('fijo');
       }
     },
-    bloqueadas: () => { cargarBloqueadas(); cargarRecurrentes(); },
+    bloqueadas: cargarBloqueadas,
     configuracion: cargarConfiguracion
   };
   if (loaders[name]) loaders[name]();
@@ -1976,12 +1868,12 @@ async function cargarMenu() {
 
   grid.innerHTML = items.map(item => `
     <div class="item-card">
-      <div class="item-card-img">${item.imagen_url ? `<img src="${item.imagen_url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.nextSibling.style.display='flex'"><span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:28px;">🍕</span>` : '<span style="display:flex;width:100%;height:100%;align-items:center;justify-content:center;font-size:28px;">🍕</span>'}</div>
+      <div class="item-card-img">${item.imagen_url ? `<img src="${item.imagen_url}" style="width:100%;height:100%;object-fit:cover;">` : '🍕'}</div>
       <div class="item-card-body">
         <div class="item-card-name">${item.nombre}</div>
         ${item.descripcion ? `<div class="item-card-desc">${item.descripcion}</div>` : ''}
         <div class="item-card-price">
-          Base: ${formatPrecio(item.precio_base)} · Extra/persona: ${formatPrecio(item.precio_por_nino_extra)}
+          Base: ${formatPrecio(item.precio_base)} · Extra/niño: ${formatPrecio(item.precio_por_nino_extra)}
         </div>
         <div style="margin-top:6px;">
           <span class="badge ${item.activo ? 'badge-confirmada' : 'badge-cancelada'}">${item.activo ? 'Activo' : 'Inactivo'}</span>
@@ -2062,14 +1954,14 @@ async function cargarJuegos() {
 
   grid.innerHTML = juegos.map(j => `
     <div class="item-card">
-      <div class="item-card-img">${j.imagen_url ? `<img src="${j.imagen_url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.nextSibling.style.display='flex'"><span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:28px;">🎪</span>` : '<span style="display:flex;width:100%;height:100%;align-items:center;justify-content:center;font-size:28px;">🎪</span>'}</div>
+      <div class="item-card-img">${j.imagen_url ? `<img src="${j.imagen_url}" style="width:100%;height:100%;object-fit:cover;">` : '🎪'}</div>
       <div class="item-card-body">
         <div class="item-card-name">${j.nombre}</div>
         ${j.descripcion ? `<div class="item-card-desc">${j.descripcion}</div>` : ''}
         <div class="item-card-price">
           ${j.precio_fijo > 0 ? `Fijo: ${formatPrecio(j.precio_fijo)}` : ''}
           ${j.precio_fijo > 0 && j.precio_por_nino > 0 ? ' · ' : ''}
-          ${j.precio_por_nino > 0 ? `Por persona: ${formatPrecio(j.precio_por_nino)}` : ''}
+          ${j.precio_por_nino > 0 ? `Por niño: ${formatPrecio(j.precio_por_nino)}` : ''}
         </div>
         <div style="margin-top:6px;">
           <span class="badge ${j.activo ? 'badge-confirmada' : 'badge-cancelada'}">${j.activo ? 'Activo' : 'Inactivo'}</span>
@@ -2304,52 +2196,6 @@ async function cargarBloqueadas() {
 }
 
 function openModalBloqueo() { openModal('modal-bloqueo'); }
-function openModalRecurrente() { openModal('modal-recurrente'); }
-
-async function cargarRecurrentes() {
-  const res = await api('GET', `/admin/${SLUG}/fechas-recurrentes`);
-  if (!res) return;
-  const rows = await res.json();
-  const tbody = document.getElementById('recurrentes-tbody');
-  const DIAS = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
-  if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="empty-state-icon">✅</div><div class="empty-state-text">No hay días recurrentes bloqueados</div></div></td></tr>`;
-    return;
-  }
-  tbody.innerHTML = rows.map(r => `
-    <tr>
-      <td><strong>${DIAS[r.dia_semana]}</strong> (todos los ${DIAS[r.dia_semana]}s)</td>
-      <td>${r.hora_inicio ? `${r.hora_inicio.slice(0,5)} — ${(r.hora_fin||'').slice(0,5)}` : 'Todo el día'}</td>
-      <td>${r.motivo || '—'}</td>
-      <td><button class="btn btn-danger btn-sm" onclick="eliminarRecurrente('${r.id}')">🗑</button></td>
-    </tr>
-  `).join('');
-}
-
-async function guardarRecurrente() {
-  const body = {
-    dia_semana: parseInt(document.getElementById('r-dia-semana').value),
-    hora_inicio: document.getElementById('r-inicio-rec').value || null,
-    hora_fin: document.getElementById('r-fin-rec').value || null,
-    motivo: document.getElementById('r-motivo-rec').value || null,
-  };
-  const res = await api('POST', `/admin/${SLUG}/fechas-recurrentes`, body);
-  if (res?.ok) {
-    toast('Día recurrente bloqueado', 'success');
-    closeModal('modal-recurrente');
-    cargarRecurrentes();
-    document.getElementById('r-inicio-rec').value = '';
-    document.getElementById('r-fin-rec').value = '';
-    document.getElementById('r-motivo-rec').value = '';
-  } else toast('Error al guardar', 'error');
-}
-
-async function eliminarRecurrente(id) {
-  if (!confirm('¿Eliminar este día recurrente?')) return;
-  const res = await api('DELETE', `/admin/${SLUG}/fechas-recurrentes/${id}`);
-  if (res?.ok) { toast('Eliminado', 'success'); cargarRecurrentes(); }
-  else toast('Error al eliminar', 'error');
-}
 
 async function guardarBloqueo() {
   const body = {
@@ -2409,14 +2255,6 @@ async function cargarConfiguracion() {
   document.getElementById('cfg-costo-envio').value = cfg.costo_envio || 0;
   toggleCostoEnvio();
   toggleSeñaGroup();
-
-  // Modos de presupuesto
-  const modoBase = document.getElementById('cfg-modo-base');
-  const modoUnid = document.getElementById('cfg-modo-unidades');
-  const modoPers = document.getElementById('cfg-modo-personas');
-  if (cfg.modo_presupuesto_base !== false) modoBase.classList.add('on'); else modoBase.classList.remove('on');
-  if (cfg.modo_presupuesto_unidades) modoUnid.classList.add('on'); else modoUnid.classList.remove('on');
-  if (cfg.modo_presupuesto_personas) modoPers.classList.add('on'); else modoPers.classList.remove('on');
 
   // Colores del calendario
   cargarColoresCalendario(cfg.config_calendario);
@@ -2526,9 +2364,6 @@ async function guardarConfiguracion() {
     ofrece_envio: document.getElementById('cfg-ofrece-envio').classList.contains('on'),
     costo_envio: parseFloat(document.getElementById('cfg-costo-envio').value) || 0,
     config_calendario: leerColoresCalendario(),
-    modo_presupuesto_base: document.getElementById('cfg-modo-base').classList.contains('on'),
-    modo_presupuesto_unidades: document.getElementById('cfg-modo-unidades').classList.contains('on'),
-    modo_presupuesto_personas: document.getElementById('cfg-modo-personas').classList.contains('on'),
   };
 
   const res = await api('PATCH', `/admin/${SLUG}/configuracion`, body);
@@ -2587,7 +2422,7 @@ async function cargarCombos() {
 
   grid.innerHTML = combos.map(c => `
     <div class="item-card">
-      <div class="item-card-img">${c.imagen_url ? `<img src="${c.imagen_url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.nextSibling.style.display='flex'"><span style="display:none;width:100%;height:100%;align-items:center;justify-content:center;font-size:28px;">🎁</span>` : '<span style="display:flex;width:100%;height:100%;align-items:center;justify-content:center;font-size:28px;">🎁</span>'}</div>
+      <div class="item-card-img">${c.imagen_url ? `<img src="${c.imagen_url}" style="width:100%;height:100%;object-fit:cover;">` : '🎁'}</div>
       <div class="item-card-body">
         <div class="item-card-name">${c.nombre}</div>
         ${c.descripcion ? `<div class="item-card-desc">${c.descripcion}</div>` : ''}
