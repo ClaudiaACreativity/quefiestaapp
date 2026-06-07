@@ -930,6 +930,15 @@ select option { background: var(--surface2); }
             <div id="cfg-portada-preview" style="margin-top:8px;display:none;">
               <img id="cfg-portada-img" style="max-height:100px;border-radius:8px;border:1px solid var(--border);">
             </div>
+            <div style="margin-top:10px;">
+              <label style="font-size:12px;color:var(--text2);">Opacidad de la imagen en la portada</label>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+                <input type="range" id="cfg-portada-opacidad" min="0" max="1" step="0.05" value="0.9"
+                  style="flex:1;" oninput="document.getElementById('cfg-portada-opacidad-val').textContent=Math.round(this.value*100)+'%'">
+                <span id="cfg-portada-opacidad-val" style="font-size:13px;font-weight:700;min-width:36px;">90%</span>
+              </div>
+              <div style="font-size:11px;color:var(--text2);margin-top:3px;">0% = invisible · 100% = imagen completa</div>
+            </div>
           </div>
         </div>
       </div>
@@ -1185,7 +1194,7 @@ select option { background: var(--surface2); }
         <textarea id="mi-descripcion" placeholder="Descripción breve"></textarea>
       </div>
       <div class="form-group">
-        <label>Precio base (para cantidad base de personas)</label>
+        <label>Precio base <span style="font-size:11px;font-weight:400;color:var(--text2);">(modo base: precio para X personas · modo unidades: precio por unidad · modo personas: precio de referencia)</span></label>
         <input type="number" id="mi-precio-base" min="0" step="100" placeholder="0">
       </div>
       <div class="form-group">
@@ -2235,6 +2244,9 @@ async function cargarConfiguracion() {
   document.getElementById('cfg-direccion').value = cfg.direccion || '';
   document.getElementById('cfg-logo-url').value = cfg.logo_url || '';
   document.getElementById('cfg-portada-url').value = cfg.imagen_portada_url || '';
+  const op = cfg.portada_opacidad ?? 0.9;
+  document.getElementById('cfg-portada-opacidad').value = op;
+  document.getElementById('cfg-portada-opacidad-val').textContent = Math.round(op*100)+'%';
   document.getElementById('cfg-color-primario').value = cfg.color_primario || '#6C3FC5';
   document.getElementById('cfg-color-primario-hex').value = cfg.color_primario || '#6C3FC5';
   document.getElementById('cfg-color-secundario').value = cfg.color_secundario || '#F9A8D4';
@@ -2350,6 +2362,7 @@ async function guardarConfiguracion() {
     direccion: document.getElementById('cfg-direccion').value || null,
     logo_url: document.getElementById('cfg-logo-url').value || null,
     imagen_portada_url: document.getElementById('cfg-portada-url').value || null,
+    portada_opacidad: parseFloat(document.getElementById('cfg-portada-opacidad').value),
     color_primario: document.getElementById('cfg-color-primario-hex').value || null,
     color_secundario: document.getElementById('cfg-color-secundario-hex').value || null,
     capacidad_maxima: parseInt(document.getElementById('cfg-capacidad').value) || null,
