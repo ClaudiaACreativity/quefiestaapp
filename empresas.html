@@ -293,7 +293,7 @@ body {
 /* PRESUPUESTADOR */
 /* Sección presupuesto: cantidad + resumen lado a lado */
 .seccion-presup {
-  max-width: 860px;
+  max-width: 1100px;
   margin: 0 auto 0;
   display: grid;
   grid-template-columns: 1fr 280px;
@@ -303,7 +303,7 @@ body {
 
 /* Secciones individuales centradas */
 .seccion-full {
-  max-width: 860px;
+  max-width: 1100px;
   margin: 0 auto;
   width: 100%;
 }
@@ -882,7 +882,7 @@ footer strong { color: white; }
 
   <!-- SECCIÓN 1: CANTIDAD DE PERSONAS + RESUMEN -->
   <div class="seccion-presup">
-    <div class="presup-panel">
+    <div id="panel-cantidad-personas" class="presup-panel">
       <div class="presup-panel-title">👦 Cantidad de personas</div>
       <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
         <div class="ninos-control">
@@ -893,7 +893,7 @@ footer strong { color: white; }
           </div>
           <button class="ninos-btn" onclick="cambiarNinos(1)">+</button>
         </div>
-        <div style="font-size:13px;color:var(--text2);line-height:1.5;">
+        <div style="font-size:13px;color:var(--text2);line-height:1.5;" id="ninos-desc">
           El precio base incluye hasta <strong id="ninos-base-label">20</strong> personas.<br>
           Cada persona extra tiene un costo adicional por ítem.
         </div>
@@ -1250,6 +1250,11 @@ window.onload = async () => {
     await cargarSalon();
     mostrarSeccionEntrega();
     aplicarColoresCalendario(salon?.config_calendario);
+    // Ocultar panel de cantidad de personas si el tenant no lo habilitó
+    if (!salon?.ninos_base && !salon?.precio_base_salon) {
+      const panel = document.getElementById('panel-cantidad-personas');
+      if (panel) panel.style.display = 'none';
+    }
     await Promise.all([cargarMenu(), cargarJuegos(), cargarCombos()]);
     await cargarDisponibilidad();
     renderCalendario();
@@ -1894,7 +1899,14 @@ function calcularTotal() {
 function actualizarResumen() {
   const { salon: ps, menu: pm, juegos: pj, envio: pe, total } = calcularTotal();
 
-  document.getElementById('res-salon').textContent = formatPrecio(ps);
+  // Línea del servicio/salón
+  if (ps > 0) {
+    document.getElementById('res-salon').textContent = formatPrecio(ps);
+    document.getElementById('res-ninos').textContent = cantNinos;
+    document.getElementById('res-salon-linea').style.display = 'flex';
+  } else {
+    document.getElementById('res-salon-linea').style.display = 'none';
+  }
 
   if (pm > 0) {
     const labels = menuSeleccionado.map(m => m.nombre).join(', ');
