@@ -167,15 +167,15 @@ body {
 
 .section-title {
   font-family: 'Fraunces', serif;
-  font-size: clamp(26px, 4vw, 38px);
+  font-size: clamp(30px, 4vw, 44px);
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
   line-height: 1.2;
 }
 
 .section-subtitle {
   color: var(--text2);
-  font-size: 15px;
+  font-size: clamp(16px, 2vw, 19px);
   margin-bottom: 40px;
   line-height: 1.6;
 }
@@ -285,9 +285,9 @@ body {
   background: var(--bg);
   padding: 8px 24px;
   font-family: 'Fraunces', serif;
-  font-size: 18px;
+  font-size: clamp(20px, 3vw, 26px);
   font-style: italic;
-  color: var(--text2);
+  color: var(--text);
 }
 
 /* PRESUPUESTADOR */
@@ -898,10 +898,6 @@ footer strong { color: white; }
     <div class="hero-badge" id="hero-badge">🎉 Reservas online</div>
     <h1 class="hero-title" id="hero-title">Tu evento, <span>perfecto</span></h1>
     <p class="hero-subtitle" id="hero-subtitle">Armá el evento ideal para ese día especial. Elegí menú, adicionales y fecha desde acá.</p>
-    <div class="hero-actions">
-      <a href="#presupuestador" class="btn-hero btn-hero-primary">🎊 Armar mi presupuesto</a>
-      <a href="#combos" class="btn-hero btn-hero-secondary">Ver ofertas</a>
-    </div>
   </div>
 </header>
 
@@ -1287,6 +1283,7 @@ let modoPrespuesto = null; // 'base' | 'unidades' | 'personas'
 let personasLibres = 1; // Para modo 'personas'
 // Cantidades por ítem en modo 'unidades'
 const cantidadesItems = {}; // { item_id: cantidad }
+let presupuestoActivado = false; // se activa con la primera interacción del cliente
 
 const hoy = new Date();
 calMes = hoy.getMonth() + 1;
@@ -1671,6 +1668,7 @@ function renderJuegosList() {
 // INTERACCIONES
 // ============================================================
 function cambiarNinos(delta) {
+  presupuestoActivado = true;
   cantNinos = Math.max(1, cantNinos + delta);
   document.getElementById('ninos-value').textContent = cantNinos;
   document.getElementById('res-ninos').textContent = cantNinos;
@@ -1680,6 +1678,7 @@ function cambiarNinos(delta) {
 }
 
 function toggleMenu(id) {
+  presupuestoActivado = true;
   const item = menuItems.find(m => m.id === id);
   if (!item) return;
   const idx = menuSeleccionado.findIndex(s => s.id === id);
@@ -1690,6 +1689,7 @@ function toggleMenu(id) {
 }
 
 function toggleJuego(id) {
+  presupuestoActivado = true;
   const juego = juegosItems.find(j => j.id === id);
   if (!juego) return;
   const idx = juegosSeleccionados.findIndex(s => s.id === id);
@@ -1702,6 +1702,7 @@ function toggleJuego(id) {
 let combosSeleccionados = []; // [{...combo, cantidad: N}]
 
 function cambiarCantidadCombo(id, delta) {
+  presupuestoActivado = true;
   const idx = combosSeleccionados.findIndex(c => c.id === id);
   if (idx >= 0) {
     combosSeleccionados[idx].cantidad = Math.max(0, combosSeleccionados[idx].cantidad + delta);
@@ -1816,6 +1817,7 @@ let reservasHoraDelDia = {};
 function inicializarModos() {
   if (!salon) return;
   // Resetear estado al inicializar
+  presupuestoActivado = false;
   combosSeleccionados = [];
   menuSeleccionado = [];
   juegosSeleccionados = [];
@@ -1869,6 +1871,7 @@ function seleccionarModo(modo) {
   document.getElementById('panel-modo-personas').style.display = modo === 'personas' ? 'block' : 'none';
 
   // Resetear selecciones y re-renderizar ítems
+  presupuestoActivado = false;
   menuSeleccionado = [];
   juegosSeleccionados = [];
   Object.keys(cantidadesItems).forEach(k => delete cantidadesItems[k]);
@@ -1878,12 +1881,14 @@ function seleccionarModo(modo) {
 }
 
 function cambiarPersonasLibres(delta) {
+  presupuestoActivado = true;
   personasLibres = Math.max(1, personasLibres + delta);
   document.getElementById('personas-libres-value').textContent = personasLibres;
   actualizarResumen();
 }
 
 function cambiarCantidadItem(id, delta, tipo) {
+  presupuestoActivado = true;
   const key = tipo + '_' + id;
   cantidadesItems[key] = Math.max(0, (cantidadesItems[key] || 0) + delta);
   document.getElementById(`cant-val-${key}`).textContent = cantidadesItems[key];
@@ -2112,11 +2117,11 @@ function mostrarSeccionEntrega() {
 // RESUMEN Y CÁLCULO
 // ============================================================
 function calcularTotal() {
-  if (!salon) return { salon: 0, menu: 0, juegos: 0, envio: 0, total: 0, aPedido: false };
+  if (!salon) return { salon: 0, menu: 0, juegos: 0, combos: 0, envio: 0, total: 0, aPedido: false };
+  if (!presupuestoActivado) return { salon: 0, menu: 0, juegos: 0, combos: 0, envio: 0, total: 0, aPedido: false };
 
   const modo = modoPrespuesto || 'base';
   const costoEnvio = (modalidadEntrega === 'envio') ? (parseFloat(salon.costo_envio) || 0) : 0;
-
   // Precio de combos seleccionados — se suma siempre independiente del modo
   const precioCombos = combosSeleccionados.reduce((sum, c) => sum + (parseFloat(c.precio_cerrado) || 0) * c.cantidad, 0);
 
@@ -2321,6 +2326,17 @@ async function enviarReserva() {
       if (archivoComprobante && data.reserva_id) {
         await subirComprobante(data.reserva_id);
       }
+
+      // Limpiar presupuesto
+      presupuestoActivado = false;
+      combosSeleccionados = [];
+      menuSeleccionado = [];
+      juegosSeleccionados = [];
+      Object.keys(cantidadesItems).forEach(k => delete cantidadesItems[k]);
+      renderCombosList();
+      renderMenuList();
+      renderJuegosList();
+      actualizarResumen();
 
       document.getElementById('formulario').style.display = 'none';
       const success = document.getElementById('success-screen');
