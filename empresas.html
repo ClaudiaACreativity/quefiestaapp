@@ -1273,6 +1273,7 @@ if (SLUG && window.location.search.includes('slug=')) {
 let salon = null;
 let menuItems = [];
 let juegosItems = [];
+let combosItems = [];
 let cantNinos = 20;
 let ninosBase = 20;
 let menuSeleccionado = [];
@@ -1399,31 +1400,43 @@ async function cargarSalon() {
 async function cargarCombos() {
   const res = await fetch(`${API}/${SLUG}/combos`);
   if (!res.ok) return;
-  const combos = await res.json();
-  const grid = document.getElementById('combos-grid');
+  combosItems = await res.json();
 
-  if (!combos.length) {
+  if (!combosItems.length) {
     document.getElementById('combos').style.display = 'none';
     document.querySelector('.divisor').style.display = 'none';
     return;
   }
+  renderCombosList();
+}
 
-  grid.innerHTML = combos.map(c => `
-    <div class="combo-card" onclick="seleccionarCombo(this, ${JSON.stringify(c).replace(/"/g,'&quot;')})">
-      <div class="combo-img">
-        ${c.imagen_url
-          ? `<img src="${c.imagen_url}" style="width:100%;height:100%;object-fit:cover;">`
-          : '🎪'}
+function renderCombosList() {
+  const grid = document.getElementById('combos-grid');
+  grid.innerHTML = combosItems.map(c => {
+    const sel = combosSeleccionados.find(s => s.id === c.id);
+    const cant = sel ? sel.cantidad : 0;
+    return `
+      <div class="combo-card ${cant > 0 ? 'selected' : ''}">
+        <div class="combo-img">
+          ${c.imagen_url
+            ? `<img src="${c.imagen_url}" style="width:100%;height:100%;object-fit:cover;">` 
+            : '🎪'}
+        </div>
+        <div class="combo-body">
+          <div class="combo-name">${c.nombre}</div>
+          ${c.descripcion ? `<div class="combo-desc">${c.descripcion}</div>` : ''}
+          <div class="combo-price-label">Precio cerrado</div>
+          <div class="combo-price">${formatPrecio(c.precio_cerrado)}</div>
+          <div class="cantidad-item-control" style="margin-top:12px;justify-content:center;">
+            <button class="cantidad-item-btn" onclick="cambiarCantidadCombo('${c.id}', -1)">−</button>
+            <span class="cantidad-item-val">${cant}</span>
+            <button class="cantidad-item-btn" onclick="cambiarCantidadCombo('${c.id}', 1)">+</button>
+          </div>
+          ${cant > 0 ? `<div class="combo-check">✓ ${cant} seleccionado${cant > 1 ? 's' : ''}</div>` : ''}
+        </div>
       </div>
-      <div class="combo-body">
-        <div class="combo-name">${c.nombre}</div>
-        ${c.descripcion ? `<div class="combo-desc">${c.descripcion}</div>` : ''}
-        <div class="combo-price-label">Precio cerrado</div>
-        <div class="combo-price">${formatPrecio(c.precio_cerrado)}</div>
-        <div class="combo-check">✓ Seleccionado</div>
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 async function cargarMenu() {
@@ -1686,17 +1699,18 @@ function toggleJuego(id) {
   actualizarResumen();
 }
 
-let comboSeleccionado = null;
+let combosSeleccionados = []; // [{...combo, cantidad: N}]
 
-function seleccionarCombo(el, combo) {
-  const yaSeleccionado = el.classList.contains('selected');
-  document.querySelectorAll('.combo-card').forEach(c => c.classList.remove('selected'));
-  if (yaSeleccionado) {
-    comboSeleccionado = null;
-  } else {
-    el.classList.add('selected');
-    comboSeleccionado = combo;
+function cambiarCantidadCombo(id, delta) {
+  const idx = combosSeleccionados.findIndex(c => c.id === id);
+  if (idx >= 0) {
+    combosSeleccionados[idx].cantidad = Math.max(0, combosSeleccionados[idx].cantidad + delta);
+    if (combosSeleccionados[idx].cantidad === 0) combosSeleccionados.splice(idx, 1);
+  } else if (delta > 0) {
+    const combo = combosItems.find(c => c.id === id);
+    if (combo) combosSeleccionados.push({ ...combo, cantidad: 1 });
   }
+  renderCombosList();
   actualizarResumen();
 }
 
@@ -1802,7 +1816,7 @@ let reservasHoraDelDia = {};
 function inicializarModos() {
   if (!salon) return;
   // Resetear estado al inicializar
-  comboSeleccionado = null;
+  combosSeleccionados = [];
   menuSeleccionado = [];
   juegosSeleccionados = [];
   Object.keys(cantidadesItems).forEach(k => delete cantidadesItems[k]);
@@ -2103,11 +2117,11 @@ function calcularTotal() {
   const modo = modoPrespuesto || 'base';
   const costoEnvio = (modalidadEntrega === 'envio') ? (parseFloat(salon.costo_envio) || 0) : 0;
 
-  // Si hay combo seleccionado, el total es el precio cerrado del combo
-  if (comboSeleccionado) {
+  // Si hay combos seleccionados, sumar su precio al total
+  if (combosSeleccionados.length > 0) {
     const costoEnvioC = (modalidadEntrega === 'envio') ? (parseFloat(salon.costo_envio) || 0) : 0;
-    const totalCombo = (parseFloat(comboSeleccionado.precio_cerrado) || 0) + costoEnvioC;
-    return { salon: 0, menu: 0, juegos: 0, envio: costoEnvioC, total: totalCombo, aPedido: false };
+    const totalCombos = combosSeleccionados.reduce((sum, c) => sum + (parseFloat(c.precio_cerrado) || 0) * c.cantidad, 0);
+    return { salon: 0, menu: 0, juegos: 0, envio: costoEnvioC, total: totalCombos + costoEnvioC, aPedido: false };
   }
 
   if (modo === 'base') {
@@ -2163,16 +2177,20 @@ function calcularTotal() {
 function actualizarResumen() {
   const { salon: ps, menu: pm, juegos: pj, envio: pe, total, aPedido } = calcularTotal();
 
-  // Línea del combo seleccionado
+  // Líneas de combos seleccionados
   const resComboLinea = document.getElementById('res-combo-linea');
   const resComboNombre = document.getElementById('res-combo-nombre');
   const resComboValor = document.getElementById('res-combo-valor');
-  if (resComboLinea && comboSeleccionado) {
-    resComboNombre.textContent = comboSeleccionado.nombre;
-    resComboValor.textContent = formatPrecio(comboSeleccionado.precio_cerrado);
-    resComboLinea.style.display = 'flex';
-  } else if (resComboLinea) {
-    resComboLinea.style.display = 'none';
+  if (resComboLinea) {
+    if (combosSeleccionados.length > 0) {
+      const nombre = combosSeleccionados.map(c => `${c.nombre} x${c.cantidad}`).join(', ');
+      const valor = combosSeleccionados.reduce((sum, c) => sum + (parseFloat(c.precio_cerrado) || 0) * c.cantidad, 0);
+      resComboNombre.textContent = nombre.length > 35 ? nombre.slice(0, 35) + '…' : nombre;
+      resComboValor.textContent = formatPrecio(valor);
+      resComboLinea.style.display = 'flex';
+    } else {
+      resComboLinea.style.display = 'none';
+    }
   }
 
   // Línea del servicio/salón
@@ -2282,6 +2300,7 @@ async function enviarReserva() {
     cliente_telefono: document.getElementById('f-tel').value,
     menu_seleccionado: menuSeleccionado.map(m => ({id: m.id, nombre: m.nombre, precio_base: m.precio_base, precio_por_nino_extra: m.precio_por_nino_extra})),
     juegos_seleccionados: juegosSeleccionados.map(j => ({id: j.id, nombre: j.nombre, precio_fijo: j.precio_fijo, precio_por_nino: j.precio_por_nino})),
+    combos_seleccionados: combosSeleccionados.map(c => ({id: c.id, nombre: c.nombre, precio_cerrado: c.precio_cerrado, cantidad: c.cantidad})),
     precio_salon: ps,
     precio_menu: pm,
     precio_juegos: pj,
