@@ -825,7 +825,7 @@ select option { background: var(--surface2); }
           <div class="page-title">Fechas bloqueadas 🚫</div>
           <div class="page-subtitle">Días no disponibles para reservar</div>
         </div>
-        <button class="btn btn-accent" onclick="openModalBloqueo()">+ Bloquear fecha</button>
+        <button class="btn btn-accent" onclick="openModalBloqueo()">+ Bloquear fecha puntual</button>
       </div>
       <div class="table-container">
         <table>
@@ -838,6 +838,30 @@ select option { background: var(--surface2); }
             </tr>
           </thead>
           <tbody id="bloqueadas-tbody">
+            <tr><td colspan="4" class="loading">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Días recurrentes bloqueados -->
+      <div class="topbar" style="margin-top:32px;">
+        <div>
+          <div class="page-title" style="font-size:16px;">Días recurrentes bloqueados 🔁</div>
+          <div class="page-subtitle">Días de la semana que siempre están cerrados (ej: todos los lunes)</div>
+        </div>
+        <button class="btn btn-accent" onclick="openModal('modal-recurrente')">+ Agregar día recurrente</button>
+      </div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Día de la semana</th>
+              <th>Horario</th>
+              <th>Motivo</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="recurrentes-tbody">
             <tr><td colspan="4" class="loading">Cargando...</td></tr>
           </tbody>
         </table>
@@ -1410,6 +1434,43 @@ select option { background: var(--surface2); }
   </div>
 </div>
 
+<!-- Modal Recurrente -->
+<div class="modal-overlay" id="modal-recurrente">
+  <div class="modal">
+    <div class="modal-title">Bloquear día recurrente</div>
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Día de la semana</label>
+        <select id="rec-dia">
+          <option value="0">Domingo</option>
+          <option value="1">Lunes</option>
+          <option value="2">Martes</option>
+          <option value="3">Miércoles</option>
+          <option value="4">Jueves</option>
+          <option value="5">Viernes</option>
+          <option value="6">Sábado</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Hora inicio (opcional — vacío = día entero)</label>
+        <input type="time" id="rec-inicio">
+      </div>
+      <div class="form-group">
+        <label>Hora fin (opcional)</label>
+        <input type="time" id="rec-fin">
+      </div>
+      <div class="form-group full">
+        <label>Motivo (opcional)</label>
+        <input type="text" id="rec-motivo" placeholder="Ej: Día de descanso, limpieza...">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-recurrente')">Cancelar</button>
+      <button class="btn btn-accent" onclick="guardarRecurrente()">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal Reserva Manual -->
 <div class="modal-overlay" id="modal-reserva">
   <div class="modal">
@@ -1682,7 +1743,7 @@ function showPage(name) {
         cambiarModoHorario('fijo');
       }
     },
-    bloqueadas: cargarBloqueadas,
+    bloqueadas: () => { cargarBloqueadas(); cargarRecurrentes(); },
     configuracion: cargarConfiguracion
   };
   if (loaders[name]) loaders[name]();
@@ -2274,6 +2335,59 @@ async function eliminarBloqueo(id) {
   const res = await api('DELETE', `/admin/${SLUG}/fechas-bloqueadas/${id}`);
   if (res?.ok) { toast('Fecha desbloqueada', 'success'); cargarBloqueadas(); }
   else toast('Error al desbloquear', 'error');
+}
+
+// ============================================================
+// FECHAS RECURRENTES
+// ============================================================
+const DIAS_NOMBRE = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+async function cargarRecurrentes() {
+  const res = await api('GET', `/admin/${SLUG}/fechas-recurrentes`);
+  if (!res) return;
+  const rows = await res.json();
+  const tbody = document.getElementById('recurrentes-tbody');
+
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state"><div class="empty-state-icon">✅</div><div class="empty-state-text">No hay días recurrentes bloqueados</div></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td>${DIAS_NOMBRE[r.dia_semana]}</td>
+      <td>${r.hora_inicio ? `${r.hora_inicio.slice(0,5)} - ${r.hora_fin?.slice(0,5)}` : 'Día completo'}</td>
+      <td>${r.motivo || '—'}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="eliminarRecurrente('${r.id}')">🗑 Eliminar</button></td>
+    </tr>
+  `).join('');
+}
+
+async function guardarRecurrente() {
+  const body = {
+    dia_semana: parseInt(document.getElementById('rec-dia').value),
+    hora_inicio: document.getElementById('rec-inicio').value || null,
+    hora_fin: document.getElementById('rec-fin').value || null,
+    motivo: document.getElementById('rec-motivo').value || null,
+    activo: true
+  };
+
+  const res = await api('POST', `/admin/${SLUG}/fechas-recurrentes`, body);
+  if (res?.ok) {
+    toast('Día recurrente bloqueado', 'success');
+    closeModal('modal-recurrente');
+    document.getElementById('rec-inicio').value = '';
+    document.getElementById('rec-fin').value = '';
+    document.getElementById('rec-motivo').value = '';
+    cargarRecurrentes();
+  } else toast('Error al guardar', 'error');
+}
+
+async function eliminarRecurrente(id) {
+  if (!confirm('¿Eliminar este día recurrente?')) return;
+  const res = await api('DELETE', `/admin/${SLUG}/fechas-recurrentes/${id}`);
+  if (res?.ok) { toast('Día recurrente eliminado', 'success'); cargarRecurrentes(); }
+  else toast('Error al eliminar', 'error');
 }
 
 // ============================================================
