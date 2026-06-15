@@ -2117,12 +2117,8 @@ function calcularTotal() {
   const modo = modoPrespuesto || 'base';
   const costoEnvio = (modalidadEntrega === 'envio') ? (parseFloat(salon.costo_envio) || 0) : 0;
 
-  // Si hay combos seleccionados, sumar su precio al total
-  if (combosSeleccionados.length > 0) {
-    const costoEnvioC = (modalidadEntrega === 'envio') ? (parseFloat(salon.costo_envio) || 0) : 0;
-    const totalCombos = combosSeleccionados.reduce((sum, c) => sum + (parseFloat(c.precio_cerrado) || 0) * c.cantidad, 0);
-    return { salon: 0, menu: 0, juegos: 0, envio: costoEnvioC, total: totalCombos + costoEnvioC, aPedido: false };
-  }
+  // Precio de combos seleccionados — se suma siempre independiente del modo
+  const precioCombos = combosSeleccionados.reduce((sum, c) => sum + (parseFloat(c.precio_cerrado) || 0) * c.cantidad, 0);
 
   if (modo === 'base') {
     const ninosExtra = Math.max(0, cantNinos - ninosBase);
@@ -2137,8 +2133,8 @@ function calcularTotal() {
       precioJuegos += parseFloat(j.precio_fijo) || 0;
       precioJuegos += (parseFloat(j.precio_por_nino) || 0) * cantNinos;
     });
-    return { salon: precioSalon, menu: precioMenu, juegos: precioJuegos, envio: costoEnvio,
-             total: precioSalon + precioMenu + precioJuegos + costoEnvio, aPedido: false };
+    return { salon: precioSalon, menu: precioMenu, juegos: precioJuegos, combos: precioCombos, envio: costoEnvio,
+             total: precioSalon + precioMenu + precioJuegos + precioCombos + costoEnvio, aPedido: false };
   }
 
   if (modo === 'unidades') {
@@ -2152,8 +2148,8 @@ function calcularTotal() {
       const pu = parseFloat(j.precio_unidad) || parseFloat(j.precio_fijo) || 0;
       precioJuegos += pu * (j.cantidad || 1);
     });
-    return { salon: 0, menu: precioMenu, juegos: precioJuegos, envio: costoEnvio,
-             total: precioMenu + precioJuegos + costoEnvio, aPedido: false };
+    return { salon: 0, menu: precioMenu, juegos: precioJuegos, combos: precioCombos, envio: costoEnvio,
+             total: precioMenu + precioJuegos + precioCombos + costoEnvio, aPedido: false };
   }
 
   if (modo === 'personas') {
@@ -2167,11 +2163,11 @@ function calcularTotal() {
       const pr = parseFloat(j.precio_ref_persona) || parseFloat(j.precio_fijo) || 0;
       precioRef += pr * (personasLibres || 1);
     });
-    return { salon: 0, menu: precioRef, juegos: 0, envio: costoEnvio,
-             total: precioRef + costoEnvio, aPedido: true };
+    return { salon: 0, menu: precioRef, juegos: 0, combos: precioCombos, envio: costoEnvio,
+             total: precioRef + precioCombos + costoEnvio, aPedido: true };
   }
 
-  return { salon: 0, menu: 0, juegos: 0, envio: 0, total: 0, aPedido: false };
+  return { salon: 0, menu: 0, juegos: 0, combos: 0, envio: 0, total: 0, aPedido: false };
 }
 
 function actualizarResumen() {
