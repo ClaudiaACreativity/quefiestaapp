@@ -54,38 +54,41 @@ body {
 /* HERO */
 .hero {
   position: relative;
-  min-height: 480px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 60px 24px 80px;
   overflow: hidden;
 }
 
-.hero-bg {
-  position: absolute; inset: 0;
+.hero-banner {
+  position: relative;
+  width: 100%;
+  height: 280px;
   background: linear-gradient(135deg, var(--color1) 0%, var(--color2) 100%);
-  opacity: 0.12;
+  opacity: 0.9;
 }
 
 .hero-img {
   position: absolute; inset: 0;
   object-fit: cover;
   width: 100%; height: 100%;
-  opacity: var(--hero-img-opacity, 0.9);
 }
 
-.hero-content { position: relative; z-index: 2; max-width: 680px; }
+.hero-content {
+  position: relative;
+  text-align: center;
+  padding: 32px 24px 48px;
+  max-width: 680px;
+  margin: 0 auto;
+}
 
 .hero-logo {
   width: 80px; height: 80px;
   border-radius: 20px;
   object-fit: cover;
-  margin-bottom: 20px;
+  margin: -56px auto 20px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.15);
   display: none;
+  border: 4px solid var(--bg);
+  position: relative;
+  z-index: 2;
 }
 
 .hero-badge {
@@ -891,8 +894,9 @@ footer strong { color: white; }
 
 <!-- HERO -->
 <header class="hero" id="hero">
-  <div class="hero-bg"></div>
-  <img id="hero-img" class="hero-img" src="" alt="" style="display:none">
+  <div class="hero-banner" id="hero-banner">
+    <img id="hero-img" class="hero-img" src="" alt="" style="display:none">
+  </div>
   <div class="hero-content">
     <img id="hero-logo" class="hero-logo" src="" alt="">
     <div class="hero-badge" id="hero-badge">🎉 Reservas online</div>
@@ -903,16 +907,16 @@ footer strong { color: white; }
 
 <!-- COMBOS -->
 <section class="section" id="combos">
-  <div class="section-label">Ofertas especiales</div>
-  <div class="section-title">Combos armados</div>
+  <div class="section-label" id="combos-label">Ofertas especiales</div>
+  <div class="section-title" id="combos-titulo">Combos armados</div>
   <div class="section-subtitle" id="combos-subtitle">Paquetes con todo incluido a precio cerrado. ¡Elegí el que más te gusta!</div>
   <div class="combos-grid" id="combos-grid">
     <!-- se carga dinámicamente -->
   </div>
 </section>
 
-<div class="divisor">
-  <span class="divisor-text">¿Querés personalizar? Armá tu combo a medida 🎯</span>
+<div class="divisor" id="divisor-combos">
+  <span class="divisor-text">¿Querés personalizar? Armá tu pedido a medida 🎯</span>
 </div>
 
 <!-- PRESUPUESTADOR -->
@@ -1017,14 +1021,14 @@ footer strong { color: white; }
         <div class="resumen-total-valor" id="res-total">$0</div>
       </div>
       <div class="resumen-seña" id="res-seña" style="display:none;"></div>
-      <div style="margin-top:16px;font-size:12px;color:var(--text2);line-height:1.5;text-align:center;">
+      <div id="res-disclaimer" style="margin-top:16px;font-size:12px;color:var(--text2);line-height:1.5;text-align:center;">
         * El presupuesto es orientativo y será confirmado por la organización.
       </div>
     </div>
   </div>
 
   <!-- SECCIÓN 2: MENÚ -->
-  <div class="seccion-full">
+  <div class="seccion-full" id="seccion-menu">
     <div class="presup-panel">
       <div class="presup-panel-title">🍽 Menú</div>
       <div class="menu-grid" id="menu-list">
@@ -1034,7 +1038,7 @@ footer strong { color: white; }
   </div>
 
   <!-- SECCIÓN 3: ADICIONALES -->
-  <div class="seccion-full">
+  <div class="seccion-full" id="seccion-adicionales">
     <div class="presup-panel">
       <div class="presup-panel-title">🎮 Adicionales</div>
       <div class="adicionales-grid" id="juegos-list">
@@ -1110,6 +1114,17 @@ footer strong { color: white; }
     <div class="presup-panel" style="border-left:3px solid var(--color1);">
       <div class="presup-panel-title" style="font-size:16px;">📋 Política de cancelación</div>
       <p id="politica-cancelacion" style="font-size:14px;color:var(--text2);line-height:1.7;"></p>
+    </div>
+  </div>
+
+  <!-- AVISO WHATSAPP ANTES DEL FORMULARIO -->
+  <div class="seccion-full">
+    <div id="aviso-whatsapp-form" style="display:none;background:linear-gradient(135deg,var(--color1)10,var(--color2)10);border:2px solid var(--color1);border-radius:var(--radius);padding:20px 24px;text-align:center;margin-bottom:24px;">
+      <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;">¿Lo que buscás no está detallado en esta página?</div>
+      <div style="font-size:14px;color:var(--text2);margin-bottom:14px;">Comunicate con nosotros por WhatsApp y te ayudamos a armar tu pedido.</div>
+      <a id="aviso-whatsapp-link" href="#" target="_blank" class="btn-hero btn-hero-primary" style="display:inline-flex;">
+        📱 Consultar por WhatsApp
+      </a>
     </div>
   </div>
 
@@ -1297,9 +1312,6 @@ window.onload = async () => {
     await cargarSalon();
     mostrarSeccionEntrega();
     aplicarColoresCalendario(salon?.config_calendario);
-    // Opacidad de imagen de portada
-    const opacidad = parseFloat(salon?.portada_opacidad ?? 0.9) || 0.9;
-    document.documentElement.style.setProperty('--hero-img-opacity', opacidad);
     inicializarModos();
     await Promise.all([cargarMenu(), cargarJuegos(), cargarCombos()]);
     await cargarDisponibilidad();
@@ -1336,7 +1348,9 @@ async function cargarSalon() {
     const img = document.getElementById('hero-img');
     img.src = salon.imagen_portada_url;
     img.style.display = 'block';
+    img.style.opacity = parseFloat(salon.portada_opacidad ?? 0.9) || 0.9;
   }
+  // Si no hay imagen, el banner queda visible con el color de fondo del tenant (definido por CSS)
 
   if (salon.logo_url) {
     const logo = document.getElementById('hero-logo');
@@ -1356,6 +1370,13 @@ async function cargarSalon() {
     const btn = document.getElementById('whatsapp-btn');
     btn.href = `https://wa.me/${salon.whatsapp}`;
     btn.style.display = 'flex';
+
+    const avisoLink = document.getElementById('aviso-whatsapp-link');
+    const avisoBox = document.getElementById('aviso-whatsapp-form');
+    if (avisoLink && avisoBox) {
+      avisoLink.href = `https://wa.me/${salon.whatsapp}`;
+      avisoBox.style.display = 'block';
+    }
   }
 
   // Footer
@@ -1395,13 +1416,28 @@ async function cargarSalon() {
 }
 
 async function cargarCombos() {
+  // Si el tenant desactivó la sección de combos, ni siquiera consultamos el endpoint
+  if (salon && salon.modo_combos === false) {
+    document.getElementById('combos').style.display = 'none';
+    document.getElementById('divisor-combos').style.display = 'none';
+    return;
+  }
+
+  // Aplicar textos personalizados del tenant (si los configuró)
+  if (salon?.titulo_combos) {
+    document.getElementById('combos-titulo').textContent = salon.titulo_combos;
+  }
+  if (salon?.subtitulo_combos) {
+    document.getElementById('combos-subtitle').textContent = salon.subtitulo_combos;
+  }
+
   const res = await fetch(`${API}/${SLUG}/combos`);
   if (!res.ok) return;
   combosItems = await res.json();
 
   if (!combosItems.length) {
     document.getElementById('combos').style.display = 'none';
-    document.querySelector('.divisor').style.display = 'none';
+    document.getElementById('divisor-combos').style.display = 'none';
     return;
   }
   renderCombosList();
@@ -1440,13 +1476,30 @@ async function cargarMenu() {
   const res = await fetch(`${API}/${SLUG}/menu`);
   if (!res.ok) return;
   menuItems = await res.json();
+  const seccion = document.getElementById('seccion-menu');
+  if (!menuItems.length) {
+    if (seccion) seccion.style.display = 'none';
+    return;
+  }
+  if (seccion) seccion.style.display = '';
   renderMenuList();
 }
 
 async function cargarJuegos() {
+  const seccion = document.getElementById('seccion-adicionales');
+  // Si el tenant desactivó la sección de adicionales, ni siquiera consultamos el endpoint
+  if (salon && salon.modo_accesorios === false) {
+    if (seccion) seccion.style.display = 'none';
+    return;
+  }
   const res = await fetch(`${API}/${SLUG}/juegos`);
   if (!res.ok) return;
   juegosItems = await res.json();
+  if (!juegosItems.length) {
+    if (seccion) seccion.style.display = 'none';
+    return;
+  }
+  if (seccion) seccion.style.display = '';
   renderJuegosList();
 }
 
@@ -1530,11 +1583,8 @@ function renderBannerHorarios(data) {
 // RENDER LISTAS
 // ============================================================
 function renderMenuList() {
+  if (!menuItems.length) return; // la sección ya está oculta por cargarMenu()
   const list = document.getElementById('menu-list');
-  if (!menuItems.length) {
-    list.innerHTML = '<div style="color:var(--text2);font-size:14px;">No hay ítems de menú configurados.</div>';
-    return;
-  }
 
   const modo = modoPrespuesto || 'base';
 
@@ -1596,11 +1646,8 @@ function renderMenuList() {
 }
 
 function renderJuegosList() {
+  if (!juegosItems.length) return; // la sección ya está oculta por cargarJuegos()
   const list = document.getElementById('juegos-list');
-  if (!juegosItems.length) {
-    list.innerHTML = '<div style="color:var(--text2);font-size:14px;">No hay adicionales configurados.</div>';
-    return;
-  }
 
   const modo = modoPrespuesto || 'base';
 
@@ -1878,6 +1925,14 @@ function seleccionarModo(modo) {
   renderMenuList();
   renderJuegosList();
   actualizarResumen();
+
+  // El comprobante no aplica en modo "personas" (presupuesto a confirmar por WhatsApp)
+  const modalidadTenant = salon?.modalidad_cobro || '';
+  const usaTransferencia = modalidadTenant.includes('transferencia') || modalidadTenant === 'total_transferencia';
+  const grupoComprobante = document.getElementById('comprobante-group');
+  if (grupoComprobante) {
+    grupoComprobante.style.display = (usaTransferencia && modo !== 'personas') ? 'block' : 'none';
+  }
 }
 
 function cambiarPersonasLibres(delta) {
@@ -2234,19 +2289,33 @@ function actualizarResumen() {
     document.getElementById('res-total').style.fontSize = '';
   }
 
-  // Seña
-  if (salon && total > 0 && !aPedido) {
+  // Seña + texto disclaimer — varían según el modo de presupuesto
+  const disclaimerEl = document.getElementById('res-disclaimer');
+  if (aPedido) {
+    // Modo "para X personas" — presupuesto a confirmar por WhatsApp
+    document.getElementById('res-seña').style.display = 'none';
+    if (disclaimerEl) {
+      disclaimerEl.textContent = '* El presupuesto es orientativo y será confirmado por la organización a tu WhatsApp. También te indicaremos el importe de la seña para hacer efectiva tu reserva.';
+    }
+  } else if (salon && total > 0) {
     const modalidad = salon.modalidad_cobro || '';
     if (modalidad.includes('seña')) {
       const porcentaje = salon.porcentaje_seña || 30;
       const seña = Math.round(total * porcentaje / 100);
       document.getElementById('res-seña').textContent = `Seña: ${formatPrecio(seña)} (${porcentaje}%)`;
       document.getElementById('res-seña').style.display = 'block';
+      if (disclaimerEl) {
+        disclaimerEl.textContent = `* Para confirmar la reserva se deberá abonar una seña de ${formatPrecio(seña)} (${porcentaje}%) y subir el comprobante de la transferencia realizada en el formulario. El saldo se abona en efectivo o por transferencia al momento de retirar o recibir el pedido.`;
+      }
     } else {
       document.getElementById('res-seña').style.display = 'none';
+      if (disclaimerEl) disclaimerEl.textContent = '';
     }
   } else {
     document.getElementById('res-seña').style.display = 'none';
+    if (disclaimerEl) {
+      disclaimerEl.textContent = '* El presupuesto se actualiza a medida que elegís los ítems.';
+    }
   }
 }
 
@@ -2276,14 +2345,16 @@ async function enviarReserva() {
     toast('Ingresá la dirección de envío', 'error'); return;
   }
 
-  // Validar comprobante si es modalidad transferencia
+  const { salon: ps, menu: pm, juegos: pj, envio: pe, total, aPedido } = calcularTotal();
+
+  // Validar comprobante si es modalidad transferencia — NO aplica en modo "a confirmar" (X personas),
+  // donde la seña y el comprobante se gestionan después por WhatsApp.
   const modalidad = salon?.modalidad_cobro || '';
-  const requiereComprobante = modalidad.includes('transferencia') || modalidad === 'total_transferencia';
+  const requiereComprobante = !aPedido && (modalidad.includes('transferencia') || modalidad === 'total_transferencia');
   if (requiereComprobante && !archivoComprobante) {
     toast('Adjuntá el comprobante de transferencia', 'error'); return;
   }
 
-  const { salon: ps, menu: pm, juegos: pj, envio: pe, total, aPedido } = calcularTotal();
 
   const btn = document.getElementById('btn-reservar');
   btn.disabled = true;
@@ -2309,6 +2380,7 @@ async function enviarReserva() {
     precio_total: total,
     modalidad_entrega: modalidadEntrega,
     direccion_envio: modalidadEntrega === 'envio' ? document.getElementById('f-direccion-envio').value.trim() : null,
+    tipo_presupuesto: aPedido ? 'a_confirmar' : 'cerrado',
     observaciones: document.getElementById('f-obs').value
   };
 
