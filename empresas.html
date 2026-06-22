@@ -922,8 +922,8 @@ footer strong { color: white; }
 <!-- PRESUPUESTADOR -->
 <section class="section" id="presupuestador">
   <div class="section-label">Presupuestador</div>
-  <div class="section-title">Armá tu evento a medida</div>
-  <div class="section-subtitle">Elegí lo que querés incluir y el precio se actualiza en tiempo real</div>
+  <div class="section-title" id="presup-titulo">Armá tu evento a medida</div>
+  <div class="section-subtitle" id="presup-subtitulo">Elegí lo que querés incluir y el precio se actualiza en tiempo real</div>
 
   <!-- SECCIÓN 1: SELECTOR DE MODO + RESUMEN -->
   <div class="seccion-presup">
@@ -1360,6 +1360,20 @@ async function cargarSalon() {
 
   // personas base
   ninosBase = salon.ninos_base || 20;
+
+  // Textos configurables del presupuestador y divisor
+  if (salon.titulo_presupuestador) {
+    const el = document.getElementById('presup-titulo');
+    if (el) el.textContent = salon.titulo_presupuestador;
+  }
+  if (salon.subtitulo_presupuestador) {
+    const el = document.getElementById('presup-subtitulo');
+    if (el) el.textContent = salon.subtitulo_presupuestador;
+  }
+  if (salon.texto_divisor) {
+    const el = document.querySelector('#divisor-combos .divisor-text');
+    if (el) el.textContent = salon.texto_divisor;
+  }
   cantNinos = ninosBase;
   document.getElementById('ninos-value').textContent = cantNinos;
   document.getElementById('ninos-base-label').textContent = ninosBase;
@@ -1926,12 +1940,16 @@ function seleccionarModo(modo) {
   renderJuegosList();
   actualizarResumen();
 
-  // El comprobante no aplica en modo "personas" (presupuesto a confirmar por WhatsApp)
+  // El comprobante y el mensaje de pago no aplican en modo "personas" (presupuesto a confirmar por WhatsApp)
   const modalidadTenant = salon?.modalidad_cobro || '';
   const usaTransferencia = modalidadTenant.includes('transferencia') || modalidadTenant === 'total_transferencia';
   const grupoComprobante = document.getElementById('comprobante-group');
+  const pagoInfo = document.getElementById('pago-info');
   if (grupoComprobante) {
     grupoComprobante.style.display = (usaTransferencia && modo !== 'personas') ? 'block' : 'none';
+  }
+  if (pagoInfo) {
+    pagoInfo.style.display = (modo !== 'personas' && pagoInfo.textContent) ? 'block' : 'none';
   }
 }
 
@@ -2417,7 +2435,7 @@ async function enviarReserva() {
       let texto = modoPrespuesto === 'personas'
         ? `Tu solicitud fue recibida, ${nombre}. Te enviaremos el presupuesto a ${email} o por WhatsApp a la brevedad.`
         : `Tu solicitud fue recibida, ${nombre}. Te contactaremos a ${email} para confirmar.`;
-      if (data.monto_seña > 0) {
+      if (data.monto_seña > 0 && modoPrespuesto !== 'personas') {
         texto += ` La seña es de ${formatPrecio(data.monto_seña)}.`;
       }
       document.getElementById('success-text').textContent = texto;

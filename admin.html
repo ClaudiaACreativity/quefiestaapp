@@ -1175,6 +1175,20 @@ select option { background: var(--surface2); }
           </div>
 
         </div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px;">
+          <div class="form-group">
+            <label>Título del presupuestador</label>
+            <input type="text" id="cfg-titulo-presupuestador" placeholder="Armá tu evento a medida">
+          </div>
+          <div class="form-group">
+            <label>Subtítulo del presupuestador</label>
+            <input type="text" id="cfg-subtitulo-presupuestador" placeholder="Elegí lo que querés incluir y el precio se actualiza en tiempo real">
+          </div>
+          <div class="form-group">
+            <label>Texto del divisor (entre combos y presupuestador)</label>
+            <input type="text" id="cfg-texto-divisor" placeholder="¿Querés personalizar? Armá tu pedido a medida 🎯">
+          </div>
+        </div>
       </div>
 
       <div class="config-section">
@@ -2494,6 +2508,13 @@ async function cargarConfiguracion() {
   if (tituloInput) tituloInput.value = cfg.titulo_combos || '';
   if (subtituloInput) subtituloInput.value = cfg.subtitulo_combos || '';
 
+  const titPresup = document.getElementById('cfg-titulo-presupuestador');
+  const subPresup = document.getElementById('cfg-subtitulo-presupuestador');
+  const txtDivisor = document.getElementById('cfg-texto-divisor');
+  if (titPresup) titPresup.value = cfg.titulo_presupuestador || '';
+  if (subPresup) subPresup.value = cfg.subtitulo_presupuestador || '';
+  if (txtDivisor) txtDivisor.value = cfg.texto_divisor || '';
+
   // Colores del calendario
   cargarColoresCalendario(cfg.config_calendario);
 
@@ -2593,7 +2614,7 @@ async function guardarConfiguracion() {
     color_secundario: document.getElementById('cfg-color-secundario-hex').value || null,
     capacidad_maxima: parseInt(document.getElementById('cfg-capacidad').value) || null,
     ninos_base: parseInt(document.getElementById('cfg-ninos-base').value) || null,
-    precio_base_salon: parseFloat(document.getElementById('cfg-precio-salon').value) || null,
+    precio_base_salon: parseFloat(document.getElementById('cfg-precio-salon').value) || 0,
     modalidad_cobro: document.getElementById('cfg-modalidad-cobro').value || null,
     porcentaje_seña: parseInt(document.getElementById('cfg-porcentaje-seña').value) || null,
     alias_transferencia: document.getElementById('cfg-alias').value || null,
@@ -2610,6 +2631,9 @@ async function guardarConfiguracion() {
     modo_accesorios: document.getElementById('cfg-modo-accesorios')?.classList.contains('on') ?? false,
     titulo_combos: document.getElementById('cfg-titulo-combos')?.value || null,
     subtitulo_combos: document.getElementById('cfg-subtitulo-combos')?.value || null,
+    titulo_presupuestador: document.getElementById('cfg-titulo-presupuestador')?.value || null,
+    subtitulo_presupuestador: document.getElementById('cfg-subtitulo-presupuestador')?.value || null,
+    texto_divisor: document.getElementById('cfg-texto-divisor')?.value || null,
   };
 
   const res = await api('PATCH', `/admin/${SLUG}/configuracion`, body);
