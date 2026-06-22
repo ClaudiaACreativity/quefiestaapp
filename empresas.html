@@ -993,7 +993,7 @@ footer strong { color: white; }
       <!-- Detalle ítems -->
       <div id="res-detalle-items"></div>
       <div class="resumen-linea" id="res-salon-linea" style="display:none;">
-        <span class="resumen-linea-label">Servicio (<span id="res-ninos">20</span> personas)</span>
+        <span class="resumen-linea-label">Paquete base (<span id="res-ninos">20</span> personas)</span>
         <span class="resumen-linea-valor" id="res-salon">$0</span>
       </div>
       <div class="resumen-linea" id="res-menu-linea" style="display:none;">
@@ -2323,7 +2323,15 @@ function actualizarResumen() {
       document.getElementById('res-seña').textContent = `Seña: ${formatPrecio(seña)} (${porcentaje}%)`;
       document.getElementById('res-seña').style.display = 'block';
       if (disclaimerEl) {
-        disclaimerEl.textContent = `* Para confirmar la reserva se deberá abonar una seña de ${formatPrecio(seña)} (${porcentaje}%) y subir el comprobante de la transferencia realizada en el formulario. El saldo se abona en efectivo o por transferencia al momento de retirar o recibir el pedido.`;
+        let textoSaldo = '';
+        if (modalidad === 'seña_transferencia_resto_efectivo') {
+          textoSaldo = 'El saldo se abona en efectivo al momento de retirar o recibir el pedido.';
+        } else if (modalidad === 'seña_transferencia_resto_transferencia') {
+          textoSaldo = 'El saldo se abona por transferencia al momento de retirar o recibir el pedido.';
+        } else {
+          textoSaldo = 'El saldo se abona en efectivo o por transferencia al momento de retirar o recibir el pedido.';
+        }
+        disclaimerEl.textContent = `* Para confirmar la reserva se deberá abonar una seña de ${formatPrecio(seña)} (${porcentaje}%) y subir el comprobante de la transferencia en el formulario. ${textoSaldo}`;
       }
     } else {
       document.getElementById('res-seña').style.display = 'none';

@@ -999,7 +999,7 @@ select option { background: var(--surface2); }
             <input type="number" id="cfg-ninos-base" min="1" placeholder="20">
           </div>
           <div class="form-group full">
-            <label>Precio base del salón (para la cantidad base de personas)</label>
+            <label>Precio del paquete base (para la cantidad base de personas — dejá en 0 si no aplicar precio fijo de paquete)</label>
             <input type="number" id="cfg-precio-salon" min="0" step="100">
           </div>
         </div>
@@ -1012,8 +1012,9 @@ select option { background: var(--surface2); }
             <label>Forma de cobro</label>
             <select id="cfg-modalidad-cobro">
               <option value="total_transferencia">Pago total por transferencia</option>
-              <option value="seña_transferencia_resto_efectivo">Seña por transferencia + resto en efectivo</option>
-              <option value="seña_transferencia_resto_transferencia">Seña por transferencia + resto por transferencia</option>
+              <option value="seña_transferencia_resto_efectivo">Seña por transferencia + saldo en efectivo</option>
+              <option value="seña_transferencia_resto_transferencia">Seña por transferencia + saldo por transferencia</option>
+              <option value="seña_transferencia_resto_cualquiera">Seña por transferencia + saldo en efectivo o por transferencia</option>
               <option value="mercadopago">MercadoPago</option>
             </select>
           </div>
@@ -1031,8 +1032,9 @@ select option { background: var(--surface2); }
             <div style="margin-top:6px;font-size:12px;color:var(--text2);">
               Textos modelo según tu modalidad:
               <div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;">
-                <button class="btn btn-ghost btn-sm" style="font-size:11px;" onclick="usarModeloPago('sena_efectivo')">📋 Seña + resto en efectivo</button>
-                <button class="btn btn-ghost btn-sm" style="font-size:11px;" onclick="usarModeloPago('sena_transferencia')">📋 Seña + resto por transferencia</button>
+                <button class="btn btn-ghost btn-sm" style="font-size:11px;" onclick="usarModeloPago('sena_efectivo')">📋 Seña + saldo en efectivo</button>
+                <button class="btn btn-ghost btn-sm" style="font-size:11px;" onclick="usarModeloPago('sena_transferencia')">📋 Seña + saldo por transferencia</button>
+                <button class="btn btn-ghost btn-sm" style="font-size:11px;" onclick="usarModeloPago('sena_cualquiera')">📋 Seña + saldo en efectivo o transferencia</button>
                 <button class="btn btn-ghost btn-sm" style="font-size:11px;" onclick="usarModeloPago('total')">📋 Pago total anticipado</button>
               </div>
             </div>
@@ -2876,6 +2878,8 @@ function usarModeloPago(tipo) {
     texto = `Para confirmar tu reserva, transferí el ${porcentaje}% del total al alias ${alias} y adjuntá el comprobante. El saldo restante se abona en efectivo el día del evento.`;
   } else if (tipo === 'sena_transferencia') {
     texto = `Para confirmar tu reserva, transferí el ${porcentaje}% del total al alias ${alias} y adjuntá el comprobante. El saldo restante deberá abonarse por transferencia al mismo alias antes del evento.`;
+  } else if (tipo === 'sena_cualquiera') {
+    texto = `Para confirmar tu reserva, transferí el ${porcentaje}% del total al alias ${alias} y adjuntá el comprobante. El saldo restante podés abonarlo en efectivo o por transferencia al momento de retirar o recibir el pedido.`;
   } else if (tipo === 'total') {
     texto = `Para confirmar tu reserva, transferí el 100% del total al alias ${alias} y adjuntá el comprobante. Sin pago completo no se confirma la reserva.`;
   }
