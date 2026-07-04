@@ -1000,10 +1000,7 @@ footer strong { color: white; }
         <span class="resumen-linea-label" id="res-salon-label">Paquete (<span id="res-ninos">20</span> personas)</span>
         <span class="resumen-linea-valor" id="res-salon">$0</span>
       </div>
-      <div class="resumen-linea" id="res-menu-linea" style="display:none;">
-        <span class="resumen-linea-label" id="res-menu-label">Menú</span>
-        <span class="resumen-linea-valor" id="res-menu">$0</span>
-      </div>
+      <div id="res-items-list"></div>
       <div class="resumen-linea" id="res-juegos-linea" style="display:none;">
         <span class="resumen-linea-label">Adicionales</span>
         <span class="resumen-linea-valor" id="res-juegos">$0</span>
@@ -1691,15 +1688,20 @@ function renderMenuList() {
     }
 
     if (modo === 'personas') {
-      // Solo selección sí/no — sin cantidades
-      const sel = menuSeleccionado.some(m => m.id === item.id);
+      // Mismo layout que unidades pero sin precios
+      const key = 'menu_' + item.id;
+      const cant = cantidadesItems[key] || 0;
       return `
-        <div class="item-check ${sel ? 'checked' : ''}" onclick="toggleMenu('${item.id}')" style="cursor:pointer;">
-          <div class="item-check-box">${sel ? '✓' : ''}</div>
+        <div class="item-check ${cant > 0 ? 'checked' : ''}">
           <div class="item-check-img">${imgHtml}</div>
           <div class="item-check-info" style="flex:1;">
             <div class="item-check-name">${item.nombre}</div>
             ${item.descripcion ? `<div class="item-check-desc">${item.descripcion}</div>` : ''}
+          </div>
+          <div class="cantidad-item-control">
+            <button class="cantidad-item-btn" onclick="cambiarCantidadItem('${item.id}', -1, 'menu')">−</button>
+            <span class="cantidad-item-val" id="cant-val-menu_${item.id}">${cant}</span>
+            <button class="cantidad-item-btn" onclick="cambiarCantidadItem('${item.id}', 1, 'menu')">+</button>
           </div>
         </div>
       `;
@@ -2328,23 +2330,30 @@ function actualizarResumen() {
     document.getElementById('res-salon-linea').style.display = 'none';
   }
 
-  if (pm > 0) {
-    const labels = menuSeleccionado.map(m => m.nombre).join(', ');
-    document.getElementById('res-menu-label').textContent = labels.length > 30 ? labels.slice(0,30)+'…' : labels;
-    document.getElementById('res-menu').textContent = formatPrecio(pm);
-    document.getElementById('res-menu-linea').style.display = 'flex';
-  } else if (aPedido) {
-    // Modo personas: mostrar ítems seleccionados (sin cantidades ni precios)
-    if (menuSeleccionado.length) {
-      const txt = menuSeleccionado.map(m => m.nombre).join(', ');
-      document.getElementById('res-menu-label').textContent = txt.length > 35 ? txt.slice(0,35)+'…' : txt;
-      document.getElementById('res-menu').textContent = '';
-      document.getElementById('res-menu-linea').style.display = 'flex';
+  // Ítems del menú — una línea por ítem (lista vertical tipo factura)
+  const itemsList = document.getElementById('res-items-list');
+  if (itemsList) {
+    if (aPedido && menuSeleccionado.length) {
+      // Modo personas: solo nombre, sin precio
+      itemsList.innerHTML = menuSeleccionado.map(m => `
+        <div class="resumen-linea">
+          <span class="resumen-linea-label">• ${m.nombre}</span>
+          <span class="resumen-linea-valor"></span>
+        </div>`).join('');
+    } else if (pm > 0 && menuSeleccionado.length) {
+      // Modo unidades o base: nombre + precio
+      itemsList.innerHTML = menuSeleccionado.map(m => {
+        const pu = parseFloat(m.precio_unidad) || parseFloat(m.precio_base) || 0;
+        const cant = m.cantidad || 1;
+        return `
+          <div class="resumen-linea">
+            <span class="resumen-linea-label">• ${m.nombre}${cant > 1 ? ` x${cant}` : ''}</span>
+            <span class="resumen-linea-valor">${formatPrecio(pu * cant)}</span>
+          </div>`;
+      }).join('');
     } else {
-      document.getElementById('res-menu-linea').style.display = 'none';
+      itemsList.innerHTML = '';
     }
-  } else {
-    document.getElementById('res-menu-linea').style.display = 'none';
   }
 
   if (pj > 0) {
@@ -2362,7 +2371,6 @@ function actualizarResumen() {
   }
 
   if (aPedido) {
-  if (aPedido) {
     document.getElementById('res-total-label').textContent = 'Total a confirmar';
     document.getElementById('res-total').textContent = '—';
     document.getElementById('res-total').style.fontSize = '28px';
@@ -2371,7 +2379,6 @@ function actualizarResumen() {
     document.getElementById('res-total').textContent = formatPrecio(total);
     document.getElementById('res-total').style.fontSize = '';
   }
-  }
 
   // Seña + texto disclaimer — varían según el modo de presupuesto
   const disclaimerEl = document.getElementById('res-disclaimer');
@@ -2379,7 +2386,7 @@ function actualizarResumen() {
     // Modo "para X personas" — presupuesto a confirmar por WhatsApp
     document.getElementById('res-seña').style.display = 'none';
     if (disclaimerEl) {
-      disclaimerEl.textContent = '* El presupuesto será confirmado por la organización a tu WhatsApp. También te indicaremos el importe de la seña para hacer efectiva tu reserva.';
+      disclaimerEl.textContent = '* El presupuesto es orientativo y será confirmado por la organización a tu WhatsApp. También te indicaremos el importe de la seña para hacer efectiva tu reserva.';
     }
   } else if (salon && total > 0) {
     const modalidad = salon.modalidad_cobro || '';
