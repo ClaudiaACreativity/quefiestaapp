@@ -1021,7 +1021,7 @@ footer strong { color: white; }
         <span class="resumen-linea-valor" id="res-horario">—</span>
       </div>
       <div class="resumen-total">
-        <div class="resumen-total-label">Total estimado</div>
+        <div class="resumen-total-label" id="res-total-label">Total estimado</div>
         <div class="resumen-total-valor" id="res-total">$0</div>
       </div>
       <div class="resumen-seña" id="res-seña" style="display:none;"></div>
@@ -2338,6 +2338,22 @@ function actualizarResumen() {
     document.getElementById('res-menu-label').textContent = labels.length > 30 ? labels.slice(0,30)+'…' : labels;
     document.getElementById('res-menu').textContent = formatPrecio(pm);
     document.getElementById('res-menu-linea').style.display = 'flex';
+  } else if (aPedido) {
+    // Modo personas: mostrar ítems seleccionados por cantidad (sin precio)
+    const itemsConCantidad = Object.entries(cantidadesItems)
+      .filter(([k, v]) => k.startsWith('menu_') && v > 0)
+      .map(([k, v]) => {
+        const item = menuItems.find(m => m.id === k.replace('menu_', ''));
+        return item ? `${item.nombre} x${v}` : null;
+      }).filter(Boolean);
+    if (itemsConCantidad.length) {
+      const txt = itemsConCantidad.join(', ');
+      document.getElementById('res-menu-label').textContent = txt.length > 35 ? txt.slice(0,35)+'…' : txt;
+      document.getElementById('res-menu').textContent = '';
+      document.getElementById('res-menu-linea').style.display = 'flex';
+    } else {
+      document.getElementById('res-menu-linea').style.display = 'none';
+    }
   } else {
     document.getElementById('res-menu-linea').style.display = 'none';
   }
@@ -2357,11 +2373,15 @@ function actualizarResumen() {
   }
 
   if (aPedido) {
-    document.getElementById('res-total').textContent = 'A confirmar';
-    document.getElementById('res-total').style.fontSize = '20px';
+  if (aPedido) {
+    document.getElementById('res-total-label').textContent = 'Total a confirmar';
+    document.getElementById('res-total').textContent = '—';
+    document.getElementById('res-total').style.fontSize = '28px';
   } else {
+    document.getElementById('res-total-label').textContent = 'Total estimado';
     document.getElementById('res-total').textContent = formatPrecio(total);
     document.getElementById('res-total').style.fontSize = '';
+  }
   }
 
   // Seña + texto disclaimer — varían según el modo de presupuesto
@@ -2370,7 +2390,7 @@ function actualizarResumen() {
     // Modo "para X personas" — presupuesto a confirmar por WhatsApp
     document.getElementById('res-seña').style.display = 'none';
     if (disclaimerEl) {
-      disclaimerEl.textContent = '* El presupuesto es orientativo y será confirmado por la organización a tu WhatsApp. También te indicaremos el importe de la seña para hacer efectiva tu reserva.';
+      disclaimerEl.textContent = '* El presupuesto será confirmado por la organización a tu WhatsApp. También te indicaremos el importe de la seña para hacer efectiva tu reserva.';
     }
   } else if (salon && total > 0) {
     const modalidad = salon.modalidad_cobro || '';
