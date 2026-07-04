@@ -2386,7 +2386,7 @@ function actualizarResumen() {
     // Modo "para X personas" — presupuesto a confirmar por WhatsApp
     document.getElementById('res-seña').style.display = 'none';
     if (disclaimerEl) {
-      disclaimerEl.textContent = '* El presupuesto es orientativo y será confirmado por la organización a tu WhatsApp. También te indicaremos el importe de la seña para hacer efectiva tu reserva.';
+      disclaimerEl.textContent = 'El presupuesto será confirmado por la organización a tu WhatsApp. También te indicaremos el importe de la seña para hacer efectiva tu reserva.';
     }
   } else if (salon && total > 0) {
     const modalidad = salon.modalidad_cobro || '';
