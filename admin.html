@@ -611,6 +611,9 @@ select option { background: var(--surface2); }
       <div class="nav-item" onclick="showPage('combos')">
         <span class="nav-icon">🎁</span> Combos / Ofertas
       </div>
+      <div class="nav-item" onclick="showPage('paquetes')">
+        <span class="nav-icon">📦</span> Paquetes base
+      </div>
       <div class="nav-section">Disponibilidad</div>
       <div class="nav-item" onclick="showPage('horarios')">
         <span class="nav-icon">🕐</span> Horarios
@@ -770,6 +773,20 @@ select option { background: var(--surface2); }
         <button class="btn btn-accent" onclick="openModalCombo()">+ Agregar combo</button>
       </div>
       <div class="items-grid" id="combos-grid">
+        <div class="loading">Cargando...</div>
+      </div>
+    </div>
+
+    <!-- PAQUETES BASE -->
+    <div id="page-paquetes" class="page">
+      <div class="topbar">
+        <div>
+          <div class="page-title">Paquetes base 📦</div>
+          <div class="page-subtitle">Paquetes cerrados con precio fijo para una cantidad de personas (modo "Menú base")</div>
+        </div>
+        <button class="btn btn-accent" onclick="openModalPaquete()">+ Agregar paquete</button>
+      </div>
+      <div class="items-grid" id="paquetes-grid">
         <div class="loading">Cargando...</div>
       </div>
     </div>
@@ -1649,6 +1666,64 @@ select option { background: var(--surface2); }
   </div>
 </div>
 
+<!-- Modal Paquete Base -->
+<div class="modal-overlay" id="modal-paquete">
+  <div class="modal">
+    <div class="modal-title" id="modal-paquete-title">Nuevo paquete base</div>
+    <input type="hidden" id="paquete-id">
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Nombre del paquete</label>
+        <input type="text" id="p-nombre" placeholder="Ej: Paquete Básico, Paquete Premium...">
+      </div>
+      <div class="form-group full">
+        <label>Descripción — qué incluye (cada línea = un ítem de la lista)</label>
+        <textarea id="p-descripcion" rows="5" placeholder="Panchitos&#10;Masitas dulces&#10;Alfajores&#10;Sandwiches&#10;Jugos"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Cantidad base de personas</label>
+        <input type="number" id="p-cantidad-base" min="1" placeholder="20">
+      </div>
+      <div class="form-group">
+        <label>Precio para la cantidad base</label>
+        <input type="number" id="p-precio-base" min="0" step="100" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>Precio por persona extra</label>
+        <input type="number" id="p-precio-extra" min="0" step="100" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>Orden de aparición</label>
+        <input type="number" id="p-orden" min="0" value="0">
+      </div>
+      <div class="form-group full">
+        <label>Imagen (opcional)</label>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="url" id="p-imagen" placeholder="https://..." style="flex:1">
+          <label class="btn btn-ghost btn-sm" style="cursor:pointer;white-space:nowrap;">
+            📁 Subir
+            <input type="file" accept="image/*" style="display:none" onchange="subirImagen(this,'p-imagen','p-imagen-preview','p-imagen-img')">
+          </label>
+        </div>
+        <div id="p-imagen-preview" style="margin-top:8px;display:none;">
+          <img id="p-imagen-img" style="max-height:80px;border-radius:8px;border:1px solid var(--border);">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Estado</label>
+        <div class="toggle-wrap">
+          <button class="toggle on" id="p-activo" onclick="toggleBtn(this)"></button>
+          <span id="p-activo-label">Activo</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-paquete')">Cancelar</button>
+      <button class="btn btn-accent" onclick="guardarPaquete()">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal Usuario Admin -->
 <div class="modal-overlay" id="modal-usuario">
   <div class="modal">
@@ -1782,6 +1857,7 @@ function showPage(name) {
     menu: cargarMenu,
     juegos: cargarJuegos,
     combos: cargarCombos,
+    paquetes: cargarPaquetes,
     usuarios: cargarUsuarios,
     horarios: async () => {
       // Cargar modo desde config antes de mostrar horarios
@@ -2756,6 +2832,87 @@ async function eliminarCombo(id) {
   if (!confirm('¿Eliminar este combo?')) return;
   const res = await api('DELETE', `/admin/${SLUG}/combos/${id}`);
   if (res?.ok) { toast('Combo eliminado', 'success'); cargarCombos(); }
+  else toast('Error al eliminar', 'error');
+}
+
+// ============================================================
+// PAQUETES BASE
+// ============================================================
+async function cargarPaquetes() {
+  const res = await api('GET', `/admin/${SLUG}/paquetes-base`);
+  if (!res) return;
+  const paquetes = await res.json();
+  const grid = document.getElementById('paquetes-grid');
+  if (!paquetes.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📦</div><div class="empty-state-text">No hay paquetes. ¡Agregá el primero!</div></div>`;
+    return;
+  }
+  grid.innerHTML = paquetes.map(p => `
+    <div class="item-card">
+      <div class="item-card-img">${p.imagen_url ? `<img src="${p.imagen_url}" style="width:100%;height:100%;object-fit:cover;">` : '📦'}</div>
+      <div class="item-card-body">
+        <div class="item-card-name">${p.nombre}</div>
+        ${p.descripcion ? `<div class="item-card-desc" style="white-space:pre-line;font-size:12px;">${p.descripcion}</div>` : ''}
+        <div class="item-card-price">
+          ${formatPrecio(p.precio_base)} · ${p.cantidad_base} personas<br>
+          <span style="font-size:12px;color:var(--text2);">+${formatPrecio(p.precio_por_extra)}/persona extra</span>
+        </div>
+        <span class="badge ${p.activo ? 'badge-confirmada' : 'badge-cancelada'}">${p.activo ? 'Activo' : 'Inactivo'}</span>
+        <div class="item-card-actions">
+          <button class="btn btn-ghost btn-sm" onclick="editarPaquete(${JSON.stringify(p).replace(/"/g,'&quot;')})">✏️ Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="eliminarPaquete('${p.id}')">🗑</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openModalPaquete(p) {
+  document.getElementById('modal-paquete-title').textContent = p ? 'Editar paquete' : 'Nuevo paquete base';
+  document.getElementById('paquete-id').value = p?.id || '';
+  document.getElementById('p-nombre').value = p?.nombre || '';
+  document.getElementById('p-descripcion').value = p?.descripcion || '';
+  document.getElementById('p-cantidad-base').value = p?.cantidad_base || 20;
+  document.getElementById('p-precio-base').value = p?.precio_base || 0;
+  document.getElementById('p-precio-extra').value = p?.precio_por_extra || 0;
+  document.getElementById('p-orden').value = p?.orden ?? 0;
+  document.getElementById('p-imagen').value = p?.imagen_url || '';
+  document.getElementById('p-imagen-preview').style.display = 'none';
+  const toggle = document.getElementById('p-activo');
+  toggle.className = 'toggle ' + (p?.activo !== false ? 'on' : '');
+  document.getElementById('p-activo-label').textContent = p?.activo !== false ? 'Activo' : 'Inactivo';
+  openModal('modal-paquete');
+}
+
+function editarPaquete(p) { openModalPaquete(p); }
+
+async function guardarPaquete() {
+  const id = document.getElementById('paquete-id').value;
+  const body = {
+    nombre: document.getElementById('p-nombre').value,
+    descripcion: document.getElementById('p-descripcion').value,
+    cantidad_base: parseInt(document.getElementById('p-cantidad-base').value) || 20,
+    precio_base: parseFloat(document.getElementById('p-precio-base').value) || 0,
+    precio_por_extra: parseFloat(document.getElementById('p-precio-extra').value) || 0,
+    orden: parseInt(document.getElementById('p-orden').value) || 0,
+    imagen_url: document.getElementById('p-imagen').value || null,
+    activo: document.getElementById('p-activo').classList.contains('on')
+  };
+  if (!body.nombre) { toast('El nombre es obligatorio', 'error'); return; }
+  const res = id
+    ? await api('PUT', `/admin/${SLUG}/paquetes-base/${id}`, body)
+    : await api('POST', `/admin/${SLUG}/paquetes-base`, body);
+  if (res?.ok) {
+    toast(id ? 'Paquete actualizado' : 'Paquete creado', 'success');
+    closeModal('modal-paquete');
+    cargarPaquetes();
+  } else toast('Error al guardar', 'error');
+}
+
+async function eliminarPaquete(id) {
+  if (!confirm('¿Eliminar este paquete?')) return;
+  const res = await api('DELETE', `/admin/${SLUG}/paquetes-base/${id}`);
+  if (res?.ok) { toast('Paquete eliminado', 'success'); cargarPaquetes(); }
   else toast('Error al eliminar', 'error');
 }
 

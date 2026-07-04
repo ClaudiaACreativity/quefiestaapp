@@ -313,15 +313,15 @@ body {
 
 /* Grids de items */
 .menu-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .adicionales-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 @media (max-width: 800px) {
@@ -937,19 +937,23 @@ footer strong { color: white; }
 
       <!-- Modo 1: Base de personas -->
       <div id="panel-modo-base" style="display:none;">
-        <div class="presup-panel-title">👦 Cantidad de personas</div>
-        <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
-          <div class="ninos-control">
-            <button class="ninos-btn" onclick="cambiarNinos(-1)">−</button>
-            <div>
-              <div class="ninos-value" id="ninos-value">20</div>
-              <div class="ninos-label">personas</div>
+        <div class="presup-panel-title">📦 Elegí tu paquete</div>
+        <div id="paquetes-base-list" style="margin-top:12px;"></div>
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+          <div class="presup-panel-title" style="font-size:14px;margin-bottom:10px;">👥 ¿Cuántas personas son?</div>
+          <div style="display:flex;align-items:center;gap:24px;flex-wrap:wrap;">
+            <div class="ninos-control">
+              <button class="ninos-btn" onclick="cambiarNinos(-1)">−</button>
+              <div>
+                <div class="ninos-value" id="ninos-value">20</div>
+                <div class="ninos-label">personas</div>
+              </div>
+              <button class="ninos-btn" onclick="cambiarNinos(1)">+</button>
             </div>
-            <button class="ninos-btn" onclick="cambiarNinos(1)">+</button>
-          </div>
-          <div style="font-size:13px;color:var(--text2);line-height:1.5;" id="ninos-desc">
-            El precio base incluye hasta <strong id="ninos-base-label">20</strong> personas.<br>
-            Cada persona extra tiene un costo adicional por ítem.
+            <div style="font-size:13px;color:var(--text2);line-height:1.5;" id="ninos-desc">
+              El paquete incluye hasta <strong id="ninos-base-label">20</strong> personas.<br>
+              Cada persona extra tiene un costo adicional.
+            </div>
           </div>
         </div>
       </div>
@@ -993,7 +997,7 @@ footer strong { color: white; }
       <!-- Detalle ítems -->
       <div id="res-detalle-items"></div>
       <div class="resumen-linea" id="res-salon-linea" style="display:none;">
-        <span class="resumen-linea-label">Paquete base (<span id="res-ninos">20</span> personas)</span>
+        <span class="resumen-linea-label" id="res-salon-label">Paquete (<span id="res-ninos">20</span> personas)</span>
         <span class="resumen-linea-valor" id="res-salon">$0</span>
       </div>
       <div class="resumen-linea" id="res-menu-linea" style="display:none;">
@@ -1285,6 +1289,8 @@ let salon = null;
 let menuItems = [];
 let juegosItems = [];
 let combosItems = [];
+let paquetesBaseItems = [];
+let paqueteSeleccionado = null;
 let cantNinos = 20;
 let ninosBase = 20;
 let menuSeleccionado = [];
@@ -1313,7 +1319,7 @@ window.onload = async () => {
     mostrarSeccionEntrega();
     aplicarColoresCalendario(salon?.config_calendario);
     inicializarModos();
-    await Promise.all([cargarMenu(), cargarJuegos(), cargarCombos()]);
+    await Promise.all([cargarMenu(), cargarJuegos(), cargarCombos(), cargarPaquetesBase()]);
     await cargarDisponibilidad();
     renderCalendario();
   } catch(e) {
@@ -1486,6 +1492,60 @@ function renderCombosList() {
   }).join('');
 }
 
+async function cargarPaquetesBase() {
+  const res = await fetch(`${API}/${SLUG}/paquetes-base`);
+  if (!res.ok) return;
+  paquetesBaseItems = await res.json();
+  renderPaquetesBase();
+}
+
+function renderPaquetesBase() {
+  const container = document.getElementById('paquetes-base-list');
+  if (!container) return;
+  if (!paquetesBaseItems.length) {
+    container.innerHTML = '<div style="color:var(--text2);font-size:14px;padding:12px 0;">No hay paquetes configurados.</div>';
+    return;
+  }
+  container.innerHTML = paquetesBaseItems.map(p => {
+    const sel = paqueteSeleccionado?.id === p.id;
+    const lineas = (p.descripcion || '').split('\n').filter(l => l.trim());
+    return `
+      <div class="item-check ${sel ? 'checked' : ''}" onclick="seleccionarPaqueteBase('${p.id}')"
+           style="cursor:pointer;margin-bottom:10px;align-items:flex-start;padding:14px;">
+        <div class="item-check-box" style="margin-top:3px;flex-shrink:0;">${sel ? '✓' : ''}</div>
+        ${p.imagen_url ? `<div class="item-check-img" style="flex-shrink:0;"><img src="${p.imagen_url}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;"></div>` : ''}
+        <div class="item-check-info" style="flex:1;">
+          <div class="item-check-name">${p.nombre}</div>
+          ${lineas.length ? `<ul style="margin:6px 0 8px 16px;font-size:13px;color:var(--text2);line-height:1.7;">${lineas.map(l => `<li>${l}</li>`).join('')}</ul>` : ''}
+          <div style="font-size:14px;font-weight:700;color:var(--color1);">
+            ${formatPrecio(p.precio_base)} <span style="font-weight:400;color:var(--text2);font-size:12px;">para ${p.cantidad_base} personas</span>
+            ${p.precio_por_extra > 0 ? `<span style="font-weight:400;color:var(--text2);font-size:12px;"> · +${formatPrecio(p.precio_por_extra)}/persona extra</span>` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function seleccionarPaqueteBase(id) {
+  presupuestoActivado = true;
+  if (paqueteSeleccionado?.id === id) {
+    paqueteSeleccionado = null;
+    ninosBase = salon?.ninos_base || 20;
+  } else {
+    paqueteSeleccionado = paquetesBaseItems.find(p => p.id === id) || null;
+    if (paqueteSeleccionado) {
+      ninosBase = paqueteSeleccionado.cantidad_base;
+      cantNinos = Math.max(cantNinos, ninosBase);
+      document.getElementById('ninos-value').textContent = cantNinos;
+      const label = document.getElementById('ninos-base-label');
+      if (label) label.textContent = ninosBase;
+    }
+  }
+  renderPaquetesBase();
+  actualizarResumen();
+}
+
 async function cargarMenu() {
   const res = await fetch(`${API}/${SLUG}/menu`);
   if (!res.ok) return;
@@ -1631,31 +1691,27 @@ function renderMenuList() {
     }
 
     if (modo === 'personas') {
-      const sel = menuSeleccionado.some(m => m.id === item.id);
-      const precioRef = parseFloat(item.precio_ref_persona) || parseFloat(item.precio_base) || 0;
+      // Mismo layout que unidades pero sin precios
+      const key = 'menu_' + item.id;
+      const cant = cantidadesItems[key] || 0;
       return `
-        <div class="item-check ${sel ? 'checked' : ''}" onclick="toggleMenu('${item.id}')">
-          <div class="item-check-box">${sel ? '✓' : ''}</div>
+        <div class="item-check ${cant > 0 ? 'checked' : ''}">
           <div class="item-check-img">${imgHtml}</div>
-          <div class="item-check-info">
+          <div class="item-check-info" style="flex:1;">
             <div class="item-check-name">${item.nombre}</div>
-            <div class="item-check-desc" style="color:var(--color1);font-weight:600;">${formatPrecio(precioRef)}/persona <span style="font-weight:400;color:var(--text2);">(ref.)</span></div>
+            ${item.descripcion ? `<div class="item-check-desc">${item.descripcion}</div>` : ''}
+          </div>
+          <div class="cantidad-item-control">
+            <button class="cantidad-item-btn" onclick="cambiarCantidadItem('${item.id}', -1, 'menu')">−</button>
+            <span class="cantidad-item-val" id="cant-val-menu_${item.id}">${cant}</span>
+            <button class="cantidad-item-btn" onclick="cambiarCantidadItem('${item.id}', 1, 'menu')">+</button>
           </div>
         </div>
       `;
     }
 
-    // Modo base (default)
-    return `
-      <div class="item-check ${checked ? 'checked' : ''}" onclick="toggleMenu('${item.id}')">
-        <div class="item-check-box">${checked ? '✓' : ''}</div>
-        <div class="item-check-img">${imgHtml}</div>
-        <div class="item-check-info">
-          <div class="item-check-name">${item.nombre}</div>
-          <div class="item-check-desc">Base ${formatPrecio(item.precio_base)} · Extra: ${formatPrecio(item.precio_por_nino_extra)}/persona</div>
-        </div>
-      </div>
-    `;
+    // Modo base: la sección de menú se oculta, solo aparecen los paquetes
+    return '';
   }).join('');
 }
 
@@ -1931,16 +1987,22 @@ function seleccionarModo(modo) {
   document.getElementById('panel-modo-unidades').style.display = modo === 'unidades' ? 'block' : 'none';
   document.getElementById('panel-modo-personas').style.display = modo === 'personas' ? 'block' : 'none';
 
-  // Resetear selecciones y re-renderizar ítems
+  // En modo base el menú NO se muestra (los paquetes ya definen el contenido)
+  const seccionMenu = document.getElementById('seccion-menu');
+  if (seccionMenu) seccionMenu.style.display = modo === 'base' ? 'none' : (menuItems.length ? '' : 'none');
+
+  // Resetear selecciones
   presupuestoActivado = false;
   menuSeleccionado = [];
   juegosSeleccionados = [];
+  paqueteSeleccionado = null;
   Object.keys(cantidadesItems).forEach(k => delete cantidadesItems[k]);
+  renderPaquetesBase();
   renderMenuList();
   renderJuegosList();
   actualizarResumen();
 
-  // El comprobante y el mensaje de pago no aplican en modo "personas" (presupuesto a confirmar por WhatsApp)
+  // Comprobante y mensaje de pago: no aplican en modo "personas"
   const modalidadTenant = salon?.modalidad_cobro || '';
   const usaTransferencia = modalidadTenant.includes('transferencia') || modalidadTenant === 'total_transferencia';
   const grupoComprobante = document.getElementById('comprobante-group');
@@ -2199,20 +2261,21 @@ function calcularTotal() {
   const precioCombos = combosSeleccionados.reduce((sum, c) => sum + (parseFloat(c.precio_cerrado) || 0) * c.cantidad, 0);
 
   if (modo === 'base') {
-    const ninosExtra = Math.max(0, cantNinos - ninosBase);
-    const precioSalon = parseFloat(salon.precio_base_salon) || 0;
-    let precioMenu = 0;
-    menuSeleccionado.forEach(item => {
-      precioMenu += parseFloat(item.precio_base) || 0;
-      precioMenu += (parseFloat(item.precio_por_nino_extra) || 0) * ninosExtra;
-    });
+    // El precio viene del paquete seleccionado, no de los ítems del menú
+    let precioPaquete = 0;
+    if (paqueteSeleccionado) {
+      const cantBase = paqueteSeleccionado.cantidad_base || ninosBase;
+      const extra = Math.max(0, cantNinos - cantBase);
+      precioPaquete = (parseFloat(paqueteSeleccionado.precio_base) || 0)
+                    + extra * (parseFloat(paqueteSeleccionado.precio_por_extra) || 0);
+    }
     let precioJuegos = 0;
     juegosSeleccionados.forEach(j => {
       precioJuegos += parseFloat(j.precio_fijo) || 0;
       precioJuegos += (parseFloat(j.precio_por_nino) || 0) * cantNinos;
     });
-    return { salon: precioSalon, menu: precioMenu, juegos: precioJuegos, combos: precioCombos, envio: costoEnvio,
-             total: precioSalon + precioMenu + precioJuegos + precioCombos + costoEnvio, aPedido: false };
+    return { salon: precioPaquete, menu: 0, juegos: precioJuegos, combos: precioCombos, envio: costoEnvio,
+             total: precioPaquete + precioJuegos + precioCombos + costoEnvio, aPedido: false };
   }
 
   if (modo === 'unidades') {
@@ -2231,18 +2294,8 @@ function calcularTotal() {
   }
 
   if (modo === 'personas') {
-    // Precio a confirmar — mostrar referencia usando precio_ref_persona
-    let precioRef = 0;
-    menuSeleccionado.forEach(item => {
-      const pr = parseFloat(item.precio_ref_persona) || parseFloat(item.precio_base) || 0;
-      precioRef += pr * (personasLibres || 1);
-    });
-    juegosSeleccionados.forEach(j => {
-      const pr = parseFloat(j.precio_ref_persona) || parseFloat(j.precio_fijo) || 0;
-      precioRef += pr * (personasLibres || 1);
-    });
-    return { salon: 0, menu: precioRef, juegos: 0, combos: precioCombos, envio: costoEnvio,
-             total: precioRef + precioCombos + costoEnvio, aPedido: true };
+    // Solo lista de ítems elegidos + cantidad de personas — precio a confirmar por WhatsApp
+    return { salon: 0, menu: 0, juegos: 0, combos: 0, envio: 0, total: 0, aPedido: true };
   }
 
   return { salon: 0, menu: 0, juegos: 0, combos: 0, envio: 0, total: 0, aPedido: false };
@@ -2267,10 +2320,14 @@ function actualizarResumen() {
     }
   }
 
-  // Línea del servicio/salón
+  // Línea del paquete base
   if (ps > 0) {
     document.getElementById('res-salon').textContent = formatPrecio(ps);
     document.getElementById('res-ninos').textContent = cantNinos;
+    const labelEl = document.getElementById('res-salon-label');
+    if (labelEl && paqueteSeleccionado) {
+      labelEl.innerHTML = `${paqueteSeleccionado.nombre} (<span id="res-ninos">${cantNinos}</span> personas)`;
+    }
     document.getElementById('res-salon-linea').style.display = 'flex';
   } else {
     document.getElementById('res-salon-linea').style.display = 'none';
@@ -2399,6 +2456,7 @@ async function enviarReserva() {
     menu_seleccionado: menuSeleccionado.map(m => ({id: m.id, nombre: m.nombre, precio_base: m.precio_base, precio_por_nino_extra: m.precio_por_nino_extra})),
     juegos_seleccionados: juegosSeleccionados.map(j => ({id: j.id, nombre: j.nombre, precio_fijo: j.precio_fijo, precio_por_nino: j.precio_por_nino})),
     combos_seleccionados: combosSeleccionados.map(c => ({id: c.id, nombre: c.nombre, precio_cerrado: c.precio_cerrado, cantidad: c.cantidad})),
+    paquete_seleccionado: paqueteSeleccionado ? {id: paqueteSeleccionado.id, nombre: paqueteSeleccionado.nombre, precio_base: paqueteSeleccionado.precio_base, cantidad_base: paqueteSeleccionado.cantidad_base, precio_por_extra: paqueteSeleccionado.precio_por_extra} : null,
     precio_salon: ps,
     precio_menu: pm,
     precio_juegos: pj,
@@ -2430,7 +2488,9 @@ async function enviarReserva() {
       combosSeleccionados = [];
       menuSeleccionado = [];
       juegosSeleccionados = [];
+      paqueteSeleccionado = null;
       Object.keys(cantidadesItems).forEach(k => delete cantidadesItems[k]);
+      renderPaquetesBase();
       renderCombosList();
       renderMenuList();
       renderJuegosList();
