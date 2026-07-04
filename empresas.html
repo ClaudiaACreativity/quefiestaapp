@@ -1691,20 +1691,15 @@ function renderMenuList() {
     }
 
     if (modo === 'personas') {
-      // Mismo layout que unidades pero sin precios
-      const key = 'menu_' + item.id;
-      const cant = cantidadesItems[key] || 0;
+      // Solo selección sí/no — sin cantidades
+      const sel = menuSeleccionado.some(m => m.id === item.id);
       return `
-        <div class="item-check ${cant > 0 ? 'checked' : ''}">
+        <div class="item-check ${sel ? 'checked' : ''}" onclick="toggleMenu('${item.id}')" style="cursor:pointer;">
+          <div class="item-check-box">${sel ? '✓' : ''}</div>
           <div class="item-check-img">${imgHtml}</div>
           <div class="item-check-info" style="flex:1;">
             <div class="item-check-name">${item.nombre}</div>
             ${item.descripcion ? `<div class="item-check-desc">${item.descripcion}</div>` : ''}
-          </div>
-          <div class="cantidad-item-control">
-            <button class="cantidad-item-btn" onclick="cambiarCantidadItem('${item.id}', -1, 'menu')">−</button>
-            <span class="cantidad-item-val" id="cant-val-menu_${item.id}">${cant}</span>
-            <button class="cantidad-item-btn" onclick="cambiarCantidadItem('${item.id}', 1, 'menu')">+</button>
           </div>
         </div>
       `;
@@ -2339,15 +2334,9 @@ function actualizarResumen() {
     document.getElementById('res-menu').textContent = formatPrecio(pm);
     document.getElementById('res-menu-linea').style.display = 'flex';
   } else if (aPedido) {
-    // Modo personas: mostrar ítems seleccionados por cantidad (sin precio)
-    const itemsConCantidad = Object.entries(cantidadesItems)
-      .filter(([k, v]) => k.startsWith('menu_') && v > 0)
-      .map(([k, v]) => {
-        const item = menuItems.find(m => m.id === k.replace('menu_', ''));
-        return item ? `${item.nombre} x${v}` : null;
-      }).filter(Boolean);
-    if (itemsConCantidad.length) {
-      const txt = itemsConCantidad.join(', ');
+    // Modo personas: mostrar ítems seleccionados (sin cantidades ni precios)
+    if (menuSeleccionado.length) {
+      const txt = menuSeleccionado.map(m => m.nombre).join(', ');
       document.getElementById('res-menu-label').textContent = txt.length > 35 ? txt.slice(0,35)+'…' : txt;
       document.getElementById('res-menu').textContent = '';
       document.getElementById('res-menu-linea').style.display = 'flex';
