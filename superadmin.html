@@ -940,6 +940,9 @@ async function guardarTenant() {
   if (res?.ok) {
     toast('Salón actualizado', 'success');
     closeModal('modal-tenant');
+    // Resetear filtro para que el tenant actualizado sea visible independientemente de su nuevo estado
+    const filtro = document.getElementById('filtro-estado-tenant');
+    if (filtro) filtro.value = '';
     cargarTenants();
   } else toast('Error al actualizar', 'error');
 }
