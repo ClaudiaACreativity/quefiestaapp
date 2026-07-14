@@ -631,6 +631,10 @@ select option { background:var(--surface2); }
             <input type="number" id="cfg-trial" min="1" step="1" placeholder="30">
           </div>
           <div class="form-group">
+            <label>Alias/CBU para cobro de suscripciones</label>
+            <input type="text" id="cfg-alias" placeholder="Ej: gestionateia.mp">
+          </div>
+          <div class="form-group">
             <label>Contraseña superadmin</label>
             <input type="password" id="cfg-password" placeholder="Nueva contraseña (dejar vacío para no cambiar)">
           </div>
@@ -1097,6 +1101,7 @@ async function cargarConfiguracion() {
     const cfg = res?.ok ? await res.json() : null;
     if (cfg?.precio_mensual_usd) document.getElementById('cfg-precio').value = cfg.precio_mensual_usd;
     if (cfg?.valor_dolar_oficial) document.getElementById('cfg-tc').value = cfg.valor_dolar_oficial;
+    if (cfg?.alias_suscripcion) document.getElementById('cfg-alias').value = cfg.alias_suscripcion;
     if (cfg?.dias_trial) document.getElementById('cfg-trial').value = cfg.dias_trial;
   } catch(e) {
     document.getElementById('cfg-precio').value = '25';
@@ -1109,6 +1114,8 @@ async function guardarConfiguracion() {
   const body = {
     precio_mensual_usd: document.getElementById('cfg-precio').value,
     valor_dolar_oficial: document.getElementById('cfg-tc').value,
+    dias_trial: document.getElementById('cfg-trial')?.value,
+    alias_suscripcion: document.getElementById('cfg-alias')?.value || null,
     dias_trial: document.getElementById('cfg-trial').value,
   };
   const nuevaPassword = document.getElementById('cfg-password').value;

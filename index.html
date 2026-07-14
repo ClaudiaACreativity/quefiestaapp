@@ -759,6 +759,7 @@ footer {
   <div class="hero-actions">
     <a href="#registro" class="btn-primary">🎊 Empezar prueba gratuita</a>
     <a href="#caracteristicas" class="btn-secondary">Ver características</a>
+    <button onclick="abrirModalRenovar()" class="btn-secondary" style="border-color:rgba(255,255,255,0.4);color:rgba(255,255,255,0.85);">🔄 Renovar suscripción</button>
   </div>
   <div class="hero-proof">
     <div class="hero-proof-item"><div class="check">✓</div> 30 días gratis, sin tarjeta</div>
@@ -1133,6 +1134,9 @@ footer {
       <a href="#registro" class="btn-primary" style="width:100%;justify-content:center;">
         🎊 Empezar prueba gratuita
       </a>
+      <button onclick="abrirModalRenovar()" class="btn-secondary" style="width:100%;justify-content:center;margin-top:12px;">
+        🔄 Ya soy cliente — Renovar suscripción
+      </button>
     </div>
   </div>
 </section>
@@ -1341,5 +1345,126 @@ function toast(msg, type = 'success') {
   setTimeout(() => el.classList.remove('show'), 3500);
 }
 </script>
+<!-- MODAL RENOVAR SUSCRIPCIÓN -->
+<div id="modal-renovar" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:20px;padding:32px;max-width:480px;width:100%;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+    <button onclick="cerrarModalRenovar()" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:#666;">✕</button>
+    <h2 style="font-family:'Fraunces',serif;font-size:24px;margin-bottom:8px;color:#1a1a2e;">Renovar suscripción 🔄</h2>
+    <p style="color:#666;font-size:14px;margin-bottom:24px;">Transferí el monto indicado y subí el comprobante. Activaremos tu cuenta a la brevedad.</p>
+
+    <div id="renovar-datos" style="background:#f8f9fa;border-radius:12px;padding:16px;margin-bottom:20px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-size:13px;color:#666;">Monto a transferir</span>
+        <span id="renovar-monto" style="font-size:22px;font-weight:800;color:#E05A00;">$...</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:13px;color:#666;">Alias / CBU</span>
+        <span id="renovar-alias" style="font-weight:700;font-size:15px;color:#1a1a2e;">cargando...</span>
+      </div>
+    </div>
+
+    <div id="renovar-form">
+      <div style="margin-bottom:14px;">
+        <label style="font-size:13px;font-weight:600;color:#333;display:block;margin-bottom:6px;">Tu email de cuenta *</label>
+        <input type="email" id="renovar-email" placeholder="email@tuempresa.com"
+          style="width:100%;padding:10px 14px;border:1.5px solid #ddd;border-radius:10px;font-size:14px;box-sizing:border-box;">
+      </div>
+      <div style="margin-bottom:20px;">
+        <label style="font-size:13px;font-weight:600;color:#333;display:block;margin-bottom:6px;">Comprobante de transferencia *</label>
+        <input type="file" id="renovar-comprobante" accept="image/*,application/pdf"
+          style="width:100%;padding:10px 14px;border:1.5px solid #ddd;border-radius:10px;font-size:14px;box-sizing:border-box;background:#fff;">
+      </div>
+      <button onclick="enviarRenovacion()" id="renovar-btn"
+        style="width:100%;padding:14px;background:#E05A00;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">
+        📤 Enviar comprobante
+      </button>
+    </div>
+
+    <div id="renovar-success" style="display:none;text-align:center;padding:20px 0;">
+      <div style="font-size:48px;">🎉</div>
+      <h3 style="font-family:'Fraunces',serif;font-size:20px;margin:12px 0 8px;">¡Comprobante recibido!</h3>
+      <p style="color:#666;font-size:14px;">Lo revisaremos y activaremos tu cuenta a la brevedad. Te avisaremos por email.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_RENOVAR = 'https://reserva-aulas.onrender.com/quefiestaapp';
+
+async function abrirModalRenovar() {
+  document.getElementById('modal-renovar').style.display = 'flex';
+  document.getElementById('renovar-form').style.display = 'block';
+  document.getElementById('renovar-success').style.display = 'none';
+  document.getElementById('renovar-email').value = '';
+  document.getElementById('renovar-comprobante').value = '';
+
+  // Cargar precio y alias desde config pública
+  try {
+    const res = await fetch(`${API_RENOVAR}/config-publica`);
+    if (res.ok) {
+      const cfg = await res.json();
+      document.getElementById('renovar-monto').textContent =
+        `$${Number(cfg.precio_ars).toLocaleString('es-AR')} ARS`;
+      document.getElementById('renovar-alias').textContent =
+        cfg.alias_suscripcion || 'Consultá por WhatsApp';
+    }
+  } catch(e) {
+    document.getElementById('renovar-monto').textContent = 'Consultá por WhatsApp';
+  }
+}
+
+function cerrarModalRenovar() {
+  document.getElementById('modal-renovar').style.display = 'none';
+}
+
+async function enviarRenovacion() {
+  const email = document.getElementById('renovar-email').value.trim();
+  const file = document.getElementById('renovar-comprobante').files[0];
+  const btn = document.getElementById('renovar-btn');
+
+  if (!email) { alert('Ingresá tu email de cuenta.'); return; }
+  if (!file) { alert('Adjuntá el comprobante de transferencia.'); return; }
+
+  btn.textContent = 'Enviando...';
+  btn.disabled = true;
+
+  try {
+    const form = new FormData();
+    form.append('email', email);
+    form.append('file', file);
+
+    const res = await fetch(`${API_RENOVAR}/renovar-suscripcion`, {
+      method: 'POST',
+      body: form
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      document.getElementById('renovar-form').style.display = 'none';
+      document.getElementById('renovar-success').style.display = 'block';
+    } else {
+      alert(data.detail || 'Error al enviar. Verificá tu email o contactanos por WhatsApp.');
+      btn.textContent = '📤 Enviar comprobante';
+      btn.disabled = false;
+    }
+  } catch(e) {
+    alert('Error de conexión. Intentá de nuevo.');
+    btn.textContent = '📤 Enviar comprobante';
+    btn.disabled = false;
+  }
+}
+
+// Cerrar modal al hacer click fuera
+document.getElementById('modal-renovar').addEventListener('click', function(e) {
+  if (e.target === this) cerrarModalRenovar();
+});
+
+// Abrir modal si la URL tiene #renovar
+if (window.location.hash === '#renovar') {
+  window.addEventListener('load', abrirModalRenovar);
+}
+</script>
+
 </body>
 </html>
